@@ -1,29 +1,26 @@
 # vue-todolist
 
-## Project setup
-```
-yarn install
-```
+> 一个从前台到后端到数据库完整的 TodoList
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
+## How Works?
 
-### Compiles and minifies for production
-```
-yarn run build
-```
+- 前端: Vue + Axios + LocalStorage
+- UI: Element-UI
+- 后台: Koa.js+ Koa-router + Koa-Session
+- 数据库: Postgresql
 
-### Run your tests
-```
-yarn run test
-```
+```bash
+# 安装依赖
+$ yarn install
 
-### Lints and fixes files
-```
-yarn run lint
-```
+# 构建和启动服务
+$ yarn run build
+$ yarn start
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# 前台开发
+$ yarn run serve
+# 后台开发
+$ yarn run dev
+# Pgsql配置
+configs/dbConf.js
+```
