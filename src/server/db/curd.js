@@ -12,7 +12,6 @@ function addTodo(uid, {
     status,
     endDate
 }) {
-    // let todoId = String.prototype.slice.call(new Date().getTime(), -6) + uid.padStart(3, '0') + Math.random().toString().slice(-6)
     return pool.query('INSERT INTO todo_list(todo_id,uid, content,start_date,end_date,status) VALUES(nextval(\'todo_list_todo_id_seq\'), $1,$2,$3,$4,$5)', [uid, target, startDate, endDate, status])
 }
 
@@ -29,9 +28,9 @@ function getAll(uid) {
     return pool.query('select * from todo_list where uid=$1', [uid])
 }
 
-function clear(uid) {
+// function clear(uid) {
 
-}
+// }
 
 
 //user表操作

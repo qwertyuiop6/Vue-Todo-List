@@ -17,18 +17,35 @@ function getCookie(key) {
     return Cookie.get(key)
 }
 
-function deleteCookies(keys) {
+function delCookies(keys) {
     keys.forEach(key => {
         Cookie.remove(key)
     });
 }
 
+
 function toLogin(params) {
     return post('/login', params)
 }
+
+function checkLogin() {
+    return get('/checkLogin')
+}
+
+function register(params) {
+    return post('/register', params)
+}
+
+function toLogout(params) {
+    return post('/logout', params)
+}
+
 export {
     setCookie,
     getCookie,
-    deleteCookies,
-    toLogin
+    delCookies,
+    toLogin,
+    register,
+    toLogout,
+    checkLogin,
 }

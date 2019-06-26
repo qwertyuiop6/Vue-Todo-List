@@ -4,19 +4,20 @@ async function getAll(ctx) {
     console.log('uid[%s] getall todo', ctx.params.uid);
 
     let result = await curd.getAll(ctx.params.uid)
-    // console.log(result.rows)
 
     ctx.body = {
-        // code: 200,
         data: result.rows
     }
+    console.log(result.rows);
+
 }
+
 async function addTodo(ctx) {
-    console.log('uid[%s] add todo: %s', ctx.params.uid, ctx.request.body);
+    console.log('uid[%s] add todo: %s', ctx.params.uid, JSON.stringify(ctx.request.body));
 
     const todo = ctx.request.body
     try {
-        let result = await curd.addTodo(ctx.params.uid, todo)
+        await curd.addTodo(ctx.params.uid, todo)
         ctx.body = {
             code: 200,
         }
@@ -25,89 +26,127 @@ async function addTodo(ctx) {
     }
 
 }
+
 async function delTodo(ctx) {
     console.log('user[%s] del todo[%s]', ctx.request.body.uid, ctx.params.todoId);
 
     const {
         uid
     } = ctx.request.body;
+
     try {
-        let result = await curd.delTodo(ctx.params.todoId, uid);
-        ctx.body = {
-            code: 200,
-        };
+        await curd.delTodo(ctx.params.todoId, uid);
+        ctx.status = 200
     } catch (error) {
         console.log(error);
     }
 
 }
+
 async function changeStatus(ctx) {
-    console.log('change' + ctx.request.body);
+    console.log('%s change %s', ctx.request.body.uid, ctx.params.todoId);
 
     const {
         status
     } = ctx.request.body;
+
     try {
-        let result = await curd.setStatus(ctx.params.todoId, status)
-        // console.log(result.rows);
-        ctx.body = {
-            code: 200,
-            // data:
-        };
+        await curd.setStatus(ctx.params.todoId, status)
+        ctx.status = 200
     } catch (error) {
         console.log(error);
     }
 }
-async function checkLogin(ctx) {
-    console.log('login' + ctx.request.body);
+
+async function doLogin(ctx) {
+    console.log('[%s:%s] want to login', ctx.request.body.name, ctx.request.body.passwd);
 
     const {
         name,
         passwd
     } = ctx.request.body;
+
     try {
         let result = await curd.getUserInfo(name);
-        if (result.rows.length == 0) {
-            // ctx.status = 404;
+        if (result.rows.length === 0) {
             ctx.body = {
                 code: 404,
-                msg: '该昵称用户未找到~'
+                msg: '此昵称用户未找到~'
             }
         } else if (result.rows[0].u_passwd !== passwd) {
-            // ctx.status = 403;
             ctx.body = {
                 code: 403,
-                msg: '密码不匹配~'
+                msg: '密码错误~'
             }
         } else if (result.rows[0].u_passwd === passwd) {
             const uid = result.rows[0].uid;
             ctx.session = {
-                name,
                 isLogin: true,
+                name,
                 uid,
             };
 
-            ctx.cookies.set('name', name, {
-                httpOnly: false
-            });
-            ctx.cookies.set('isLogin', true, {
-                httpOnly: false
-            });
-            ctx.cookies.set('uid', uid, {
-                httpOnly: false
-            })
+            // ctx.cookies.set('name', name, {
+            //     httpOnly: false
+            // });
+            // ctx.cookies.set('isLogin', true, {
+            //     httpOnly: false
+            // });
+            // ctx.cookies.set('uid', uid, {
+            //     httpOnly: false
+            // })
 
             console.log(name, "login success,session:", ctx.session);
-
             ctx.body = {
                 code: 200,
-                // session: ctx.session,
+                data: ctx.session
             }
         }
-        // console.log(result.rows);
 
     } catch (error) {
         console.log(error);
+    }
+}
+
+async function checkLogin(ctx) {
+    if (ctx.session.isLogin) {
+        ctx.body = ctx.session
+    } else {
+        ctx.body = {
+            isLogin: false
+        }
+    }
+}
+
+async function logout(ctx) {
+    console.log('user [%s] logout ', ctx.request.body.uid);
+    ctx.session = null;
+    ctx.status = 200
+}
+
+async function register(ctx) {
+    console.log('someone want to regsiter [%s:%s]', ctx.request.body.name, ctx.request.body.passwd);
+    const {
+        name,
+        passwd
+    } = ctx.request.body;
+    try {
+        const res = await curd.getUserInfo(name);
+        if (res.rows.length) {
+            ctx.body = {
+                code: 403,
+                msg: '该用户名已被使用!'
+            }
+            return
+        }
+        await curd.createUser(name, passwd);
+        ctx.body = {
+            code: 200,
+        };
+
+    } catch (error) {
+        console.log(error);
+
     }
 }
 
@@ -116,5 +155,8 @@ module.exports = {
     addTodo,
     delTodo,
     changeStatus,
+    doLogin,
+    register,
+    logout,
     checkLogin
 }
