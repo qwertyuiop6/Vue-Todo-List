@@ -160,15 +160,6 @@ export default {
     this.checkLogin();
   },
   methods: {
-    //检查登录状态
-    // checkLogin() {
-    //   //检查Cookie中是否存在session
-    //   if (loginApi.getCookie("isLogin")) {
-    //     this.setLoginStatus(true);
-    //   } else {
-    //     this.setLoginStatus(false);
-    //   }
-    // },
     checkLogin() {
       //检查session会话是否过期
       loginApi.checkLogin().then(res => {
@@ -212,14 +203,16 @@ export default {
         confirmButtonText: "确定!",
         cancelButtonText: "取消~",
         type: "warning"
-      }).then(() => {
-        loginApi.toLogout({ uid }).then(res => {
-          // loginApi.delCookies(["uid", "name", "isLogin"]);
+      })
+        .then(() => {
+          loginApi.toLogout({ uid }).then(() => {
+            // loginApi.delCookies(["uid", "name", "isLogin"]);
 
-          this.setLoginStatus(false);
-          this.$message("已退出登录~");
-        });
-      });
+            this.setLoginStatus(false);
+            this.$message("已退出登录~");
+          });
+        })
+        .catch(() => {});
     },
     //设置登录状态信息，并发送用户uid name 登录状态到父组件
     setLoginStatus(isLogin, userInfo, sync = false) {
@@ -230,7 +223,7 @@ export default {
         this.$message.success(`Hi ${this.name} ,Welcome to your todolist!`);
       } else {
         this.loginStatus = false;
-        this.name = "";
+        this.name = "guy";
         this.uid = "";
       }
       this.$emit(

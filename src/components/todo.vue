@@ -63,7 +63,7 @@
           <el-button
             size="mini"
             v-text="status[scope.row.status].toggle"
-            @click="status[scope.row.status].togglefn(scope.$index,scope.row.todoId)"
+            @click="toggleFn(scope.$index,scope.row.todoId,status[scope.row.status].toggleStatus)"
           ></el-button>
           <el-button size="mini" type="danger" @click="del(scope.$index,scope.row.todoId)">
             <i class="el-icon-delete"></i>
@@ -141,13 +141,13 @@ export default {
         {
           img: "el-icon-more",
           text: "进行中",
-          togglefn: this.done,
+          toggleStatus: 1,
           toggle: "完成了！"
         },
         {
           img: "el-icon-success",
           text: "已完成",
-          togglefn: this.undo,
+          toggleStatus: 0,
           toggle: "还原"
         }
       ]
@@ -202,6 +202,7 @@ export default {
           } = ele;
           list.push({ startDate, target, status, endDate, todoId });
         });
+        list.sort((a, b) => a.todoId - b.todoId);
         this.tableData = list;
         localStorage.setItem("todolist", JSON.stringify(this.tableData));
       });
@@ -211,7 +212,6 @@ export default {
     getLocalTodo(Locallist, tasks = []) {
       Locallist.forEach(todo => {
         if (!todo.hasOwnProperty("todoId")) {
-          var date = new Date();
           tasks.push(api.add(this.uid, todo));
         }
       });
@@ -232,7 +232,7 @@ export default {
 
       //online状态添加到server
       if (this.loginStatus) {
-        api.add(this.uid, newTodo).then(res => {
+        api.add(this.uid, newTodo).then(() => {
           // this.tableData.push(newTodo);
           this.$message.success("添加成功~");
           this.getTodolist();
@@ -253,7 +253,7 @@ export default {
       })
         .then(() => {
           if (this.loginStatus) {
-            api.del(this.uid, todoId).then(res => {
+            api.del(this.uid, todoId).then(() => {
               this.tableData.splice(index, 1);
               // this.$message.success("删除成功!");
             });
@@ -264,31 +264,20 @@ export default {
           localStorage.setItem("todolist", JSON.stringify(this.tableData));
         })
         .catch(() => {
-          this.$message.info("已取消删除~");
+          this.$message.info("已取消删除");
         });
     },
 
-    //改变todo状态为完成
-    done(index, todoId) {
+    //更改todo完成状态
+    toggleFn(index, todoId, status) {
       if (this.loginStatus) {
-        api.changeStatus(this.uid, todoId, 1);
+        api.changeStatus(this.uid, todoId, status);
       }
 
       var data = this.tableData[index];
-      data.status = 1;
+      data.status = status;
       this.tableData.splice(index, 1, data);
-      localStorage.setItem("todolist", JSON.stringify(this.tableData));
-    },
 
-    //撤销todo完成动作
-    undo(index, todoId) {
-      if (this.loginStatus) {
-        api.changeStatus(this.uid, todoId, 0);
-      }
-
-      var data = this.tableData[index];
-      data.status = 0;
-      this.tableData.splice(index, 1, data);
       localStorage.setItem("todolist", JSON.stringify(this.tableData));
     }
   }

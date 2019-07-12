@@ -28,16 +28,8 @@ function getAll(uid) {
     return pool.query('select * from todo_list where uid=$1', [uid])
 }
 
-// function clear(uid) {
-
-// }
-
 
 //user表操作
-
-// function getUserCount() {
-//     return pool.pool.query('select count(*) from users')
-// }
 
 function createUser(name, passwd) {
     return pool.query('insert into users(uid,u_name,u_passwd) values(nextval(\'users_uid_seq\'),$1,$2)', [name, passwd])

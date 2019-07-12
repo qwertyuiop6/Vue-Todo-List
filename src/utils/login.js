@@ -4,11 +4,6 @@ import {
     post
 } from "./http";
 
-/**
- * set cookie
- * @param {*} key
- * @param {*} value
- */
 function setCookie(key, value) {
     Cookie.set(key, value)
 }

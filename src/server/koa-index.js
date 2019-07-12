@@ -11,7 +11,8 @@ const app = new Koa();
 async function corsFrontDev(ctx, next) {
   const frontDevDomain = "localhost";
   if (ctx.origin.includes(frontDevDomain)) {
-    ctx.set("Access-Control-Allow-Origin", "*");
+    ctx.set("Access-Control-Allow-Origin", "http://localhost:8080");
+    ctx.set("Access-Control-Allow-Credentials", true);
   }
 
   await next();
@@ -20,9 +21,9 @@ async function corsFrontDev(ctx, next) {
 app.keys = sessionConf.appKeys;
 
 app
+  .use(corsFrontDev)
   .use(Static(`${__dirname}/../../dist`))
   .use(bodyParser())
-  .use(corsFrontDev)
   .use(session(sessionConf.config, app))
   .use(myRouter.checkSession)
   .use(myRouter.routes)

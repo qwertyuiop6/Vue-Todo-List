@@ -11,6 +11,7 @@ if (process.env.NODE_ENV == 'development') {
 
 axios.defaults.timeout = 10000;
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+axios.defaults.withCredentials = true
 
 /**
  * get方法，对应get请求

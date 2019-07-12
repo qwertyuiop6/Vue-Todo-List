@@ -22,7 +22,7 @@ router
 
 //检查数据请求登录状态合法性
 async function checkSession(ctx, next) {
-    console.log('find req, method: %s , target api: %s', ctx.method, ctx.url);
+    console.log('find req from %s, method: %s , target api: %s', ctx.origin, ctx.method, ctx.url);
 
     if (!allowMethods.includes(ctx.method)) {
         ctx.status = 405;

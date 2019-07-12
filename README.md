@@ -8,22 +8,26 @@
 # 安装依赖
 $ yarn install
 
+# 表导入Pgsql
+server/todo.sql
+# Pgsql连接配置
+server/config/dbConf.js
+
 # 构建和启动服务
 $ yarn run build
 $ yarn start
 
 
+
+# 后台开发
+$ yarn run dev
 # 前台开发
 $ yarn run serve
-# 后台开发(先build前端)
-$ yarn run dev
-# Pgsql配置
-configs/dbConf.js
 ```
 
 ## How Works?
 
 - 前端: Vue + Axios + LocalStorage
 - UI: Element-UI
-- 后台: Koa.js+ Koa-router + Koa-Session
+- 后台: Koa.js + Koa-router + Koa-Session
 - 数据库: Postgresql

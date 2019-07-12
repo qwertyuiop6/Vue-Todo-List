@@ -86,16 +86,6 @@ async function doLogin(ctx) {
                 uid,
             };
 
-            // ctx.cookies.set('name', name, {
-            //     httpOnly: false
-            // });
-            // ctx.cookies.set('isLogin', true, {
-            //     httpOnly: false
-            // });
-            // ctx.cookies.set('uid', uid, {
-            //     httpOnly: false
-            // })
-
             console.log(name, "login success,session:", ctx.session);
             ctx.body = {
                 code: 200,
