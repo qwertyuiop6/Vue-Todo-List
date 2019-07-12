@@ -10,7 +10,7 @@ const app = new Koa();
 
 async function corsFrontDev(ctx, next) {
   const frontDevDomain = "localhost";
-  if (ctx.origin.includes(frontDevDomain)) {
+  if (process.env.NODE_ENV == 'development' && ctx.origin.includes(frontDevDomain)) {
     ctx.set("Access-Control-Allow-Origin", "http://localhost:8080");
     ctx.set("Access-Control-Allow-Credentials", true);
   }
