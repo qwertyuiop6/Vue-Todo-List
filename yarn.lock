@@ -5410,9 +5410,9 @@ locate-path@^3.0.0:
     path-exists "^3.0.0"
 
 lodash.defaultsdeep@^4.6.0:
-  version "4.6.0"
-  resolved "https://registry.npm.taobao.org/lodash.defaultsdeep/download/lodash.defaultsdeep-4.6.0.tgz#bec1024f85b1bd96cbea405b23c14ad6443a6f81"
-  integrity sha1-vsECT4WxvZbL6kBbI8FK1kQ6b4E=
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/lodash.defaultsdeep/-/lodash.defaultsdeep-4.6.1.tgz#512e9bd721d272d94e3d3a63653fa17516741ca6"
+  integrity sha512-3j8wdDzYuWO3lM3Reg03MuQR957t287Rpcxp1njpEa8oDrikb+FwGdW3n+FELh/A6qib6yPit0j/pv9G/yeAqA==
 
 lodash.kebabcase@^4.1.1:
   version "4.1.1"
@@ -7188,14 +7188,9 @@ qs@6.5.2, qs@~6.5.2:
   resolved "https://registry.npm.taobao.org/qs/download/qs-6.5.2.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fqs%2Fdownload%2Fqs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
   integrity sha1-yzroBuh0BERYTvFUzo7pjUA/PjY=
 
-qs@^6.5.2:
+qs@^6.5.2, qs@^6.7.0:
   version "6.7.0"
   resolved "https://registry.npm.taobao.org/qs/download/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
-  integrity sha1-QdwaAV49WB8WIXdr4xr7KHapsbw=
-
-qs@^6.7.0:
-  version "6.7.0"
-  resolved "https://registry.npm.taobao.org/qs/download/qs-6.7.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fqs%2Fdownload%2Fqs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha1-QdwaAV49WB8WIXdr4xr7KHapsbw=
 
 query-string@^5.0.1:
