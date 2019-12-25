@@ -1,7 +1,7 @@
 module.exports = {
-    host: 'cave.zhexue.world',
-    port: 5432,
-    database: 'study',
     user: 'wxs',
+    host: 'no-bug.xyz',
+    database: 'todo',
     password: 'wxs123',
+    port: 5432,
 }
