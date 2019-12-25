@@ -63,9 +63,9 @@
           <el-button
             size="mini"
             v-text="status[scope.row.status].toggle"
-            @click="toggleFn(scope.$index,scope.row.todoId,status[scope.row.status].toggleStatus)"
+            @click="toggleFn(scope.$index,scope.row.id,status[scope.row.status].toggleStatus)"
           ></el-button>
-          <el-button size="mini" type="danger" @click="del(scope.$index,scope.row.todoId)">
+          <el-button size="mini" type="danger" @click="del(scope.$index,scope.row.id)">
             <i class="el-icon-delete"></i>
           </el-button>
         </template>
@@ -73,6 +73,7 @@
     </el-table>
   </div>
 </template>
+
 <style lang="scss">
 .box {
   text-align: center;
@@ -114,6 +115,7 @@
   }
 }
 </style>
+
 <script>
 import login from "./todoLogin.vue";
 
@@ -198,11 +200,11 @@ export default {
             content: target,
             end_date: endDate,
             status,
-            todo_id: todoId
+            id
           } = ele;
-          list.push({ startDate, target, status, endDate, todoId });
+          list.push({ startDate, target, status, endDate, id });
         });
-        list.sort((a, b) => a.todoId - b.todoId);
+        list.sort((a, b) => a.id - b.id);
         this.tableData = list;
         localStorage.setItem("todolist", JSON.stringify(this.tableData));
       });
@@ -211,7 +213,7 @@ export default {
     //将本地离线创建的无IDtodo 同步到server
     getLocalTodo(Locallist, tasks = []) {
       Locallist.forEach(todo => {
-        if (!todo.hasOwnProperty("todoId")) {
+        if (!todo.hasOwnProperty("id")) {
           tasks.push(api.add(this.uid, todo));
         }
       });
@@ -245,7 +247,7 @@ export default {
     },
 
     //删除一条todo
-    del(index, todoId) {
+    del(index, id) {
       this.$confirm("确定删除这个Todolist吗?", "FBI Warnning!!", {
         confirmButtonText: "确定!",
         cancelButtonText: "取消~",
@@ -253,7 +255,7 @@ export default {
       })
         .then(() => {
           if (this.loginStatus) {
-            api.del(this.uid, todoId).then(() => {
+            api.del(this.uid, id).then(() => {
               this.tableData.splice(index, 1);
               // this.$message.success("删除成功!");
             });
@@ -269,9 +271,9 @@ export default {
     },
 
     //更改todo完成状态
-    toggleFn(index, todoId, status) {
+    toggleFn(index, id, status) {
       if (this.loginStatus) {
-        api.changeStatus(this.uid, todoId, status);
+        api.changeStatus(this.uid, id, status);
       }
 
       var data = this.tableData[index];

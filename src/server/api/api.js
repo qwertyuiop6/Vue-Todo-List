@@ -28,14 +28,14 @@ async function addTodo(ctx) {
 }
 
 async function delTodo(ctx) {
-    console.log('user[%s] del todo[%s]', ctx.request.body.uid, ctx.params.todoId);
+    console.log('user[%s] del todo[%s]', ctx.request.body.uid, ctx.params.id);
 
     const {
         uid
     } = ctx.request.body;
 
     try {
-        await curd.delTodo(ctx.params.todoId, uid);
+        await curd.delTodo(ctx.params.id, uid);
         ctx.status = 200
     } catch (error) {
         console.log(error);
@@ -44,14 +44,14 @@ async function delTodo(ctx) {
 }
 
 async function changeStatus(ctx) {
-    console.log('%s change %s', ctx.request.body.uid, ctx.params.todoId);
+    console.log('%s change %s', ctx.request.body.uid, ctx.params.id);
 
     const {
         status
     } = ctx.request.body;
 
     try {
-        await curd.setStatus(ctx.params.todoId, status)
+        await curd.setStatus(ctx.params.id, status)
         ctx.status = 200
     } catch (error) {
         console.log(error);
@@ -73,13 +73,13 @@ async function doLogin(ctx) {
                 code: 404,
                 msg: '此昵称用户未找到~'
             }
-        } else if (result.rows[0].u_passwd !== passwd) {
+        } else if (result.rows[0].passwd !== passwd) {
             ctx.body = {
                 code: 403,
                 msg: '密码错误~'
             }
-        } else if (result.rows[0].u_passwd === passwd) {
-            const uid = result.rows[0].uid;
+        } else if (result.rows[0].passwd === passwd) {
+            const uid = result.rows[0].id;
             ctx.session = {
                 isLogin: true,
                 name,
