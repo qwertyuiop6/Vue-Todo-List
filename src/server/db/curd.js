@@ -13,15 +13,15 @@ function addTodo(uid, {
     endDate
 }) {
     // let todoId = String.prototype.slice.call(new Date().getTime(), -6) + uid.padStart(3, '0') + Math.random().toString().slice(-6)
-    return pool.query('INSERT INTO todo_list(todo_id,uid, content,start_date,end_date,status) VALUES(nextval(\'todo_list_todo_id_seq\'), $1,$2,$3,$4,$5)', [uid, target, startDate, endDate, status])
+    return pool.query('INSERT INTO todo_list(id,uid, content,start_date,end_date,status) VALUES(nextval(\'todo_list_id_seq\'), $1,$2,$3,$4,$5)', [uid, target, startDate, endDate, status])
 }
 
 function delTodo(todoId, uid) {
-    return pool.query('delete from todo_list where uid=$1 and todo_id=$2', [uid, todoId])
+    return pool.query('delete from todo_list where uid=$1 and id=$2', [uid, todoId])
 }
 
 function setStatus(todoId, status) {
-    return pool.query('update todo_list set status=$2 where todo_id=$1', [todoId, status])
+    return pool.query('update todo_list set status=$2 where id=$1', [todoId, status])
 }
 
 function getAll(uid) {
@@ -41,11 +41,11 @@ function clear(uid) {
 // }
 
 function createUser(name, passwd) {
-    return pool.query('insert into users(uid,u_name,u_passwd) values(nextval(\'users_uid_seq\'),$1,$2)', [name, passwd])
+    return pool.query('insert into user(id,name,passwd) values(nextval(\'users_id_seq\'),$1,$2)', [name, passwd])
 }
 
 function getUserInfo(name) {
-    return pool.query('select u_passwd,uid from users where u_name=$1', [name])
+    return pool.query('select passwd,id from user where name=$1', [name])
 }
 
 module.exports = {
