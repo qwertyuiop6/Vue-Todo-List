@@ -9,7 +9,7 @@
 $ yarn install
 
 # 表导入Pgsql
-server/todo.sql
+server/db/todolist.sql
 # Pgsql连接配置
 server/config/dbConf.js
 
