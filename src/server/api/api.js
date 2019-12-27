@@ -149,4 +149,5 @@ module.exports = {
     register,
     logout,
     checkLogin
+<<<<<<< HEAD
 }

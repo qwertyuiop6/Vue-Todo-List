@@ -5,4 +5,3 @@ module.exports = {
     user: 'wxs',
     password: 'wxs123',
 }
-
