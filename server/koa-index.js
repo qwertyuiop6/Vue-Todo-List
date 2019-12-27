@@ -22,7 +22,7 @@ app.keys = sessionConf.appKeys;
 
 app
   .use(corsFrontDev)
-  .use(Static(`${__dirname}/../../dist`))
+  .use(Static(`${__dirname}/../dist`))
   .use(bodyParser())
   .use(session(sessionConf.config, app))
   .use(myRouter.checkSession)

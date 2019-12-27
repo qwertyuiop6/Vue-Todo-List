@@ -6,17 +6,16 @@
 
 ```bash
 # 安装依赖
-$ yarn install
+$ yarn
 
-# 表导入Pgsql
-server/todo.sql
+# 数据库表导入Pgsql
+server/db/todolist.sql
 # Pgsql连接配置
 server/config/dbConf.js
 
 # 构建和启动服务
 $ yarn run build
 $ yarn start
-
 
 
 # 后台开发
