@@ -119,7 +119,7 @@
 <script>
 import login from "./todoLogin.vue";
 
-import * as api from "../utils/api";
+// import * as this.$api.todoList from "../utils/this.$api.todoList";
 
 export default {
   name: "etodo",
@@ -189,7 +189,7 @@ export default {
 
     //根据uid获取所有todolist
     getTodolist() {
-      api.getAll(this.uid).then(res => {
+      this.$api.todoList.getAll(this.uid).then(res => {
         console.log(res);
 
         this.loading = false;
@@ -214,7 +214,7 @@ export default {
     getLocalTodo(Locallist, tasks = []) {
       Locallist.forEach(todo => {
         if (!todo.hasOwnProperty("id")) {
-          tasks.push(api.add(this.uid, todo));
+          tasks.push(this.$api.todoList.add(this.uid, todo));
         }
       });
       // this.$message.success(tasks.length.toString());
@@ -234,7 +234,7 @@ export default {
 
       //online状态添加到server
       if (this.loginStatus) {
-        api.add(this.uid, newTodo).then(() => {
+        this.$api.todoList.add(this.uid, newTodo).then(() => {
           // this.tableData.push(newTodo);
           this.$message.success("添加成功~");
           this.getTodolist();
@@ -255,7 +255,7 @@ export default {
       })
         .then(() => {
           if (this.loginStatus) {
-            api.del(this.uid, id).then(() => {
+            this.$api.todoList.del(this.uid, id).then(() => {
               this.tableData.splice(index, 1);
               // this.$message.success("删除成功!");
             });
@@ -273,7 +273,7 @@ export default {
     //更改todo完成状态
     toggleFn(index, id, status) {
       if (this.loginStatus) {
-        api.changeStatus(this.uid, id, status);
+        this.$api.todoList.changeStatus(this.uid, id, status);
       }
 
       var data = this.tableData[index];

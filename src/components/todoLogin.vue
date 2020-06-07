@@ -101,7 +101,7 @@
 </style>
 
 <script>
-import * as loginApi from "../utils/login";
+// import * as this.$api.login from "../utils/login";
 
 export default {
   name: "todoLogin",
@@ -162,7 +162,7 @@ export default {
   methods: {
     checkLogin() {
       //检查session会话是否过期
-      loginApi.checkLogin().then(res => {
+      this.$api.login.checkLogin().then(res => {
         if (res.isLogin) {
           this.setLoginStatus(true, res);
         } else {
@@ -175,8 +175,8 @@ export default {
       this.isLoging = true;
       this.loginForm.nerror = "";
       this.loginForm.perror = "";
-      loginApi
-        .toLogin({ name, passwd })
+      this.$api.login
+        .login({ name, passwd })
         .then(res => {
           this.isLoging = false;
           if (res.code == 200) {
@@ -205,8 +205,8 @@ export default {
         type: "warning"
       })
         .then(() => {
-          loginApi.toLogout({ uid }).then(() => {
-            // loginApi.delCookies(["uid", "name", "isLogin"]);
+          this.$api.login.logout({ uid }).then(() => {
+            // this.$api.login.delCookies(["uid", "name", "isLogin"]);
 
             this.setLoginStatus(false);
             this.$message("已退出登录~");
@@ -240,7 +240,7 @@ export default {
     reg(name, passwd) {
       this.isLoging = true;
       this.regForm.nerror = "";
-      loginApi.register({ name, passwd }).then(res => {
+      this.$api.login.register({ name, passwd }).then(res => {
         this.isLoging = false;
         if (res.code == 403) {
           this.regForm.nerror = res.msg;

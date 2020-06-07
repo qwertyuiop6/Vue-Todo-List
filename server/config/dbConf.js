@@ -1,5 +1,5 @@
 module.exports = {
-    host: 'cave.zhexue.world',
+    host: 'zx-cave.wtfk.world',
     port: 5432,
     database: 'study',
     user: 'wxs',
