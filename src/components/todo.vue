@@ -32,7 +32,7 @@
     </el-button>
     <p v-if="content" class="tips">你是要添加: {{content}} ?</p>
 
-    <login title="登录/注册" @userHasLogin="setUserInfo" class="loginComp"></login>
+    <login title="登录/注册" @userStatusChange="setUserInfo" class="loginComp"></login>
 
     <!-- element表格 -->
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
@@ -131,8 +131,8 @@ export default {
   },
   data() {
     return {
-      name: "",
-      uid: "",
+      name: "guy",
+      uid: "0",
       loginStatus: false,
 
       content: "",
@@ -155,15 +155,20 @@ export default {
       ]
     };
   },
+  created() {
+    this.loadTable();
+  },
   methods: {
     //监听登录子组件登录状态信息触发的callback
-    setUserInfo(info, sync = false) {
+    setUserInfo(info) {
       Object.assign(this, info);
-      this.loadTable(sync);
+      if (info.loginStatus) {
+        this.loadTable(true);
+      }
     },
 
     //加载todolist列表
-    loadTable(syncLocal) {
+    loadTable(syncLocal = false) {
       let Locallist = JSON.parse(localStorage.getItem("todolist"));
       //若online状态加载server
       if (this.loginStatus) {
@@ -189,21 +194,16 @@ export default {
 
     //根据uid获取所有todolist
     getTodolist() {
-      this.$api.todoList.getAll(this.uid).then(res => {
+      this.$api.todo.getAll(this.uid).then(res => {
         console.log(res);
-
         this.loading = false;
-        let list = [];
-        res.data.forEach(ele => {
-          const {
-            start_date: startDate,
-            content: target,
-            end_date: endDate,
-            status,
-            id
-          } = ele;
-          list.push({ startDate, target, status, endDate, id });
-        });
+        let list = res.data.map(ele => ({
+          startDate: ele.start_date,
+          target: ele.content,
+          endDate: ele.end_date,
+          status: ele.status,
+          id: ele.id
+        }));
         list.sort((a, b) => a.id - b.id);
         this.tableData = list;
         localStorage.setItem("todolist", JSON.stringify(this.tableData));
@@ -214,7 +214,7 @@ export default {
     getLocalTodo(Locallist, tasks = []) {
       Locallist.forEach(todo => {
         if (!todo.hasOwnProperty("id")) {
-          tasks.push(this.$api.todoList.add(this.uid, todo));
+          tasks.push(this.$api.todo.add(this.uid, todo));
         }
       });
       // this.$message.success(tasks.length.toString());
@@ -234,7 +234,7 @@ export default {
 
       //online状态添加到server
       if (this.loginStatus) {
-        this.$api.todoList.add(this.uid, newTodo).then(() => {
+        this.$api.todo.add(this.uid, newTodo).then(() => {
           // this.tableData.push(newTodo);
           this.$message.success("添加成功~");
           this.getTodolist();
@@ -255,14 +255,21 @@ export default {
       })
         .then(() => {
           if (this.loginStatus) {
-            this.$api.todoList.del(this.uid, id).then(() => {
-              this.tableData.splice(index, 1);
-              // this.$message.success("删除成功!");
-            });
+            this.$api.todo
+              .remove(this.uid, id)
+              .then(() => {
+                this.tableData.splice(index, 1);
+                this.$message.success("删除成功!");
+              })
+              .catch(err => {
+                this.$message.error("删除失败");
+                return;
+              });
           } else {
             this.tableData.splice(index, 1);
+            this.$message.success("删除成功!");
           }
-          this.$message.success("删除成功!");
+          // this.$message.success("删除成功!");
           localStorage.setItem("todolist", JSON.stringify(this.tableData));
         })
         .catch(() => {
@@ -273,7 +280,7 @@ export default {
     //更改todo完成状态
     toggleFn(index, id, status) {
       if (this.loginStatus) {
-        this.$api.todoList.changeStatus(this.uid, id, status);
+        this.$api.todo.changeStatus(this.uid, id, status);
       }
 
       var data = this.tableData[index];

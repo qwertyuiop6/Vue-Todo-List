@@ -1,13 +1,17 @@
 import axios from 'axios';
 import QS from 'qs';
+import {
+    development as dev,
+    production as pro
+} from "../config/api";
 
 if (process.env.NODE_ENV == 'development') {
-    axios.defaults.baseURL = 'http://localhost:8000';
+    // axios.defaults.baseURL = dev;
     axios.defaults.withCredentials = true
 } else if (process.env.NODE_ENV == 'debug') {
     axios.defaults.baseURL = '';
 } else if (process.env.NODE_ENV == 'production') {
-    axios.defaults.baseURL = '';
+    axios.defaults.baseURL = pro;
 }
 
 axios.defaults.timeout = 10000;
@@ -15,9 +19,7 @@ axios.defaults.timeout = 10000;
 //设置类型为表单类型，基本请求,避免复杂请求的option请求
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 
-
 //封装get,post请求
-
 /**
  * get方法，对应get请求
  * @param {String} url [请求的url地址]

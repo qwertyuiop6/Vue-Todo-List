@@ -6,7 +6,7 @@ const pool = new Pool(dbConf)
 
 
 //todo_list表操作
-function addTodo(uid, {
+function add(uid, {
     target,
     startDate,
     status,
@@ -16,7 +16,7 @@ function addTodo(uid, {
     return pool.query('INSERT INTO public.todo_list(id,uid, content,start_date,end_date,status) VALUES(nextval(\'todo_list_id_seq\'), $1,$2,$3,$4,$5)', [uid, target, startDate, endDate, status])
 }
 
-function delTodo(todoId, uid) {
+function del(todoId, uid) {
     return pool.query('delete from public.todo_list where uid=$1 and id=$2', [uid, todoId])
 }
 
@@ -33,26 +33,9 @@ function clear(uid) {
 
 }
 
-
-//user表操作
-
-// function getUserCount() {
-//     return pool.pool.query('select count(*) from users')
-// }
-
-function createUser(name, passwd) {
-    return pool.query('insert into public.user(id,name,passwd) values(nextval(\'user_id_seq\'),$1,$2)', [name, passwd])
-}
-
-function getUserInfo(name) {
-    return pool.query('select passwd,id from public.user where name=$1', [name])
-}
-
 module.exports = {
-    createUser,
-    getUserInfo,
-    addTodo,
+    add,
     getAll,
-    delTodo,
+    del,
     setStatus,
 }

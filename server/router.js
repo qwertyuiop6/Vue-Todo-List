@@ -1,48 +1,20 @@
-const Router = require('koa-router');
-const api = require('./api/api')
+const Router = require("koa-router")
+const router = new Router()
 
-const router = new Router();
-let openRoutes = ['/', '/login', '/checkLogin', '/register'];
-let allowMethods = ['GET', 'POST'];
+const api = require("./routes/api")
+const auth = require("./routes/auth")
+
 
 router
-    .get('/', ctx => {
-        ctx.redirect('./index.html')
+    //主页静态文件
+    .get("/", (ctx) => {
+        ctx.redirect("./index.html")
     })
-    .post('/register', api.register)
-    .post('/login', api.doLogin)
-    .post('/logout', api.logout)
-    .get('/checkLogin', api.checkLogin)
 
-    //数据api
-    .get('/api/todolist/:uid', api.getAll)
-    .post('/api/todolist/:uid', api.addTodo)
-    .post('/api/todolist/del/:id', api.delTodo)
-    .post('/api/todolist/changeStatus/:id', api.changeStatus)
+    //认证路由
+    .use('/auth', auth.routes(), auth.allowedMethods())
 
-//检查数据请求登录状态
-async function checkSession(ctx, next) {
-    console.log('find req from %s, method: %s , target api: %s', ctx.origin, ctx.method, ctx.url);
+    //数据api路由
+    .use('/api', api.routes(), api.allowedMethods())
 
-    if (!allowMethods.includes(ctx.method)) {
-        ctx.status = 405;
-    }
-
-    if (!openRoutes.includes(ctx.url)) {
-
-        if (!ctx.session.isLogin) {
-            ctx.status = 403;
-            ctx.body = '你还没有登录哦~';
-            return;
-            // ctx.status = 301;
-            // ctx.redirect("/");
-        }
-
-    }
-    await next();
-}
-
-module.exports = {
-    routes: router.routes(),
-    checkSession: checkSession
-}
+module.exports = router

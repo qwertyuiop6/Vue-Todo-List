@@ -6,19 +6,27 @@
       :content="!loginStatus?'登录可以同步todolist到云端哦~':'退出登录'"
       placement="top"
     >
-      <el-button icon="el-icon-upload" circle v-if="!loginStatus" @click="loginFormVisible=true"></el-button>
+      <el-button icon="el-icon-upload" circle v-if="!loginStatus" @click="formVisible=true"></el-button>
       <el-button icon="el-icon-switch-button" circle v-else @click="logout()"></el-button>
     </el-tooltip>
 
-    <el-dialog :title="title" :visible.sync="loginFormVisible" width="400px">
+    <el-dialog :title="title" :visible.sync="formVisible" width="460px">
       <el-tabs stretch v-model="DiaTab">
         <el-tab-pane label="登录" name="login">
           <span slot="label">
             <i class="el-icon-user-solid"></i>登录
           </span>
-          <!-- 登录框 -->
-          <el-form :model="loginForm" inline="true" label-position="left">
-            <el-form-item label="昵称:" show-message :error="loginForm.nerror">
+          <!-- 登录表单 -->
+          <el-form
+            :model="loginForm"
+            :rules="loginRules"
+            :inline="!0"
+            :status-icon="!0"
+            label-position="left"
+            ref="loginForm"
+            :submitAction="login"
+          >
+            <el-form-item label="昵称:" show-message :error="loginForm.nerror" prop="name">
               <el-input
                 v-model="loginForm.name"
                 autocomplete="off"
@@ -27,7 +35,7 @@
                 placeholder="请输入您的昵称"
               ></el-input>
             </el-form-item>
-            <el-form-item label="密码:" show-message :error="loginForm.perror">
+            <el-form-item label="密码:" show-message :error="loginForm.perror" prop="passwd">
               <el-input
                 v-model="loginForm.passwd"
                 autocomplete="off"
@@ -38,27 +46,36 @@
             </el-form-item>
           </el-form>
           <div class="dialog-footer">
-            <el-button @click="loginFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="login(loginForm.name,loginForm.passwd)">
+            <el-button @click="cancel('loginForm')">取 消</el-button>
+            <el-button type="primary" @click="submitForm('loginForm')">
               登录
-              <i class="el-icon-loading" v-show="isLoging"></i>
+              <i class="el-icon-loading" v-show="loginForm.doing"></i>
             </el-button>
           </div>
         </el-tab-pane>
 
+        <!-- 注册表单 -->
         <el-tab-pane label="注册" name="regsiter">
           <span slot="label">
             <i class="el-icon-edit-outline"></i>注册
           </span>
           <!-- 注册框 -->
-          <el-form :model="regForm" status-icon :rules="rules" ref="regForm">
-            <el-form-item label="昵称:" show-message :error="regForm.nerror">
+          <el-form
+            :model="regForm"
+            :status-icon="true"
+            :inline="true"
+            :rules="regRules"
+            ref="regForm"
+            :submitAction="register"
+            label-width="90px"
+          >
+            <el-form-item label="昵称:" show-message :error="regForm.nerror" prop="name">
               <el-input
                 v-model="regForm.name"
                 autocomplete="off"
                 suffix-icon="el-icon-user-solid"
                 maxlength="10"
-                placeholder="请输入您的昵称"
+                placeholder="请输入昵称,3-10个字"
               ></el-input>
             </el-form-item>
             <el-form-item label="密码:" prop="passwd">
@@ -66,29 +83,29 @@
                 v-model="regForm.passwd"
                 autocomplete="off"
                 suffix-icon="el-icon-view"
-                placeholder="请输入密码"
+                placeholder="请输入密码,6-12位"
                 type="password"
               ></el-input>
             </el-form-item>
-            <el-form-item label="确认密码:" prop="passwd2">
+            <el-form-item label="确认密码:" prop="checkPasswd">
               <el-input
-                v-model="regForm.passwd2"
+                v-model="regForm.checkPasswd"
                 autocomplete="off"
                 suffix-icon="el-icon-view"
-                placeholder="再次输入密码:"
+                placeholder="请再次输入密码确认"
                 type="password"
               ></el-input>
             </el-form-item>
           </el-form>
           <div class="dialog-footer">
-            <el-button @click="loginFormVisible = false">取 消</el-button>
+            <el-button @click="cancel('regForm')">取 消</el-button>
             <el-button
               type="primary"
-              :disabled="regForm.passwd!==regForm.passwd2"
-              @click="reg(regForm.name,regForm.passwd)"
+              :disabled="regForm.passwd!==regForm.checkPasswd"
+              @click="submitForm('regForm')"
             >
               注册
-              <i class="el-icon-loading" v-show="isLoging"></i>
+              <i class="el-icon-loading" v-show="regForm.doing"></i>
             </el-button>
           </div>
         </el-tab-pane>
@@ -111,24 +128,55 @@ export default {
   data() {
     return {
       //登录相关
-      loginFormVisible: false,
+      formVisible: false,
       loginStatus: false,
       DiaTab: "login",
-      isLoging: false,
+
       uid: "",
       name: "",
+      timer: null,
       loginForm: {
         name: "",
         nerror: "",
         passwd: "",
-        perror: ""
+        perror: "",
+        doing: false
       },
       regForm: {
         name: "",
         nerror: "",
-        passwd: ""
+        passwd: "",
+        doing: false
       },
-      rules: {
+      loginRules: {
+        name: [{ required: true, message: "请输入用户名称", trigger: "blur" }],
+        passwd: [{ required: true, message: "请输入密码", trigger: "blur" }]
+      },
+      regRules: {
+        name: [
+          {
+            validator: (rule, value, callback) => {
+              if (this.timer) {
+                clearTimeout(this.timer);
+              }
+              this.timer = setTimeout(() => {
+                // this.$message.success("发送"+value);
+                this.$axios
+                  .get("/auth/user", { params: { name: value } })
+                  .then(res => {
+                    if (res.data.data.count > 0) {
+                      callback(new Error(`昵称:${value} 不可用`));
+                    } else {
+                      callback();
+                    }
+                  });
+              }, 1000);
+            },
+            trigger: "change"
+          },
+          { min: 3, max: 10, message: "长度在 3 到 10 个字", trigger: "blur" },
+          { required: true, message: "请输入用户名称", trigger: "blur" }
+        ],
         passwd: [
           {
             validator: (rule, value, callback) => {
@@ -139,9 +187,10 @@ export default {
               }
             },
             trigger: "blur"
-          }
+          },
+          { required: true, message: "请输入密码", trigger: "blur" }
         ],
-        passwd2: [
+        checkPasswd: [
           {
             validator: (rule, value, callback) => {
               if (value !== this.regForm.passwd) {
@@ -151,7 +200,8 @@ export default {
               }
             },
             trigger: "blur"
-          }
+          },
+          { required: true, message: "请再次输入密码", trigger: "blur" }
         ]
       }
     };
@@ -161,30 +211,42 @@ export default {
   },
   methods: {
     checkLogin() {
-      //检查session会话是否过期
-      this.$api.login.checkLogin().then(res => {
-        if (res.isLogin) {
-          this.setLoginStatus(true, res);
-        } else {
-          this.setLoginStatus(false);
-        }
-      });
+      if (!localStorage.getItem("accessToken")) {
+        return;
+      }
+      //检查token是否过期
+      this.$api.login
+        .checkLogin()
+        .then(res => {
+          this.updateUserInfo(true, res.data);
+        })
+        .catch(err => {
+          console.log(err.response);
+          // if (err.response.status == 401) {
+          //   localStorage.removeItem("accessToken");
+          //   this.$message.warning("登录状态失效,请重新登录");
+          // }
+
+          // this.updateUserInfo(false);
+        });
     },
+
     //登录
     login(name, passwd) {
-      this.isLoging = true;
+      this.loginForm.doing = true;
       this.loginForm.nerror = "";
       this.loginForm.perror = "";
       this.$api.login
         .login({ name, passwd })
         .then(res => {
-          this.isLoging = false;
+          this.loginForm.doing = false;
           if (res.code == 200) {
-            this.loginFormVisible = false;
-            this.$message.success(name + " 登陆成功~~ 欢迎~");
-            this.setLoginStatus(true, res.data, true);
+            this.formVisible = false;
+            // this.$message.success(res.data.name + " 登陆成功~ 欢迎~");
+            localStorage.setItem("accessToken", res.accessToken);
+            this.updateUserInfo(true, res.data);
           } else {
-            this.$message.error("权限验证失败，" + res.msg);
+            // this.$message.error("登录失败，" + res.msg);
             if (res.code == 404) {
               this.loginForm.nerror = res.msg;
               return;
@@ -193,10 +255,11 @@ export default {
           }
         })
         .catch(err => {
-          this.isLoging = false;
-          this.$message.error("网络可能出问题啦~" + err.response);
+          this.loginForm.doing = false;
+          this.$message.error("服务器可能出问题啦~" + err.response);
         });
     },
+
     //登出
     logout(uid = this.uid) {
       this.$confirm("确定退出登录吗?", "FBI Warnning!!", {
@@ -204,44 +267,45 @@ export default {
         cancelButtonText: "取消~",
         type: "warning"
       })
-        .then(() => {
-          this.$api.login.logout({ uid }).then(() => {
-            // this.$api.login.delCookies(["uid", "name", "isLogin"]);
+        .then(res => {
+          this.$api.login
+            .logout({ uid })
+            .then(() => {
+              // this.$api.login.delCookies(["uid", "name", "isLogin"]);
+              // localStorage.removeItem("accessToken");
+              // this.updateUserInfo(false, { name: "guy", uid: "" });
+              // this.$message("已退出登录~");
 
-            this.setLoginStatus(false);
-            this.$message("已退出登录~");
-          });
+              localStorage.removeItem("accessToken");
+              this.updateUserInfo(false, { name: "guy", uid: "" });
+              this.$message("已退出登录~");
+            })
+            .catch(err => {});
         })
-        .catch(() => {});
+        .catch(err => {});
     },
+
     //设置登录状态信息，并发送用户uid name 登录状态到父组件
-    setLoginStatus(isLogin, userInfo, sync = false) {
+    updateUserInfo(isLogin, userInfo) {
       if (isLogin) {
         this.loginStatus = true;
-        this.uid = userInfo.uid;
-        this.name = userInfo.name;
-        this.$message.success(`Hi ${this.name} ,Welcome to your todolist!`);
+        this.$message.success(`Hi ${userInfo.name} ,Welcome to your todolist!`);
       } else {
         this.loginStatus = false;
-        this.name = "guy";
-        this.uid = "";
       }
-      this.$emit(
-        "userHasLogin",
-        {
-          name: this.name,
-          uid: this.uid,
-          loginStatus: this.loginStatus
-        },
-        sync
-      );
+      this.$emit("userStatusChange", {
+        name: userInfo.name,
+        uid: userInfo.uid,
+        loginStatus: this.loginStatus
+      });
     },
+
     //注册
-    reg(name, passwd) {
-      this.isLoging = true;
+    register(name, passwd) {
+      this.regForm.doing = true;
       this.regForm.nerror = "";
       this.$api.login.register({ name, passwd }).then(res => {
-        this.isLoging = false;
+        this.regForm.doing = false;
         if (res.code == 403) {
           this.regForm.nerror = res.msg;
         } else {
@@ -249,6 +313,33 @@ export default {
           this.DiaTab = "login";
         }
       });
+    },
+
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          // if (formName=='refForm') {
+          // console.log(this.$refs[formName]);
+
+          this.$refs[formName].$attrs.submitAction(
+            this[formName].name,
+            this[formName].passwd
+          );
+          // this.$refs[formName].resetFields();
+
+          // }else if(formName=='loginForm'){
+          //   this.login(this[formName].name,this[formName].passwd)
+          // }
+        } else {
+          this.$message.warning("请修改表单错误项");
+          return false;
+        }
+      });
+    },
+    //取消操作,重置表单
+    cancel(formName) {
+      this.$refs[formName].resetFields();
+      this.formVisible = false;
     }
   }
 };
