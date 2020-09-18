@@ -97,14 +97,14 @@ async function register(ctx) {
 //生成token
 function generateAccessToken(user) {
 	return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-		expiresIn: "40s",
+		expiresIn: "60s",
 	})
 }
 
 //验证token中间件
 async function authToken(ctx, next) {
 	const authHeader = ctx.headers["authorization"]
-	const token = authHeader && authHeader.split(" ")[1]
+	const token = authHeader?.split(" ")[1]
 	if (!token) {
 		ctx.status = 401
 		ctx.body = "需要认证Token"
