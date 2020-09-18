@@ -13,11 +13,9 @@ server/db/todolist.sql
 # Pgsql连接配置
 server/config/dbConf.js
 
-# 构建前端页面
-$ yarn build
-# 启动后台服务
-$ cd server
-$ yarn&&yarn start
+# 构建和启动服务
+$ yarn run build
+$ yarn start
 
 
 # 后台开发
