@@ -173,11 +173,9 @@ export default {
       //若online状态加载server
       if (this.loginStatus) {
         this.loading = true;
-
         //登录时若本地有数据则与server同步
         if (Locallist && Locallist.length > 1 && syncLocal) {
           let syncTask = this.getLocalTodo(Locallist);
-
           //多个本地todo增加任务完成后获取新的todolist
           Promise.all(syncTask).then(() => {
             this.getTodolist();
@@ -206,14 +204,14 @@ export default {
         }));
         list.sort((a, b) => a.id - b.id);
         this.tableData = list;
-        localStorage.setItem("todolist", JSON.stringify(this.tableData));
+        this.updateLocalTodoList();
       });
     },
 
     //将本地离线创建的无IDtodo 同步到server
     getLocalTodo(Locallist, tasks = []) {
       Locallist.forEach(todo => {
-        if (!todo.hasOwnProperty("id")) {
+        if (!Object.prototype.hasOwnProperty.call(todo,"id")) {
           tasks.push(this.$api.todo.add(this.uid, todo));
         }
       });
@@ -242,7 +240,7 @@ export default {
       } else {
         //离线存储到本地LocalStorage
         this.tableData.push(newTodo);
-        localStorage.setItem("todolist", JSON.stringify(this.tableData));
+        this.updateLocalTodoList();
       }
     },
 
@@ -261,7 +259,7 @@ export default {
                 this.tableData.splice(index, 1);
                 this.$message.success("删除成功!");
               })
-              .catch(err => {
+              .catch(()=> {
                 this.$message.error("删除失败");
                 return;
               });
@@ -270,10 +268,10 @@ export default {
             this.$message.success("删除成功!");
           }
           // this.$message.success("删除成功!");
-          localStorage.setItem("todolist", JSON.stringify(this.tableData));
+          this.updateLocalTodoList();
         })
         .catch(() => {
-          this.$message.info("已取消删除");
+          // this.$message.info("已取消删除");
         });
     },
 
@@ -282,11 +280,13 @@ export default {
       if (this.loginStatus) {
         this.$api.todo.changeStatus(this.uid, id, status);
       }
-
       var data = this.tableData[index];
       data.status = status;
       this.tableData.splice(index, 1, data);
+      this.updateLocalTodoList();
+    },
 
+    updateLocalTodoList(){
       localStorage.setItem("todolist", JSON.stringify(this.tableData));
     }
   }
