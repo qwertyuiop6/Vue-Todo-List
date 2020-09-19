@@ -20,15 +20,17 @@ $ cd server
 $ yarn&&yarn start
 
 
+# 前端开发
+$ yarn serve
 # 后台开发
-$ yarn run dev
-# 前台开发
-$ yarn run serve
+$ cd server
+$ yarn dev
+
 ```
 
 ## How Works?
 
 - 前端: Vue + Axios + LocalStorage
 - UI: Element-UI
-- 后台: Koa.js + Koa-router + Koa-Session
-- 数据库: Postgresql
+- 后台: Koa.js + Koa-router + jwt + koa-cors2
+- 数据库: Postgresql + pg + DML
