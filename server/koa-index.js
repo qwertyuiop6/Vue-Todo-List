@@ -5,21 +5,31 @@ const myRouter = require("./router");
 // const session = require('koa-session');
 // const sessionConf = require('./config/sessionConf')
 
-const app = new Koa();
+const app = new Koa({
+  proxy: true,
+  proxyIpHeader: "X-Real-IP",
+  // maxIpsCount: 1,
+});
+app.proxy = true;
 
 async function preDo(ctx, next) {
+  const localhost = ["localhost", "127.0.0.1", "::1"];
+  const frontDevDomains = ["129.211.173.197", "todo.wtfk.world"];
+
+  let ip;
+  if (ctx.ip.startsWith("::ff")) {
+    ip = ctx.ip.split(":").pop();
+  } else {
+    ip = ctx.ip;
+  }
   console.log(
-    "find req from %s, method: %s , target: %s",
-    ctx.ip,
+    "Find req from %s, method: %s , target: %s",
+    ip,
     ctx.method,
     ctx.host + ctx.path
   );
 
-  const frontDevDomains = ["localhost", "::1", "127.0.0.1", "129.211.173.197"];
-  if (
-    process.env.NODE_ENV == "development" &&
-    frontDevDomains.includes(ctx.ip)
-  ) {
+  if (localhost.includes(ip) || frontDevDomains.includes(ip)) {
     ctx.set("Access-Control-Allow-Origin", "*");
     ctx.set("Access-Control-Allow-Credentials", true);
   }
