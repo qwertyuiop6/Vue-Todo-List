@@ -1,13 +1,13 @@
 const router = require("koa-router")()
-const api = require('../api/todo')
-const authToken = require('../service/auth').authToken;
+const todolist = require('../controllers/todolist')
+// const { authToken } = require('../service/authService');
 
 router
     //认证中间件
-    .use(authToken)
-    .get("/todolist/:uid", api.getAll)
-    .post("/todolist/:uid", api.add)
-    .delete("/todolist/:id", api.del)
-    .post("/todolist/changeStatus/:id", api.changeStatus)
+    // .use(authToken)
+    .get("/todolist/:uid", todolist.getAll)
+    .post("/todolist/:uid", todolist.add)
+    .delete("/todolist/:id", todolist.del)
+    .post("/todolist/:id/changeStatus", todolist.changeStatus)
 
 module.exports = router

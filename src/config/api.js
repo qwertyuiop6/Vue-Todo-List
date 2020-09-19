@@ -1,9 +1,9 @@
 //axios环境baseUrl配置
 let development = 'http://localhost:8000';
-let production = '';
+// let production = '';
 export {
     development,
-    production,
+    // production,
 }
 
 //默认导出API接口配置

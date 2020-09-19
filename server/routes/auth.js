@@ -1,12 +1,11 @@
-const router = require("koa-router")()
-const auth = require('../service/auth')
-const user = require('../api/user');
+const router = require("koa-router")();
+const authUser = require("../services/authUser");
 
 router
-    .post("/register", auth.register)
-    .post("/login", auth.doLogin)
-    .get("/user", user.checkUserName)
-    .post("/logout", auth.authToken, auth.logout)
-    .get("/checkLogin", auth.authToken, auth.checkLogin)
+  .post("/register", authUser.register)
+  .post("/login", authUser.doLogin)
+  .get("/user", authUser.checkUserName)
+  .post("/logout", authUser.authToken, authUser.logout)
+  .get("/checkLogin", authUser.authToken, authUser.checkLogin);
 
-module.exports = router
+module.exports = router;

@@ -1,14 +1,13 @@
+/* eslint-disable no-cond-assign */
 import axios from "axios";
 import QS from "qs";
-import { development as dev, production as pro } from "../config/api";
+// import { development as dev, production as pro } from "../config/api";
 
 if (process.env.NODE_ENV == "development") {
   // axios.defaults.baseURL = dev;
   axios.defaults.withCredentials = true;
-} else if (process.env.NODE_ENV == "debug") {
-  axios.defaults.baseURL = "";
 } else if (process.env.NODE_ENV == "production") {
-  axios.defaults.baseURL = pro;
+  // axios.defaults.baseURL = pro;
 }
 
 axios.defaults.timeout = 10000;
@@ -27,7 +26,7 @@ function get(url, params) {
   return new Promise((resolve, reject) => {
     axios
       .get(url, {
-        params: params,
+        params,
       })
       .then((res) => {
         resolve(res.data);
@@ -64,7 +63,7 @@ function post(url, params) {
 function del(url, params) {
   return new Promise((resolve, reject) => {
     axios
-      .delete(url, QS.stringify(params))
+      .delete(url, { params })
       .then((res) => {
         resolve(res.data);
       })

@@ -1,7 +1,9 @@
 module.exports = {
   devServer: {
-    // 设置主机地址
+    // host: "localhost",
+    //远程开发
     host: "0.0.0.0",
+    public: "129.211.173.197/",
     // 设置默认端口
     port: 8080,
     // 设置代理请求

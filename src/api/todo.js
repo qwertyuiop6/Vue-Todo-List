@@ -25,7 +25,7 @@ const add = (uid, todo) =>
  * @param {String} uid [用户uid]
  * @param {Number} todoId [每个todo的ID]
  */
-const remove = (uid, todoId) =>
+const remove = (todoId,uid) =>
     http.del(todoAPI + '/' + todoId, {
         uid
     })
@@ -37,7 +37,7 @@ const remove = (uid, todoId) =>
  * @param {Number} status [状态码,0为未完成，１为完成]
  */
 const changeStatus = (uid, todoId, status) =>
-    http.post(todoAPI + '/changeStatus/' + todoId, {
+    http.post(todoAPI + '/'+todoId+'/changeStatus', {
         uid,
         status
     })

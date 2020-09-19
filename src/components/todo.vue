@@ -8,8 +8,7 @@
     font-weight: bold;
     font-size: 1.5rem;"
       ></span>
-      ,
-      This is your {{msg}}
+      , This is your {{ msg }}
       <i class="el-icon-s-order"></i>
     </p>
     <el-input
@@ -26,23 +25,33 @@
       placeholder="截止日期"
       value-format="yyyy-MM-dd"
     ></el-date-picker>
-    <el-button type="primary" @click="add(content,datePick)">
+    <el-button type="primary" @click="add(content, datePick)">
       添加
       <i class="el-icon-edit"></i>
     </el-button>
-    <p v-if="content" class="tips">你是要添加: {{content}} ?</p>
+    <p v-if="content" class="tips">你是要添加: {{ content }} ?</p>
 
-    <login title="登录/注册" @userStatusChange="setUserInfo" class="loginComp"></login>
+    <login
+      title="登录/注册"
+      @userStatusChange="setUserInfo"
+      class="loginComp"
+    ></login>
 
     <!-- element表格 -->
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column label="创建日期" width="130" prop="startDate"></el-table-column>
+      <el-table-column
+        label="创建日期"
+        width="130"
+        prop="startDate"
+      ></el-table-column>
       <el-table-column label="目标" width="190">
         <template slot-scope="scope">
           <span
             style="margin-left: 10px"
             v-text="scope.row.target"
-            :style="scope.row.status==1?{'text-decoration':'line-through'}:{}"
+            :style="
+              scope.row.status == 1 ? { 'text-decoration': 'line-through' } : {}
+            "
           ></span>
         </template>
       </el-table-column>
@@ -54,7 +63,11 @@
       </el-table-column>
       <el-table-column label="状态" width="100">
         <template slot-scope="scope">
-          <span style="margin-left: 10px" class="status" v-text="status[scope.row.status].text"></span>
+          <span
+            style="margin-left: 10px"
+            class="status"
+            v-text="status[scope.row.status].text"
+          ></span>
           <i :class="status[scope.row.status].img"></i>
         </template>
       </el-table-column>
@@ -63,9 +76,19 @@
           <el-button
             size="mini"
             v-text="status[scope.row.status].toggle"
-            @click="toggleFn(scope.$index,scope.row.id,status[scope.row.status].toggleStatus)"
+            @click="
+              toggleFn(
+                scope.$index,
+                scope.row.id,
+                status[scope.row.status].toggleStatus
+              )
+            "
           ></el-button>
-          <el-button size="mini" type="danger" @click="del(scope.$index,scope.row.id)">
+          <el-button
+            size="mini"
+            type="danger"
+            @click="del(scope.$index, scope.row.id)"
+          >
             <i class="el-icon-delete"></i>
           </el-button>
         </template>
@@ -124,10 +147,10 @@ import login from "./todoLogin.vue";
 export default {
   name: "etodo",
   props: {
-    msg: String
+    msg: String,
   },
   components: {
-    login
+    login,
   },
   data() {
     return {
@@ -144,15 +167,15 @@ export default {
           img: "el-icon-more",
           text: "进行中",
           toggleStatus: 1,
-          toggle: "完成了！"
+          toggle: "完成了！",
         },
         {
           img: "el-icon-success",
           text: "已完成",
           toggleStatus: 0,
-          toggle: "还原"
-        }
-      ]
+          toggle: "还原",
+        },
+      ],
     };
   },
   created() {
@@ -192,15 +215,14 @@ export default {
 
     //根据uid获取所有todolist
     getTodolist() {
-      this.$api.todo.getAll(this.uid).then(res => {
-        console.log(res);
+      this.$api.todo.getAll(this.uid).then((res) => {
         this.loading = false;
-        let list = res.data.map(ele => ({
+        let list = res.data.map((ele) => ({
           startDate: ele.start_date,
           target: ele.content,
           endDate: ele.end_date,
           status: ele.status,
-          id: ele.id
+          id: ele.id,
         }));
         list.sort((a, b) => a.id - b.id);
         this.tableData = list;
@@ -210,8 +232,8 @@ export default {
 
     //将本地离线创建的无IDtodo 同步到server
     getLocalTodo(Locallist, tasks = []) {
-      Locallist.forEach(todo => {
-        if (!Object.prototype.hasOwnProperty.call(todo,"id")) {
+      Locallist.forEach((todo) => {
+        if (!Object.prototype.hasOwnProperty.call(todo, "id")) {
           tasks.push(this.$api.todo.add(this.uid, todo));
         }
       });
@@ -227,7 +249,7 @@ export default {
         startDate: now,
         target: content,
         status,
-        endDate
+        endDate,
       };
 
       //online状态添加到server
@@ -249,17 +271,18 @@ export default {
       this.$confirm("确定删除这个Todolist吗?", "FBI Warnning!!", {
         confirmButtonText: "确定!",
         cancelButtonText: "取消~",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           if (this.loginStatus) {
             this.$api.todo
-              .remove(this.uid, id)
+              .remove(id,this.uid)
               .then(() => {
                 this.tableData.splice(index, 1);
                 this.$message.success("删除成功!");
               })
-              .catch(()=> {
+              .catch((err) => {
+                console.log(err);
                 this.$message.error("删除失败");
                 return;
               });
@@ -286,9 +309,9 @@ export default {
       this.updateLocalTodoList();
     },
 
-    updateLocalTodoList(){
+    updateLocalTodoList() {
       localStorage.setItem("todolist", JSON.stringify(this.tableData));
-    }
-  }
+    },
+  },
 };
 </script>

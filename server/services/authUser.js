@@ -97,7 +97,7 @@ async function register(ctx) {
 //生成token
 function generateAccessToken(user) {
 	return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-		expiresIn: "60s",
+		expiresIn: "2m",
 	})
 }
 
@@ -132,10 +132,28 @@ async function authToken(ctx, next) {
 	)
 }
 
+async function checkUserName(ctx) {
+    const {
+        name
+    } = ctx.query
+    let result = await users.getUserCount(name)
+    let count = result.rows[0].count
+
+    ctx.body = {
+        code: 200,
+        data: {
+            name,
+            count
+        }
+    }
+}
+
+
 module.exports = {
 	doLogin,
 	checkLogin,
 	register,
 	logout,
 	authToken,
+	checkUserName
 }
