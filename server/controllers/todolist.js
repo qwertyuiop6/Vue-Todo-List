@@ -1,9 +1,10 @@
 const todos = require("../model/todo");
 
 async function getAll(ctx) {
-  console.log("uid[%s] getall Todo", ctx.request.user.uid);
-  
-  let result = await todos.getAll(ctx.params.uid);
+  const { uid } = ctx.request.user;
+  console.log("uid[%s] getall Todo", uid);
+
+  let result = await todos.getAll(uid);
 
   ctx.body = {
     code: 200,
@@ -46,8 +47,13 @@ async function del(ctx) {
 
 async function changeStatus(ctx) {
   const { status } = ctx.request.body;
-  const { id:todoID } = ctx.params;
-  console.log("user[%s] change Todo[%s]-->[%s]", ctx.request.user.uid, todoID, status);
+  const { id: todoID } = ctx.params;
+  console.log(
+    "user[%s] change Todo[%s]-->[%s]",
+    ctx.request.user.uid,
+    todoID,
+    status
+  );
 
   try {
     await todos.setStatus(todoID, status);

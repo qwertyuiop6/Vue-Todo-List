@@ -97,7 +97,7 @@ async function register(ctx) {
 //生成token
 function generateAccessToken(user) {
 	return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-		expiresIn: "2m",
+		expiresIn: process.env.ACCESS_TOKEN_EXPIRESIN,
 	})
 }
 

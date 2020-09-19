@@ -43,7 +43,7 @@ app
   .use(
     cors({
       origin: function(ctx) {
-        return ctx.origin;
+        return "*";
       },
       credentials: true,
       allowMethods: ["GET", "POST", "DELETE", "PATCH"],
