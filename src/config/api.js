@@ -1,10 +1,11 @@
 //axios环境baseUrl配置
-let development = 'http://localhost:8000';
-// let production = '';
-export {
-    development,
-    // production,
-}
+
+//导出不同构建模式后端的接口地址
+export const backend = {
+    development: 'http://localhost:8000',
+    production: '',
+    vercel:'http://129.211.173.197:8000',
+} 
 
 //默认导出API接口配置
 export default {

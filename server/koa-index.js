@@ -7,18 +7,20 @@ const myRouter = require("./router");
 
 const app = new Koa();
 
-
 async function preDo(ctx, next) {
   console.log(
     "find req from %s, method: %s , target: %s",
     ctx.ip,
     ctx.method,
     ctx.host + ctx.path
-  )
+  );
 
-  const frontDevDomains = ["localhost", "::1", "127.0.0.1"];
-  if (process.env.NODE_ENV == 'development' && frontDevDomains.includes(ctx.ip)) {
-    ctx.set("Access-Control-Allow-Origin", '*');
+  const frontDevDomains = ["localhost", "::1", "127.0.0.1", "129.211.173.197"];
+  if (
+    process.env.NODE_ENV == "development" &&
+    frontDevDomains.includes(ctx.ip)
+  ) {
+    ctx.set("Access-Control-Allow-Origin", "*");
     ctx.set("Access-Control-Allow-Credentials", true);
   }
   await next();
