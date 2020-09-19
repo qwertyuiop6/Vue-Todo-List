@@ -141,7 +141,6 @@
 
 <script>
 import login from "./todoLogin.vue";
-
 // import * as this.$api.todoList from "../utils/this.$api.todoList";
 
 export default {
@@ -276,7 +275,7 @@ export default {
         .then(() => {
           if (this.loginStatus) {
             this.$api.todo
-              .remove(id,this.uid)
+              .remove(id, this.uid)
               .then(() => {
                 this.tableData.splice(index, 1);
                 this.$message.success("删除成功!");
