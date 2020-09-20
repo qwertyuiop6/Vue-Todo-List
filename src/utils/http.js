@@ -15,7 +15,7 @@ import QS from "qs";
 // }
 
 //2.通过.env文件根据不同环境加载不同的文件变量
-let baseURL = process.env.VUE_APP_AXIOS_BASE_URL;
+const baseURL = process.env.VUE_APP_AXIOS_BASE_URL;
 if (baseURL) {
   axios.defaults.baseURL = baseURL;
 }

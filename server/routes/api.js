@@ -1,13 +1,16 @@
-const router = require("koa-router")()
-const todolist = require('../controllers/todolist')
-// const { authToken } = require('../service/authService');
+const router = require("koa-router");
+const todolist = require("../controllers/todolist");
+const mylogger = require("../middlewares/mylogger");
 
-router
-    //认证中间件
-    // .use(authToken)
-    .get("/todolist/:uid", todolist.getAll)
-    .post("/todolist/:uid", todolist.add)
-    .delete("/todolist/:id", todolist.del)
-    .post("/todolist/:id/changeStatus", todolist.changeStatus)
+const todoList = new router();
+const todo = new router();
 
-module.exports = router
+todo
+  .get("/", todolist.getAll)
+  .post("/:uid", todolist.add)
+  .delete("/:id", todolist.del)
+  .post("/:id/changeStatus", todolist.changeStatus);
+
+todoList.use("/todolist", mylogger(), todo.routes());
+
+module.exports = todoList;

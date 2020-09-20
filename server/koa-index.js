@@ -1,45 +1,24 @@
 const Koa = require("koa");
-const Static = require("koa-static");
+const static = require("koa-static");
 const bodyParser = require("koa-bodyparser");
 const myRouter = require("./router");
 const cors = require("@koa/cors");
+const logger = require("koa-logger");
+
 // const session = require('koa-session');
 // const sessionConf = require('./config/sessionConf')
 
 const app = new Koa({
-  proxy: true,
-  proxyIpHeader: "X-Real-IP",
-  // maxIpsCount: 1,
+  proxy: true, //代理模式
+  proxyIpHeader: "X-Real-IP", //代理x-real-ip头
+  // maxIpsCount: 1, //反代数
 });
-
-// async function preDo(ctx, next) {
-//   const localhost = ["localhost", "127.0.0.1", "::1"];
-//   const frontDevDomains = ["129.211.173.197", "todo.wtfk.world"];
-
-//   let ip;
-//   if (ctx.ip.startsWith("::ff")) {
-//     ip = ctx.ip.split(":").pop();
-//   } else {
-//     ip = ctx.ip;
-//   }
-//   console.log(
-//     "Find req from %s, method: %s , target: %s",
-//     ip,
-//     ctx.method,
-//     ctx.host + ctx.path
-//   );
-
-//   if (localhost.includes(ip) || frontDevDomains.includes(ip)) {
-//     ctx.set("Access-Control-Allow-Origin", "*");
-//     ctx.set("Access-Control-Allow-Credentials", true);
-//   }
-//   await next();
-// }
 
 // app.keys = sessionConf.appKeys;
 
 app
-  // .use(preDo)
+  .use(require('./utils/send')())
+  .use(logger())
   .use(
     cors({
       origin: function(ctx) {
@@ -51,11 +30,14 @@ app
       maxAge: 86400, //24-hours
     })
   )
-  .use(Static(`${__dirname}/../dist`))
+  .use(static(`${__dirname}/../dist`))
   .use(bodyParser())
   // .use(session(sessionConf.config, app))
   // .use(myRouter.checkSession)
   .use(myRouter.routes())
+  .use((ctx) => {
+    ctx.throw(404, "404 Not Found!!!");
+  })
   .listen(8000, () => {
     console.log("linsten on http://127.0.0.1:8000");
   });

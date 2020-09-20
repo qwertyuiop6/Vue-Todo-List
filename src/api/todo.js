@@ -8,7 +8,7 @@ const todoAPI = api.todo;
  * @param {String} uid [用户uid]
  */
 const getAll = uid =>
-    http.get(todoAPI + '/' + uid, {
+    http.get(todoAPI, {
         // num: 'all'
     })
 

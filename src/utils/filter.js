@@ -27,7 +27,7 @@ axios.interceptors.response.use(
     // }
   },
   (err) => {
-    console.log(`请求响应异常:${err.response.data}`);
+    console.log(`请求响应错误:${err.response.data}`);
     if (err.response.status == 401) {
       Vue.prototype.$message.warning("登陆状态失效,请重新登录");
       localStorage.removeItem("accessToken");
@@ -35,7 +35,7 @@ axios.interceptors.response.use(
         location.reload();
       }, 3000);
     }
-    Promise.reject(err);
+    return Promise.reject(err);
   }
 );
 

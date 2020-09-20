@@ -175,7 +175,12 @@ export default {
       regRules: {
         name: [
           { required: true, message: "请输入用户名称", trigger: "blur" },
-          { min: 3, max: 10, message: "长度在 3 到 10 个字", trigger: "blur" },
+          {
+            min: 3,
+            max: 10,
+            message: "长度在 3 到 10 个字",
+            trigger: "blur",
+          },
           {
             validator: (rule, value, callback) => {
               if (this.timer) {
@@ -187,12 +192,12 @@ export default {
                   .get("/auth/user", { params: { name: value } })
                   .then((res) => {
                     if (res.data.data.count > 0) {
-                      callback(new Error(`昵称:${value} 不可用`));
+                      callback(new Error(`有人起过这个名字啦~`));
                     } else {
                       callback();
                     }
                   });
-              }, 1000);
+              }, 2000);
             },
             trigger: "change",
           },
@@ -220,7 +225,7 @@ export default {
                 callback();
               }
             },
-            trigger: "change",
+            trigger: "blur",
           },
         ],
       },
@@ -260,23 +265,26 @@ export default {
         .login({ name, passwd })
         .then((res) => {
           this.loginForm.doing = false;
-          if (res.code == 200) {
-            this.formVisible = false;
-            // this.$message.success(res.data.name + " 登陆成功~ 欢迎~");
-            localStorage.setItem("accessToken", res.accessToken);
-            this.updateUserInfo(true, res.data);
-          } else {
-            // this.$message.error("登录失败，" + res.msg);
-            if (res.code == 404) {
-              this.loginForm.nerror = res.msg;
-              return;
-            }
-            this.loginForm.perror = res.msg;
-          }
+          this.formVisible = false;
+          // this.$message.success(res.data.name + " 登陆成功~ 欢迎~");
+          localStorage.setItem("accessToken", res.data.accessToken);
+          this.updateUserInfo(true, res.data);
         })
         .catch((err) => {
           this.loginForm.doing = false;
-          this.$message.error("服务器可能出问题啦,请稍后重试~" + err);
+          // console.log(err.response);
+          let { status, statusText: text, data: msg } = err.response;
+          switch (status) {
+            case 400:
+              this.loginForm.nerror = msg;
+              break;
+            case 403:
+              this.loginForm.perror = msg;
+              break;
+            default:
+              this.$message.error("服务器可能出问题啦,请稍后重试~" + text);
+              break;
+          }
         });
     },
 
