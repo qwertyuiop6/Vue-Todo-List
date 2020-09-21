@@ -1,9 +1,9 @@
 const Koa = require("koa");
 const static = require("koa-static");
 const bodyParser = require("koa-bodyparser");
-const myRouter = require("./router");
 const cors = require("@koa/cors");
 const logger = require("koa-logger");
+const router = require("./router");
 
 // const session = require('koa-session');
 // const sessionConf = require('./config/sessionConf')
@@ -17,7 +17,8 @@ const app = new Koa({
 // app.keys = sessionConf.appKeys;
 
 app
-  .use(require('./utils/send')())
+  .use(require("./middlewares/myutils")())
+  .use(require("./middlewares/cache")())
   .use(logger())
   .use(
     cors({
@@ -34,7 +35,7 @@ app
   .use(bodyParser())
   // .use(session(sessionConf.config, app))
   // .use(myRouter.checkSession)
-  .use(myRouter.routes())
+  .use(router.routes())
   .use((ctx) => {
     ctx.throw(404, "404 Not Found!!!");
   })

@@ -197,7 +197,7 @@ export default {
                       callback();
                     }
                   });
-              }, 2000);
+              }, 1500);
             },
             trigger: "change",
           },
@@ -272,7 +272,7 @@ export default {
         })
         .catch((err) => {
           this.loginForm.doing = false;
-          // console.log(err.response);
+          console.log(err);
           let { status, statusText: text, data: msg } = err.response;
           switch (status) {
             case 400:

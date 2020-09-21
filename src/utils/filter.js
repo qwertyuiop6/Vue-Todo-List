@@ -18,13 +18,12 @@ axios.interceptors.request.use(
 //响应拦截判断响应状态码
 axios.interceptors.response.use(
   (res) => {
-    // if (res.status.toString().startsWith('2')) {
     console.log("请求响应正常:", res.data);
+    if (res.data?.data?.hasOwnProperty("accessToken")) {
+      localStorage.setItem("accessToken", res.data.data.accessToken);
+      console.log("accessToken已更新");
+    }
     return Promise.resolve(res);
-    // } else {
-    //     console.log(`请求响应异常: ${res.data.code},${res.data.msg}`);
-    //     return Promise.reject(res)
-    // }
   },
   (err) => {
     console.log(`请求响应错误:${err.response.data}`);

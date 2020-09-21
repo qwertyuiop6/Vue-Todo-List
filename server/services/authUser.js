@@ -1,14 +1,33 @@
-require("dotenv").config();
+let ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN;
+const tokenConf = require("../config/token");
+if (process.env.NODE_ENV === "development") {
+  require("dotenv").config();
+  ({
+    ACCESS_TOKEN_SECRET,
+    REFRESH_TOKEN_SECRET,
+    ACCESS_TOKEN_EXPIRESIN,
+  } = process.env);
+} else {
+  ({
+    ACCESS_TOKEN_SECRET,
+    REFRESH_TOKEN_SECRET,
+    ACCESS_TOKEN_EXPIRESIN,
+  } = tokenConf); //已声明变量的对象解构赋值
+}
+
 const jwt = require("jsonwebtoken");
 const users = require("../model/user");
+const encrypt = require("../utils/encrypt");
+const Redis = require("ioredis");
+
+const redis = new Redis({
+  port: 6379,
+  host: "cloud.wtfk.world",
+  db: "0",
+  auth: "redis_wxs",
+});
 
 async function doLogin(ctx) {
-  console.log(
-    "[%s:%s] want to login",
-    ctx.request.body.name,
-    ctx.request.body.passwd
-  );
-
   const { name, passwd } = ctx.request.body;
   let result;
   try {
@@ -16,45 +35,45 @@ async function doLogin(ctx) {
   } catch (error) {
     ctx.throw(500);
   }
-  if (result.rows.length === 0) {
-    ctx.throw(400, "查无此人~", {
-      name,
-    });
-  } else if (result.rows[0].passwd !== passwd) {
-    ctx.throw(403, "密码错误~", {
+  const data = result.rows;
+  ctx.assert.ok(data.length, 400, "查无此人~", {
+    name,
+  });
+
+  ctx.assert.strictEqual(
+    encrypt(passwd, data[0].salt).passwd_hash,
+    data[0].passwd,
+    403,
+    "密码错误~",
+    {
       name,
       passwd,
-    });
-  } else if (result.rows[0].passwd === passwd) {
-    const user = {
-      name: result.rows[0].name,
-      uid: result.rows[0].id,
-      isLogin: true,
-    };
-    const accessToken = generateAccessToken(user);
-    console.log(name, "login success,user info:", user);
-    ctx.send("登陆成功", { data: { accessToken, ...user } });
-  }
+    }
+  );
+
+  const user = {
+    name: data[0].name,
+    uid: data[0].id,
+  };
+  const accessToken = generateAccessToken(user);
+  ctx.send("登陆成功", { data: { accessToken, ...user } });
 }
 
-async function checkLogin(ctx) {
-  ctx.send("accessToken在有效期", { data: ctx.state.user });
-}
+// function checkPasswd(user,passwd) {
+//   let { passwd:passwd_hash, salt } = user;
+//   return encrypt(passwd, salt).passwd_hash === passwd_hash;
+// }
 
 async function logout(ctx) {
-  console.log("user [%s] logout ", ctx.state.user.uid);
   //token del
+  redis.lpush("blocklist", ctx.state.token);
+
   ctx.send("退出登陆成功", {
     status: 202,
   });
 }
 
 async function register(ctx) {
-  console.log(
-    "someone want to regsiter [%s:%s]",
-    ctx.request.body.name,
-    ctx.request.body.passwd
-  );
   const { name, passwd } = ctx.request.body;
   let res;
   try {
@@ -66,11 +85,16 @@ async function register(ctx) {
   ctx.assert(!res.rows.length, 403, "该用户名已被使用!");
 
   try {
-    await users.createUser(name, passwd);
+    const { passwd_hash, salt } = encrypt(passwd);
+    await users.createUser(name, passwd_hash, salt);
     ctx.send("注册成功");
   } catch (error) {
     ctx.throw(500);
   }
+}
+
+async function checkLogin(ctx) {
+  ctx.send("accessToken在有效期", { data: ctx.state.user });
 }
 
 //生成token
@@ -82,19 +106,41 @@ function generateAccessToken(user) {
 
 //验证token中间件
 async function authToken(ctx, next) {
-  const authHeader = ctx.headers["authorization"];
-  const token = authHeader?.split(" ")[1];
-  ctx.assert(token, 401, "Token required!");
+  // const authHeader = ctx.headers["authorization"];
+  // const token = authHeader?.split(" ")[1];
+  ctx.assert(ctx.state.token, 401, "Token required!");
+
+  ctx.assert(
+    !(
+      await redis.lrange("blocklist", 0, await redis.llen("blocklist"))
+    ).includes(ctx.state.token),
+    403,
+    "token blocked"
+  );
 
   await jwt.verify(
-    token,
+    ctx.state.token,
     process.env.ACCESS_TOKEN_SECRET,
     async (err, user) => {
       if (err) {
         console.log(`${err}`);
-        ctx.assert(err.name !== "TokenExpiredError", 401, err.message);
+        ctx.assert.notStrictEqual(
+          err.name,
+          "TokenExpiredError",
+          401,
+          err.message
+        );
         ctx.throw(403, "非法accessToken");
       }
+      // console.log(user);
+      if (user.exp < Math.floor(Date.now() / 1000) + 60 * 3) {
+        const { name, uid } = user;
+        ctx.send("token update", {
+          data: { accessToken: generateAccessToken({ name, uid }) },
+        });
+        redis.lpush("blocklist", ctx.state.token);
+      }
+
       ctx.state.user = user;
       await next();
     }
