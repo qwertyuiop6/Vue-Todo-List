@@ -30,7 +30,8 @@ $ yarn dev
 
 ## How Works?
 
-- 前端: Vue + Axios + LocalStorage
-- UI: Element-UI
-- 后台: Koa.js + Koa-router + jwt + koa-cors2
-- 数据库: Postgresql + pg + DML
+- 前端: Vue + Element-UI + Axios + Scss +LocalStorage
+- 后台: Koa.js + Koa-router + koa-static + jwt + koa-cors
+- 数据库: Postgresql(pg) + Base DML + Redis(ioredis)
+- Other: Koa-logger,dotenv,chalk,crypto
+- CI/CD : Git/[Vercel](https://vercel.com/)

@@ -1,5 +1,5 @@
 let ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN;
-const tokenConf = require("../config/token");
+const tokenConf = require("../configs/token");
 if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
   ({
@@ -16,16 +16,11 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const jwt = require("jsonwebtoken");
-const users = require("../model/user");
+const users = require("../models/user");
 const encrypt = require("../utils/encrypt");
 const Redis = require("ioredis");
 
-const redis = new Redis({
-  port: 6379,
-  host: "cloud.wtfk.world",
-  db: "0",
-  auth: "redis_wxs",
-});
+const redis = new Redis(require('../configs/redis'));
 
 async function doLogin(ctx) {
   const { name, passwd } = ctx.request.body;

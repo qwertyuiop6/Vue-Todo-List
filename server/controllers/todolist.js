@@ -1,4 +1,4 @@
-const todos = require("../model/todo");
+const todos = require("../models/todo");
 
 async function getAll(ctx) {
   const { uid } = ctx.state.user;
