@@ -1,6 +1,7 @@
 module.exports = {
   port: 6379,
-  host: "cloud.wtfk.world",
+  host: "",
   family: 4,
   db: "0",
+  auth: "",
 };
