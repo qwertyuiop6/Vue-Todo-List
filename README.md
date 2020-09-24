@@ -9,9 +9,11 @@
 $ yarn
 
 # 数据库表导入Pgsql
-server/db/todolist.sql
-# Pgsql连接配置
-server/config/dbConf.js
+server/configs/todolist.sql
+# pgsql和redis配置
+server/configs/{pgsql.js,redis.js}
+# Jwt secret,expires配置
+server/configs/token.js
 
 # 构建前端页面
 $ yarn build
@@ -31,7 +33,7 @@ $ yarn dev
 ## How Works?
 
 - 前端: Vue + Element-UI + Axios + Scss +LocalStorage
-- 后台: Koa.js + Koa-router + koa-static + jwt + koa-cors
+- 后台: Koa.js + koa-router + koa-static + jwt + koa-cors
 - 数据库: Postgresql(pg) + Base DML + Redis(ioredis)
-- Other: Koa-logger,dotenv,chalk,crypto
+- Other: koa-logger, dotenv, chalk, crypto
 - CI/CD : Git/[Vercel](https://vercel.com/)

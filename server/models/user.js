@@ -1,5 +1,5 @@
 const { Pool } = require("pg");
-const dbConf = require("../configs/mongodb");
+const dbConf = require("../configs/pgsql");
 const pool = new Pool(dbConf);
 
 //user表操作
