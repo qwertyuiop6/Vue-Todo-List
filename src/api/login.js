@@ -1,29 +1,26 @@
-import {
-    get,
-    post
-} from "../utils/http";
+import { get, post } from "../utils/http";
 import api from "../config/api";
 const loginAPI = api.login;
 
 function login(params) {
-    return post(loginAPI + '/login', params)
+  return post(loginAPI + "/login", params);
 }
 
-function checkLogin() {
-    return get(loginAPI + '/checkLogin')
+function checkToken() {
+  return get(loginAPI + "/checkToken");
 }
 
 function register(params) {
-    return post(loginAPI + '/register', params)
+  return post(loginAPI + "/register", params);
 }
 
 function logout(params) {
-    return post(loginAPI + '/logout', params)
+  return post(loginAPI + "/logout", params);
 }
 
 export default {
-    login,
-    logout,
-    checkLogin,
-    register
-}
+  login,
+  logout,
+  checkToken,
+  register,
+};

@@ -1,8 +1,10 @@
 const Koa = require("koa");
 const static = require("koa-static");
 const bodyParser = require("koa-bodyparser");
-const cors = require("@koa/cors");
 const logger = require("koa-logger");
+const cors = require("@koa/cors");
+const onerror = require("koa-onerror");
+
 const router = require("./router");
 
 // const session = require('koa-session');
@@ -10,15 +12,23 @@ const router = require("./router");
 
 const app = new Koa({
   proxy: true, //代理模式
-  proxyIpHeader: "X-Real-IP", //代理x-real-ip头
+  proxyIpHeader: "X-Real-IP" //代理x-real-ip头
   // maxIpsCount: 1, //反代数
 });
-
+onerror(app);
 // app.keys = sessionConf.appKeys;
+
+const staticOptions = {
+  maxage: 60 * 1000, //cache-control强缓存
+  setHeaders: (res, path, stats) => {
+    //设置Etag协商缓存
+    res.setHeader("Etag", `W/"${stats.size}-${stats.mtime.getTime()}"`);
+  }
+};
 
 app
   .use(require("./middlewares/myutils")())
-  .use(require("./middlewares/cache")())
+  .use(require("./middlewares/checkFresh")())
   .use(logger())
   .use(
     cors({
@@ -28,17 +38,22 @@ app
       credentials: true,
       allowMethods: ["GET", "POST", "DELETE", "PATCH"],
       allowHeaders: ["authorization", "Content-Type"],
-      maxAge: 86400, //24-hours
+      maxAge: 86400 //24-hours
     })
   )
-  .use(static(`${__dirname}/../dist`))
-  .use(bodyParser())
+  .use(static(`${__dirname}/../dist`, staticOptions))
+  .use(bodyParser({ enableTypes: ["json", "form", "text"] }))
   // .use(session(sessionConf.config, app))
   // .use(myRouter.checkSession)
   .use(router.routes())
-  .use((ctx) => {
+  .use(ctx => {
     ctx.throw(404, "404 Not Found!!!");
+    // ctx.status = 404;
   })
-  .listen(8000, () => {
-    console.log("linsten on http://127.0.0.1:8000");
+  .on("error", (err, ctx) => {
+    console.log("interal error: ", err);
   });
+
+app.listen(8000, () => {
+  console.log("linsten on http://127.0.0.1:8000");
+});

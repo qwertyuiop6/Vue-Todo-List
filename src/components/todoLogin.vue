@@ -12,12 +12,7 @@
         v-if="!loginStatus"
         @click="formVisible = true"
       ></el-button>
-      <el-button
-        icon="el-icon-switch-button"
-        circle
-        v-else
-        @click="logout()"
-      ></el-button>
+      <el-button icon="el-icon-switch-button" circle v-else @click="logout()"></el-button>
     </el-tooltip>
 
     <el-dialog :title="title" :visible.sync="formVisible" width="460px">
@@ -34,12 +29,7 @@
             ref="loginForm"
             :submitAction="login"
           >
-            <el-form-item
-              label="昵称:"
-              show-message
-              :error="loginForm.nerror"
-              prop="name"
-            >
+            <el-form-item label="昵称:" show-message :error="loginForm.nerror" prop="name">
               <el-input
                 v-model="loginForm.name"
                 autocomplete="off"
@@ -48,12 +38,7 @@
                 placeholder="请输入您的昵称"
               ></el-input>
             </el-form-item>
-            <el-form-item
-              label="密码:"
-              show-message
-              :error="loginForm.perror"
-              prop="passwd"
-            >
+            <el-form-item label="密码:" show-message :error="loginForm.perror" prop="passwd">
               <el-input
                 v-model="loginForm.passwd"
                 autocomplete="off"
@@ -85,12 +70,7 @@
             :submitAction="register"
             label-width="90px"
           >
-            <el-form-item
-              label="昵称:"
-              show-message
-              :error="regForm.nerror"
-              prop="name"
-            >
+            <el-form-item label="昵称:" show-message :error="regForm.nerror" prop="name">
               <el-input
                 v-model="regForm.name"
                 autocomplete="off"
@@ -138,16 +118,13 @@
 <style lang="scss"></style>
 
 <script>
-// import * as this.$api.login from "../utils/login";
-
 export default {
   name: "todoLogin",
   props: {
-    title: String,
+    title: String
   },
   data() {
     return {
-      //登录相关
       formVisible: false,
       loginStatus: false,
       DiaTab: "login",
@@ -160,17 +137,17 @@ export default {
         nerror: "",
         passwd: "",
         perror: "",
-        doing: false,
+        doing: false
       },
       regForm: {
         name: "",
         nerror: "",
         passwd: "",
-        doing: false,
+        doing: false
       },
       loginRules: {
         name: [{ required: true, message: "请输入用户名称", trigger: "blur" }],
-        passwd: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        passwd: [{ required: true, message: "请输入密码", trigger: "blur" }]
       },
       regRules: {
         name: [
@@ -179,7 +156,7 @@ export default {
             min: 3,
             max: 10,
             message: "长度在 3 到 10 个字",
-            trigger: "blur",
+            trigger: "blur"
           },
           {
             validator: (rule, value, callback) => {
@@ -188,19 +165,17 @@ export default {
               }
               this.timer = setTimeout(() => {
                 // this.$message.success("发送"+value);
-                this.$axios
-                  .get("/auth/user", { params: { name: value } })
-                  .then((res) => {
-                    if (res.data.data.count > 0) {
-                      callback(new Error(`有人起过这个名字啦~`));
-                    } else {
-                      callback();
-                    }
-                  });
+                this.$axios.get("/auth/user", { params: { name: value } }).then(res => {
+                  if (res.data.data.count > 0) {
+                    callback(new Error(`有人起过这个名字啦~`));
+                  } else {
+                    callback();
+                  }
+                });
               }, 1500);
             },
-            trigger: "change",
-          },
+            trigger: "change"
+          }
         ],
         passwd: [
           { required: true, message: "请输入密码", trigger: "blur" },
@@ -212,8 +187,8 @@ export default {
                 callback();
               }
             },
-            trigger: "blur",
-          },
+            trigger: "blur"
+          }
         ],
         checkPasswd: [
           { required: true, message: "请再次输入密码", trigger: "blur" },
@@ -225,34 +200,29 @@ export default {
                 callback();
               }
             },
-            trigger: "blur",
-          },
-        ],
-      },
+            trigger: "blur"
+          }
+        ]
+      }
     };
   },
   mounted() {
-    this.checkLogin();
+    this.checkLoginStatus();
   },
   methods: {
-    checkLogin() {
+    checkLoginStatus() {
       if (!localStorage.getItem("accessToken")) {
         return;
       }
       //检查token是否过期
       this.$api.login
-        .checkLogin()
-        .then((res) => {
-          this.updateUserInfo(true, res.data);
+        .checkToken()
+        .then(res => {
+          this.loginStatus = true;
+          this.updateUserInfo(res.data);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err.response);
-          // if (err.response.status == 401) {
-          //   localStorage.removeItem("accessToken");
-          //   this.$message.warning("登录状态失效,请重新登录");
-          // }
-
-          // this.updateUserInfo(false);
         });
     },
 
@@ -263,23 +233,24 @@ export default {
       this.loginForm.perror = "";
       this.$api.login
         .login({ name, passwd })
-        .then((res) => {
+        .then(res => {
           this.loginForm.doing = false;
           this.formVisible = false;
+          this.loginStatus = true;
           // this.$message.success(res.data.name + " 登陆成功~ 欢迎~");
-          localStorage.setItem("accessToken", res.data.accessToken);
-          this.updateUserInfo(true, res.data);
+          localStorage.setItem("accessToken", res.accessToken);
+          this.updateUserInfo(res.data);
         })
-        .catch((err) => {
+        .catch(err => {
           this.loginForm.doing = false;
           console.log(err);
-          let { status, statusText: text, data: msg } = err.response;
+          let { status, statusText: text, data } = err.response;
           switch (status) {
             case 400:
-              this.loginForm.nerror = msg;
+              this.loginForm.nerror = data.error;
               break;
             case 403:
-              this.loginForm.perror = msg;
+              this.loginForm.perror = data.error;
               break;
             default:
               this.$message.error("服务器可能出问题啦,请稍后重试~" + text);
@@ -293,19 +264,15 @@ export default {
       this.$confirm("确定退出登录吗?", "FBI Warnning!!", {
         confirmButtonText: "确定!",
         cancelButtonText: "取消~",
-        type: "warning",
+        type: "warning"
       })
         .then(() => {
           this.$api.login
             .logout({ uid })
             .then(() => {
-              // this.$api.login.delCookies(["uid", "name", "isLogin"]);
-              // localStorage.removeItem("accessToken");
-              // this.updateUserInfo(false, { name: "guy", uid: "" });
-              // this.$message("已退出登录~");
-
               localStorage.removeItem("accessToken");
-              this.updateUserInfo(false, { name: "guy", uid: "" });
+              this.loginStatus = false;
+              this.updateUserInfo({ name: "guy", uid: "" });
               this.$message("已退出登录~");
             })
             .catch(() => {});
@@ -314,17 +281,14 @@ export default {
     },
 
     //设置登录状态信息，并发送用户uid name 登录状态到父组件
-    updateUserInfo(isLogin, userInfo) {
-      if (isLogin) {
-        this.loginStatus = true;
+    updateUserInfo(userInfo) {
+      if (this.loginStatus) {
         this.$message.success(`Hi ${userInfo.name} ,Welcome to your todolist!`);
-      } else {
-        this.loginStatus = false;
       }
       this.$emit("userStatusChange", {
         name: userInfo.name,
         uid: userInfo.uid,
-        loginStatus: this.loginStatus,
+        loginStatus: this.loginStatus
       });
     },
 
@@ -332,43 +296,35 @@ export default {
     register(name, passwd) {
       this.regForm.doing = true;
       this.regForm.nerror = "";
-      this.$api.login.register({ name, passwd }).then((res) => {
-        this.regForm.doing = false;
-        if (res.code == 403) {
-          this.regForm.nerror = res.msg;
-        } else {
+      this.$api.login
+        .register({ name, passwd })
+        .then(res => {
+          this.regForm.doing = false;
           this.$message.success("注册成功~,欢迎: " + name);
           this.DiaTab = "login";
-        }
-      });
+        })
+        .catch(err => {
+          if (err.response.status == 403) {
+            this.regForm.nerror = err.response.data.error;
+          }
+        });
     },
 
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
-          // if (formName=='refForm') {
-          // console.log(this.$refs[formName]);
-
-          this.$refs[formName].$attrs.submitAction(
-            this[formName].name,
-            this[formName].passwd
-          );
-          // this.$refs[formName].resetFields();
-
-          // }else if(formName=='loginForm'){
-          //   this.login(this[formName].name,this[formName].passwd)
-          // }
+          this.$refs[formName].$attrs.submitAction(this[formName].name, this[formName].passwd);
         } else {
           this.$message.warning("请修改表单错误项");
           return false;
         }
       });
     },
-    //取消操作,重置表单
+
     cancel(formName) {
       this.$refs[formName].resetFields();
       this.formVisible = false;
-    },
-  },
+    }
+  }
 };
 </script>

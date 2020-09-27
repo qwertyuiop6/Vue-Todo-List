@@ -1,16 +1,15 @@
 const router = require("koa-router");
-const todolist = require("../controllers/todolist");
+const todo = require("../controllers/todo");
 const mylogger = require("../middlewares/mylogger");
 
-const todoList = new router();
-const todo = new router();
+const TodoList = new router();
+const Todo = new router();
 
-todo
-  .get("/", todolist.getAll)
-  .post("/:uid", todolist.add)
-  .delete("/:id", todolist.del)
-  .post("/:id/changeStatus", todolist.changeStatus);
+Todo.get("/", todo.getAll)
+  .post("/", todo.add)
+  .delete("/:id", todo.del)
+  .post("/:id/changeStatus", todo.changeStatus);
 
-todoList.use("/todolist", mylogger(), todo.routes());
+TodoList.use("/todolist", mylogger(), Todo.routes());
 
-module.exports = todoList;
+module.exports = TodoList;

@@ -2,13 +2,13 @@
 
 //导出不同构建模式后端的接口地址
 export const backend = {
-    development: 'http://localhost:8000',
-    production: '',
-    vercel:'http://129.211.173.197:8000',
-} 
+  development: "http://localhost:8000",
+  production: "",
+  vercel: "",
+};
 
 //默认导出API接口配置
 export default {
-    todo: '/api/todolist',
-    login: '/auth'
-}
+  todo: "/api/todolist",
+  login: "/auth",
+};

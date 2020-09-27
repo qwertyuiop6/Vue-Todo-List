@@ -1,9 +1,6 @@
-const { Pool } = require("pg");
-const dbConf = require("../configs/pgsql");
-const pool = new Pool(dbConf);
+const { pool } = require("./pg");
 
 //user表操作
-
 function getUserCount(name = "") {
   if (name) {
     return pool.query("select count(*) from public.user where name=$1", [name]);
@@ -25,5 +22,5 @@ function getUserInfo(name) {
 module.exports = {
   createUser,
   getUserInfo,
-  getUserCount,
+  getUserCount
 };
