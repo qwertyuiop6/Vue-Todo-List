@@ -3,6 +3,7 @@ const static = require("koa-static");
 const bodyParser = require("koa-bodyparser");
 const logger = require("koa-logger");
 const cors = require("@koa/cors");
+const views = require("koa-views");
 const onerror = require("koa-onerror");
 
 const router = require("./router");
@@ -46,9 +47,14 @@ app
   // .use(session(sessionConf.config, app))
   // .use(myRouter.checkSession)
   .use(router.routes())
-  .use(ctx => {
-    ctx.throw(404, "404 Not Found!!!");
-    // ctx.status = 404;
+  .use(
+    views(`${__dirname}/views`, {
+      extension: "pug"
+    })
+  )
+  .use(async ctx => {
+    // ctx.throw(404, "404 Not Found!!!");
+    await ctx.render("error", { title: "FBI WARNING", error: "404 NOT FOUND" });
   })
   .on("error", (err, ctx) => {
     console.log("interal error: ", err);
