@@ -11,7 +11,7 @@ $ yarn
 # 数据库表导入Pgsql
 server/configs/todolist.sql
 # pgsql和redis配置
-server/configs/{pgsql.js,redis.js}
+server/configs/db.js
 # Jwt secret,expires配置
 server/configs/token.js
 
