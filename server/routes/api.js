@@ -10,6 +10,6 @@ Todo.get("/", todo.getAll)
   .delete("/:id", todo.del)
   .post("/:id/changeStatus", todo.changeStatus);
 
-TodoList.use("/todolist", mylogger(), Todo.routes());
+TodoList.use("/todolist", mylogger({ save: true }), Todo.routes());
 
 module.exports = TodoList;

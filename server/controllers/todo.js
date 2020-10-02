@@ -15,7 +15,6 @@ async function add(ctx) {
 async function del(ctx) {
   const { uid } = ctx.state.user;
   const { id } = ctx.params;
-  console.log("user[%s] want del Todo[%s]", uid, id);
   await todos.del(id, uid);
   ctx.status = 204;
 }

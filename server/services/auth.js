@@ -53,8 +53,8 @@ function generateAccessToken(user) {
   });
 }
 
-async function logout(ctx) {
-  //token del
+async function deleteToken(ctx) {
+  //token add to blocklist
   redis.lpush("blocklist", ctx.state.token);
 
   ctx.send("退出登陆成功", {
@@ -64,7 +64,7 @@ async function logout(ctx) {
 
 module.exports = {
   checkToken,
-  logout,
+  deleteToken,
   authToken,
   generateAccessToken
 };

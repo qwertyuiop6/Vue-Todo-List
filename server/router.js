@@ -7,9 +7,9 @@ const { authToken } = require("./services/auth");
 
 router
   //主页静态文件
-  .get("/", async ctx => {
+  .get("/", async () => {
     // ctx.redirect("./index.html");
-    await send("index.html");
+    // await send("index.html");
   })
 
   //用户认证路由

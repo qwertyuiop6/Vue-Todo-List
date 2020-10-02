@@ -4,9 +4,9 @@ const fs = require("fs");
 const path = require("path");
 const { timestamp2str: t2s } = require("../utils/date");
 
-const logPath = path.join(__dirname, "../logs");
+const defaultLogPath = path.join(__dirname, "../logs");
 
-module.exports = () => async (ctx, next) => {
+module.exports = (options) => async (ctx, next) => {
   const start = Date.now();
   const { uid, name } = ctx.state.user;
   const user = chalk.italic.blackBright(uid);
@@ -18,11 +18,15 @@ module.exports = () => async (ctx, next) => {
   const ms = Date.now() - start + "ms";
   const spendtime = chalk.blackBright(ms);
   const show = `User[${user}](${username})--> ${method} ${url} --> ${status} ${spendtime}`;
+
   log(show);
+
   const logline = `${t2s(start)}: User[${uid}](${name})-->${ctx.method} ${ctx.url} --> ${
     ctx.status
   } ${ms}\n`;
-  save2file("todo", logPath, logline);
+  if (options.save) {
+    save2file("todo", options.logPath??defaultLogPath, logline);
+  }
 };
 
 function save2file(name, path, line) {
