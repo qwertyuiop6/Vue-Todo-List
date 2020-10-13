@@ -6,9 +6,18 @@
       <el-tabs tab-position="left" v-model="activeTab">
         <el-tab-pane name="ing">
           <span slot="label"><i class="el-icon-date"></i> 进行中</span>
-          <el-table :data="tableData" v-loading="loading" class="todotable">
-            <el-table-column label="创建日期" width="150" prop="startDate"></el-table-column>
-            <el-table-column label="目标" width="240">
+          <el-table :data="tableData" v-loading="loading" class="todotable" empty-text="---">
+            <el-table-column width="150" prop="startDate">
+              <template slot="header">
+                <span>创建日期 </span>
+                <i class="el-icon-time"></i>
+              </template>
+            </el-table-column>
+            <el-table-column width="240">
+              <template slot="header">
+                <span>目标 </span>
+                <i class="el-icon-data-line"></i>
+              </template>
               <template slot-scope="scope">
                 <span
                   style="margin-left: 5px"
@@ -17,19 +26,30 @@
                 ></span>
               </template>
             </el-table-column>
-            <el-table-column label="截止日期" width="110">
-              <template slot-scope="scope">
+            <el-table-column width="120">
+              <template slot="header">
+                <span>截止日期 </span>
                 <i class="el-icon-time"></i>
-                <span>{{ scope.row.endDate }}</span>
+              </template>
+              <template slot-scope="scope">
+                <span>{{ scope.row.endDate || "———" }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="状态" width="90">
+            <el-table-column width="90">
+              <template slot="header">
+                <span>状态 </span>
+                <i class="el-icon-copy-document"></i>
+              </template>
               <template slot-scope="scope">
                 <span class="status" v-text="status[scope.row.status].text"></span>
                 <i :class="status[scope.row.status].img"></i>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="180">
+            <el-table-column width="180">
+              <template slot="header">
+                <span>操作 </span>
+                <i class="el-icon-s-operation"></i>
+              </template>
               <template slot-scope="scope">
                 <el-button
                   size="mini"
@@ -49,28 +69,49 @@
         <el-tab-pane name="done"
           ><span slot="label"><i class="el-icon-check"></i> 已完成</span>
           <el-table :data="tableData" v-loading="loading" class="todotable">
-            <el-table-column label="创建日期" width="150" prop="startDate"></el-table-column>
-            <el-table-column label="目标" width="240">
+            <el-table-column width="150" prop="startDate">
+              <template slot="header">
+                <span>创建日期 </span>
+                <i class="el-icon-time"></i>
+              </template>
+            </el-table-column>
+            <el-table-column width="240">
+              <template slot="header">
+                <span>目标 </span>
+                <i class="el-icon-data-line"></i>
+              </template>
               <template slot-scope="scope">
                 <span
+                  style="margin-left: 5px"
                   v-text="scope.row.target"
                   :style="scope.row.status == 1 ? { 'text-decoration': 'line-through' } : {}"
                 ></span>
               </template>
             </el-table-column>
-            <el-table-column label="截止日期" width="110">
-              <template slot-scope="scope">
+            <el-table-column width="120">
+              <template slot="header">
+                <span>截止日期 </span>
                 <i class="el-icon-time"></i>
-                <span>{{ scope.row.endDate }}</span>
+              </template>
+              <template slot-scope="scope">
+                <span>{{ scope.row.endDate || "———" }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="状态" width="90">
+            <el-table-column width="90">
+              <template slot="header">
+                <span>状态 </span>
+                <i class="el-icon-copy-document"></i>
+              </template>
               <template slot-scope="scope">
                 <span class="status" v-text="status[scope.row.status].text"></span>
                 <i :class="status[scope.row.status].img"></i>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="180">
+            <el-table-column width="180">
+              <template slot="header">
+                <span>操作 </span>
+                <i class="el-icon-s-operation"></i>
+              </template>
               <template slot-scope="scope">
                 <el-button
                   size="mini"

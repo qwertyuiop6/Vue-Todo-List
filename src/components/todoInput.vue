@@ -7,7 +7,7 @@
       v-model="content"
       clearable
       minlength="1"
-      @keyup.enter="add(content, datePick)"
+      @keypress.enter.native="add"
     ></el-input>
     <el-date-picker
       v-model="datePick"
@@ -15,11 +15,7 @@
       placeholder="截止日期"
       value-format="yyyy-MM-dd"
     ></el-date-picker>
-    <el-button
-      type="primary"
-      style="border-radius: 0 5px 5px 0;padding: 12px 15px;"
-      @click="add(content, datePick)"
-    >
+    <el-button type="primary" style="border-radius: 0 5px 5px 0;padding: 12px 15px;" @click="add">
       添加
       <i class="el-icon-edit"></i>
     </el-button>
@@ -63,19 +59,18 @@ export default {
     };
   },
   methods: {
-    add(content, endDate = "", status = 0) {
-      this.content = "";
-      this.datePick = null;
+    add() {
       var date = new Date();
       var now = `${date.getFullYear()}/${date.getMonth() +
         1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
       let newTodo = {
         startDate: now,
-        target: content,
-        status,
-        endDate
+        target: this.content,
+        status: 0,
+        endDate: this.datePick
       };
-
+      this.content = "";
+      this.datePick = null;
       this.$emit("addTodo", newTodo);
     }
   }

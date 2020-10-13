@@ -24,7 +24,6 @@
             :model="loginForm"
             :rules="loginRules"
             :inline="!0"
-            :status-icon="!0"
             label-position="left"
             ref="loginForm"
             :submitAction="login"
@@ -42,9 +41,8 @@
               <el-input
                 v-model="loginForm.passwd"
                 autocomplete="off"
-                suffix-icon="el-icon-view"
                 placeholder="请输入密码"
-                type="password"
+                show-password
               ></el-input>
             </el-form-item>
           </el-form>
@@ -83,18 +81,16 @@
               <el-input
                 v-model="regForm.passwd"
                 autocomplete="off"
-                suffix-icon="el-icon-view"
                 placeholder="请输入密码,6-12位"
-                type="password"
+                show-password
               ></el-input>
             </el-form-item>
             <el-form-item label="确认密码:" prop="checkPasswd">
               <el-input
                 v-model="regForm.checkPasswd"
                 autocomplete="off"
-                suffix-icon="el-icon-view"
                 placeholder="请再次输入密码确认"
-                type="password"
+                show-password
               ></el-input>
             </el-form-item>
           </el-form>
