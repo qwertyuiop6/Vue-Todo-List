@@ -1,7 +1,7 @@
 import * as http from "../utils/http";
-import apiConf from "../config/api";
+import API from "../config/api";
 
-const todoAPI = apiConf.todo;
+const todoAPI = API.todo;
 
 /**
  * 获取用户的todolist

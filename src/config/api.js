@@ -4,11 +4,11 @@
 export const backend = {
   development: "http://localhost:8000",
   production: "",
-  vercel: "",
+  vercel: ""
 };
 
 //默认导出API接口配置
 export default {
   todo: "/api/todolist",
-  login: "/auth",
+  auth: "/auth"
 };

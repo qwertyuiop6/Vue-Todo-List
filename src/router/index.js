@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "@/views/Home.vue";
-import TodoList from "@/components/todoList.vue";
+import TodoList from "@/views/todo/todoList.vue";
 
 Vue.use(VueRouter);
 
@@ -23,6 +23,11 @@ const routes = [
         component: () => import("@/components/editTodo.vue")
       }
     ]
+  },
+  {
+    path: "/user/:uid",
+    name: "user",
+    component: () => import(/* webpackChunkName: "about" */ "@/views/user/index.vue")
   },
   {
     path: "/about",

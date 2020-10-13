@@ -8,7 +8,19 @@ export default new Vuex.Store({
     userInfo: { name: "guyyyy", uid: 0 },
     loginStatus: false
   },
-  mutations: {},
-  actions: {},
+  mutations: {
+    updateUser(state, { info, status }) {
+      state.userInfo = info;
+      state.loginStatus = status;
+    }
+  },
+  actions: {
+    updateUser({ commit }, userInfo) {
+      commit("updateUser", userInfo);
+    }
+  },
+  getters: {
+    loginStatus: state => state.loginStatus
+  },
   modules: {}
 });

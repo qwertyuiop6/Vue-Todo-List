@@ -1,10 +1,11 @@
 <template>
-  <div class="todo">this is todo[{{ this.$route.params.todoId }}]</div>
+  <div class="user">
+    {{ this.$route.params.uid }}
+  </div>
 </template>
 
 <script>
 export default {
-  name: "editTodo",
   data: () => ({})
 };
 </script>

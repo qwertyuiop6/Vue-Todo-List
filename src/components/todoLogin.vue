@@ -126,11 +126,8 @@ export default {
   data() {
     return {
       formVisible: false,
-      loginStatus: false,
+      // loginStatus: false,
       DiaTab: "login",
-
-      uid: "",
-      name: "",
       timer: null,
       loginForm: {
         name: "",
@@ -209,17 +206,22 @@ export default {
   mounted() {
     this.checkLoginStatus();
   },
+  computed: {
+    loginStatus() {
+      // return this.$store.state.loginStatus;
+      return this.$store.loginStatus; //eventBus
+    }
+  },
   methods: {
     checkLoginStatus() {
       if (!localStorage.getItem("accessToken")) {
         return;
       }
       //检查token是否过期
-      this.$api.login
+      this.$api.auth
         .checkToken()
         .then(res => {
-          this.loginStatus = true;
-          this.updateUserInfo(res.data);
+          this.updateUser(res.data);
         })
         .catch(err => {
           console.log(err.response);
@@ -231,15 +233,14 @@ export default {
       this.loginForm.doing = true;
       this.loginForm.nerror = "";
       this.loginForm.perror = "";
-      this.$api.login
+      this.$api.auth
         .login({ name, passwd })
         .then(res => {
           this.loginForm.doing = false;
           this.formVisible = false;
-          this.loginStatus = true;
           // this.$message.success(res.data.name + " 登陆成功~ 欢迎~");
           localStorage.setItem("accessToken", res.accessToken);
-          this.updateUserInfo(res.data);
+          this.updateUser(res.data);
         })
         .catch(err => {
           this.loginForm.doing = false;
@@ -260,19 +261,18 @@ export default {
     },
 
     //登出
-    logout(uid = this.uid) {
+    logout() {
       this.$confirm("确定退出登录吗?", "FBI Warnning!!", {
         confirmButtonText: "确定!",
         cancelButtonText: "取消~",
         type: "warning"
       })
         .then(() => {
-          this.$api.login
-            .logout({ uid })
+          this.$api.auth
+            .logout()
             .then(() => {
               localStorage.removeItem("accessToken");
-              this.loginStatus = false;
-              this.updateUserInfo({ name: "guy", uid: "" });
+              this.updateUser({ name: "guy", uid: "" }, false);
               this.$message("已退出登录~");
             })
             .catch(() => {});
@@ -280,23 +280,33 @@ export default {
         .catch(() => {});
     },
 
-    //设置登录状态信息，并发送用户uid name 登录状态到父组件
-    updateUserInfo(userInfo) {
+    //设置登录状态信息
+    updateUser(userInfo, status = true) {
+      // this.$emit("userStatusChange", {
+      //   name: userInfo.name,
+      //   uid: userInfo.uid,
+      //   loginStatus: this.loginStatus
+      // });
+
+      const userState = { info: userInfo, status };
+
+      //vuex
+      // this.$store.dispatch("updateUser", userState); //actions
+      // this.$store.commit("updateUser", userState); //mutations
+
+      // eventBus store
+      this.$store.$emit("updateUser", userState);
+
       if (this.loginStatus) {
         this.$message.success(`Hi ${userInfo.name} ,Welcome to your todolist!`);
       }
-      this.$emit("userStatusChange", {
-        name: userInfo.name,
-        uid: userInfo.uid,
-        loginStatus: this.loginStatus
-      });
     },
 
     //注册
     register(name, passwd) {
       this.regForm.doing = true;
       this.regForm.nerror = "";
-      this.$api.login
+      this.$api.auth
         .register({ name, passwd })
         .then(res => {
           this.regForm.doing = false;

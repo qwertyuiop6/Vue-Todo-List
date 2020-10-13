@@ -1,9 +1,9 @@
 //event bus 事件总线
 import Vue from "vue";
 
-const vue = new Vue({
+const estore = new Vue({
   data: {
-    userInfo: { name: "guyyyy", uid: 0 },
+    userInfo: { name: "guy", uid: 0 },
     loginStatus: false
   },
   created() {
@@ -14,5 +14,10 @@ const vue = new Vue({
   }
 });
 
-//导出一个Vue实例作为简单的状态储存和事件分发对象
-export default vue;
+//1.提供一个安装方法,以插件形式注册
+estore.install = (Vue, opts) => {
+  Vue.prototype.$store = estore;
+};
+
+//2.导出一个Vue实例作为简单的状态储存和事件分发对象
+export default estore;

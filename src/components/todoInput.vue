@@ -5,34 +5,44 @@
       name="content"
       placeholder="今天想做些什么？"
       v-model="content"
+      clearable
+      minlength="1"
       @keyup.enter="add(content, datePick)"
     ></el-input>
     <el-date-picker
-      slot="append"
       v-model="datePick"
       type="date"
       placeholder="截止日期"
       value-format="yyyy-MM-dd"
     ></el-date-picker>
-    <el-button type="primary" @click="add(content, datePick)">
+    <el-button
+      type="primary"
+      style="border-radius: 0 5px 5px 0;padding: 12px 15px;"
+      @click="add(content, datePick)"
+    >
       添加
       <i class="el-icon-edit"></i>
     </el-button>
-    <p v-if="content" class="tips">你是要添加: {{ content }} ?</p>
+    <!-- <p v-if="content" class="tips">你是要添加: {{ content }} ?</p> -->
   </div>
 </template>
 
 <style lang="scss">
 #input {
   > .el-input {
-    width: 52%;
+    width: 59%;
+    font-size: unset;
   }
   .el-date-editor.el-input,
   .el-date-editor.el-input__inner {
-    width: 28%;
+    width: 10rem;
     > input {
       border-radius: 0;
     }
+  }
+  .el-input__inner {
+    border-radius: 4px 0 0 4px;
+    border-right: none;
   }
   .tips {
     font-size: 0.9rem;
@@ -55,6 +65,7 @@ export default {
   methods: {
     add(content, endDate = "", status = 0) {
       this.content = "";
+      this.datePick = null;
       var date = new Date();
       var now = `${date.getFullYear()}/${date.getMonth() +
         1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
@@ -66,26 +77,6 @@ export default {
       };
 
       this.$emit("addTodo", newTodo);
-
-      // this.tableData.push(newTodo);
-
-      //online状态添加到server
-      // if (this.loginStatus) {
-      //   this.$api.todo
-      //     .add(this.uid, newTodo)
-      //     .then(() => {
-      //       // this.tableData.push(newTodo);
-      //       this.$message.success("添加成功~");
-      //       this.getTodolist();
-      //     })
-      //     .catch(err => {
-      //       this.tableData.pop();
-      //       this.$message.error("添加失败,请重试");
-      //     });
-      // } else {
-      //   // this.tableData.push(newTodo);
-      //   this.updateLocalTodoList();
-      // }
     }
   }
 };

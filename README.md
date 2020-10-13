@@ -32,8 +32,13 @@ $ yarn dev
 
 ## How Works?
 
-- 前端: Vue + Element-UI + Axios + Scss +LocalStorage
-- 后台: Koa.js + koa-router + koa-static + jwt + koa-cors
-- 数据库: Postgresql(pg) + Base DML + Redis(ioredis)
-- Other: koa-logger, dotenv, chalk, crypto
-- CI/CD : Git/[Vercel](https://vercel.com/)
+- 前端: Vue + Vue-Router + EventBus-Store (Vuex)
+    * UI: Element-UI + Scss
+    * 网络: Axios 
+    * 持久化: LocalStorage
+- 后端: Koa2 + koa-router + koa-static + koa-cors
+    * 数据库: Postgresql(pg) + Base DML + Redis(ioredis)
+    * 会话认证管理: JWT + Redis-blocklist
+    * 日志: koa-logger + chalk
+    * Other: check-fresh, Passwd Hash+Salt(crypto)
+- CI-CD : Git + [Vercel](https://vercel.com/)
