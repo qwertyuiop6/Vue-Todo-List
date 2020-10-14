@@ -179,8 +179,7 @@ export default {
   transform: translateX(-50%);
   transition: 1s;
   &:hover {
-    transform: rotate(60deg);
-    box-shadow: 1px 2px 11px 1px #9595958f;
+    // box-shadow: 1px 2px 11px 1px #9595958f;
     transform: translateX(-50%) rotate(360deg);
   }
   .image-slot {

@@ -54,7 +54,7 @@ async function getUserData(ctx) {
       id,
       name,
       status,
-      avatar
+      avatar: avatar ?? require("../services/randomAvatar")()
     }
   });
 }
