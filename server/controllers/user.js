@@ -37,6 +37,7 @@ async function register(ctx) {
 }
 
 async function checkName(ctx) {
+  const { name } = ctx.request.query;
   let res = await users.get({ name });
   ctx.assert(!res.rows.length, 403, "该用户名已被使用!");
   ctx.status = 200;
@@ -58,7 +59,12 @@ async function getUserData(ctx) {
   });
 }
 
-async function updateUserData(ctx) {}
+async function updateUserData(ctx) {
+  const { uid } = ctx.state.user;
+  const { status, avatar } = ctx.request.body;
+  await users.update({ status, uid });
+  ctx.status = 200;
+}
 
 module.exports = {
   login,

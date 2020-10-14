@@ -1,6 +1,7 @@
 import axios from "axios";
 import Vue from "vue";
 import ElementUI from "element-ui";
+import router from "../router";
 Vue.use(ElementUI);
 
 //Axios全局拦截器设置
@@ -32,7 +33,7 @@ axios.interceptors.response.use(
       localStorage.removeItem("accessToken");
       setTimeout(() => {
         // location.reload();
-        this.$router.push({ name: "Home", params: { login: true } });
+        router.push({ name: "Home", params: {} });
       }, 1000);
     } else if (status >= 500) {
       Vue.prototype.$message.error("服务器出问题啦,请稍后重试");

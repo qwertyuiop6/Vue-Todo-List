@@ -20,8 +20,13 @@ function get({ name = null, uid = null }) {
   return pool.query("select * from public.user where id=$1", [uid]);
 }
 
+function update({ status = null, uid = null }) {
+  return pool.query("update public.user set status=$2 where id=$1", [uid, status]);
+}
+
 module.exports = {
   createUser,
   get,
+  update,
   getUserCount
 };
