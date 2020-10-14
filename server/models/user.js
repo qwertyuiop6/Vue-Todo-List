@@ -15,12 +15,13 @@ function createUser(name, passwd, salt) {
   );
 }
 
-function getUserInfo(name) {
-  return pool.query("select * from public.user where name=$1", [name]);
+function get({ name = null, uid = null }) {
+  if (name) return pool.query("select name,id,passwd,salt from public.user where name=$1", [name]);
+  return pool.query("select * from public.user where id=$1", [uid]);
 }
 
 module.exports = {
   createUser,
-  getUserInfo,
+  get,
   getUserCount
 };

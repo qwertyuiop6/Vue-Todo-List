@@ -3,11 +3,25 @@
   "env": {
     "node": true
   },
-  "extends": ["plugin:vue/essential", "eslint:recommended"],
+  "extends": [
+    "plugin:vue/essential",
+    "eslint:recommended"
+  ],
   "rules": {
     "no-console": "off"
   },
   "parserOptions": {
     "parser": "babel-eslint"
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/__tests__/*.{j,t}s?(x)",
+        "**/tests/unit/**/*.spec.{j,t}s?(x)"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 }

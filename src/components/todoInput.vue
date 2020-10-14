@@ -48,8 +48,6 @@
 </style>
 
 <script>
-import todoLogin from "./todoLogin.vue";
-
 export default {
   name: "todoInput",
   data() {

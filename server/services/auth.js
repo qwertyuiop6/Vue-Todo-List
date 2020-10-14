@@ -25,7 +25,7 @@ async function authToken(ctx, next) {
 
   await jwt.verify(ctx.state.token, ACCESS_TOKEN_SECRET, async (err, user) => {
     if (err) {
-      ctx.assert.notStrictEqual(err.name, "TokenExpiredError", 401, err.message);
+      ctx.assert.notStrictEqual(err.name, "TokenExpiredError", 401);
       ctx.throw(403, "非法accessToken");
     }
 

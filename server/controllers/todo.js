@@ -1,8 +1,9 @@
 const todos = require("../models/todo");
 
-async function getAll(ctx) {
+async function get(ctx) {
   const { uid } = ctx.state.user;
-  let result = await todos.getAll(uid);
+  let { id } = ctx.params;
+  let result = await todos.get(uid, id);
   ctx.send("获取todo列表成功", { data: result.rows });
 }
 
@@ -19,16 +20,16 @@ async function del(ctx) {
   ctx.status = 204;
 }
 
-async function changeStatus(ctx) {
-  const { status } = ctx.request.body;
-  const { id: todoID } = ctx.params;
-  await todos.setStatus(todoID, status);
+async function update(ctx) {
+  const data = ctx.request.body;
+  const { id } = ctx.params;
+  await todos.update(id, data);
   ctx.status = 200;
 }
 
 module.exports = {
-  getAll,
+  get,
   add,
   del,
-  changeStatus
+  update
 };

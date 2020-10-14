@@ -24,8 +24,7 @@ if (baseURL) {
 axios.defaults.timeout = 10000;
 
 //设置类型为表单类型，基本请求,避免复杂请求的option请求
-axios.defaults.headers.post["Content-Type"] =
-  "application/x-www-form-urlencoded;charset=UTF-8";
+axios.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded;charset=UTF-8";
 
 //封装get,post请求
 /**
@@ -37,12 +36,12 @@ function get(url, params) {
   return new Promise((resolve, reject) => {
     axios
       .get(url, {
-        params,
+        params
       })
-      .then((res) => {
+      .then(res => {
         resolve(res.data);
       })
-      .catch((err) => {
+      .catch(err => {
         reject(err);
       });
   });
@@ -51,16 +50,16 @@ function get(url, params) {
 /**
  * post方法，对应post请求
  * @param {String} url [请求的url地址]
- * @param {Object} params [请求时携带的body参数]
+ * @param {Object} body [请求时携带的body数据]
  */
-function post(url, params) {
+function post(url, body) {
   return new Promise((resolve, reject) => {
     axios
-      .post(url, QS.stringify(params))
-      .then((res) => {
+      .post(url, QS.stringify(body))
+      .then(res => {
         resolve(res.data);
       })
-      .catch((err) => {
+      .catch(err => {
         reject(err);
       });
   });
@@ -75,10 +74,10 @@ function del(url, params) {
   return new Promise((resolve, reject) => {
     axios
       .delete(url, { params })
-      .then((res) => {
+      .then(res => {
         resolve(res.data);
       })
-      .catch((err) => {
+      .catch(err => {
         reject(err);
       });
   });
@@ -87,16 +86,16 @@ function del(url, params) {
 /**
  * patch方法，对应patch请求
  * @param {String} url [请求的url地址]
- * @param {Object} params [请求时携带的body参数]
+ * @param {Object} body [请求时携带的body参数]
  */
-function patch(url, params) {
+function patch(url, body) {
   return new Promise((resolve, reject) => {
     axios
-      .patch(url, QS.stringify(params))
-      .then((res) => {
+      .patch(url, QS.stringify(body))
+      .then(res => {
         resolve(res.data);
       })
-      .catch((err) => {
+      .catch(err => {
         reject(err);
       });
   });

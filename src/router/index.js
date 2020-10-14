@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "@/views/Home.vue";
-import TodoList from "@/views/todo/todoList.vue";
+// import TodoList from "@/views/todo/todoList.vue";
 
 Vue.use(VueRouter);
 
@@ -10,13 +10,14 @@ const routes = [
     path: "/",
     name: "Home",
     component: Home,
+    props: true,
     children: [
-      {
-        path: "/",
-        name: "Todolist",
-        component: TodoList,
-        props: true
-      },
+      // {
+      //   path: "/",
+      //   name: "Todolist",
+      //   component: TodoList,
+      //   props: true
+      // },
       {
         path: "/editTodo/:todoId",
         name: "EditTodo",

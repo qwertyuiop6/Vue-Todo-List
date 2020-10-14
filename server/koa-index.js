@@ -37,7 +37,7 @@ app
         return "*";
       },
       credentials: true,
-      allowMethods: ["GET", "POST", "DELETE", "PATCH"],
+      allowMethods: ["GET", "POST", "DELETE", "PATCH", "PUT"],
       allowHeaders: ["authorization", "Content-Type"],
       maxAge: 86400 //24-hours
     })
@@ -54,6 +54,7 @@ app
   )
   .use(async ctx => {
     // ctx.throw(404, "404 Not Found!!!");
+    ctx.status = 404;
     await ctx.render("error", { title: "FBI WARNING", error: "404 NOT FOUND" });
   })
   .on("error", (err, ctx) => {

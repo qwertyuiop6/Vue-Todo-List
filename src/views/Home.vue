@@ -1,19 +1,19 @@
 <template>
   <div style="min-width:900px">
     <img class="logo" alt="Vue logo" src="@/assets/logo.png" />
-    <router-view></router-view>
-    <!-- <todo-list title="Todo List"></todo-list> -->
+    <!-- <router-view></router-view> -->
+    <todo-list title="Todo List" :login="login"></todo-list>
   </div>
 </template>
 
 <script>
-// import todoList from "@/components/todoList.vue";
+import todoList from "./todo/todoList.vue";
 
 export default {
   name: "home",
-  // components: {
-  //   todoList
-  // }
+  components: {
+    todoList
+  }
 };
 </script>
 

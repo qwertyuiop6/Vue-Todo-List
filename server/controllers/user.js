@@ -6,7 +6,7 @@ const { generateAccessToken } = require("../services/auth");
 async function login(ctx) {
   const { name, passwd } = ctx.request.body;
 
-  let result = await users.getUserInfo(name);
+  let result = await users.get({ name });
   const data = result.rows;
 
   ctx.assert.ok(data.length, 400, "查无此人~");
@@ -28,7 +28,7 @@ async function login(ctx) {
 async function register(ctx) {
   const { name, passwd } = ctx.request.body;
 
-  let res = await users.getUserInfo(name);
+  let res = await users.get({ name });
   ctx.assert(!res.rows.length, 403, "该用户名已被使用!");
 
   const { passwd_hash, salt } = encrypt(passwd);
@@ -36,21 +36,34 @@ async function register(ctx) {
   ctx.send("注册成功");
 }
 
-async function checkUserName(ctx) {
-  const { name } = ctx.query;
-  let result = await users.getUserCount(name);
-  let count = result.rows[0].count;
+async function checkName(ctx) {
+  let res = await users.get({ name });
+  ctx.assert(!res.rows.length, 403, "该用户名已被使用!");
+  ctx.status = 200;
+}
 
-  ctx.send(null, {
+async function getUserData(ctx) {
+  const { uid } = ctx.query;
+  // ctx.assert(ctx.state.user.uid, uid, 403);
+  let result = await users.get({ uid });
+  const { id, name, status, avatar } = result.rows[0];
+
+  ctx.send("获取到用户信息", {
     data: {
+      id,
       name,
-      count
+      status,
+      avatar
     }
   });
 }
 
+async function updateUserData(ctx) {}
+
 module.exports = {
   login,
   register,
-  checkUserName
+  checkName,
+  getUserData,
+  updateUserData
 };

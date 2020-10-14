@@ -9,6 +9,7 @@ export const backend = {
 
 //默认导出API接口配置
 export default {
-  todo: "/api/todolist",
-  auth: "/auth"
+  todo: "/api/data/todo",
+  auth: "/api/auth",
+  user: "/api/user"
 };

@@ -1,12 +1,14 @@
-const router = require("koa-router")();
-const { register, login, checkUserName } = require("../controllers/user");
+const router = require("koa-router");
+const { register, login, checkName } = require("../controllers/user");
 const { authToken, checkToken, deleteToken } = require("../services/auth");
 
-router
+const auth = new router();
+
+auth
   .post("/register", register)
   .post("/login", login)
-  .get("/user", checkUserName)
+  .get("/checkName", checkName)
   .post("/logout", authToken, deleteToken)
   .get("/checkToken", authToken, checkToken);
 
-module.exports = router;
+module.exports = auth;

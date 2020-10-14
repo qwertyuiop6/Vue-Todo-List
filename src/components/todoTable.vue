@@ -19,11 +19,13 @@
                 <i class="el-icon-data-line"></i>
               </template>
               <template slot-scope="scope">
-                <span
-                  style="margin-left: 5px"
+                <div
+                  class="input-textarea"
                   v-text="scope.row.target"
-                  :style="scope.row.status == 1 ? { 'text-decoration': 'line-through' } : {}"
-                ></span>
+                  :ref="'input' + scope.row.id"
+                  contenteditable="true"
+                  @blur="updateContent(scope.$index, scope.row.id)"
+                />
               </template>
             </el-table-column>
             <el-table-column width="120">
@@ -58,7 +60,11 @@
                     toggleFn(scope.$index, scope.row.id, status[scope.row.status].toggleStatus)
                   "
                 ></el-button>
-                <el-button size="mini" type="danger" @click="delTodo(scope.$index, scope.row.id)">
+                <el-button
+                  size="mini"
+                  type="danger"
+                  @click="confirmAsk(scope.$index, scope.row.id)"
+                >
                   <i class="el-icon-delete"></i>
                 </el-button>
               </template>
@@ -81,11 +87,7 @@
                 <i class="el-icon-data-line"></i>
               </template>
               <template slot-scope="scope">
-                <span
-                  style="margin-left: 5px"
-                  v-text="scope.row.target"
-                  :style="scope.row.status == 1 ? { 'text-decoration': 'line-through' } : {}"
-                ></span>
+                <span v-text="scope.row.target" :style="todoDoneStyle"></span>
               </template>
             </el-table-column>
             <el-table-column width="120">
@@ -120,9 +122,22 @@
                     toggleFn(scope.$index, scope.row.id, status[scope.row.status].toggleStatus)
                   "
                 ></el-button>
-                <el-button size="mini" type="danger" @click="delTodo(scope.$index, scope.row.id)">
-                  <i class="el-icon-delete"></i>
-                </el-button>
+
+                <el-popconfirm
+                  style="margin-left:10px"
+                  confirmButtonText="删了"
+                  cancelButtonText="不了"
+                  icon="el-icon-info"
+                  iconColor="red"
+                  title="确定删除这个todo吗？"
+                  confirmButtonType="danger"
+                  @onConfirm="delTodo(scope.$index, scope.row.id)"
+                >
+                  <el-button slot="reference" size="mini" type="danger">
+                    <i class="el-icon-delete"></i>
+                  </el-button>
+                  <!-- <el-button slot="reference">删除</el-button> -->
+                </el-popconfirm>
               </template>
             </el-table-column>
           </el-table>
@@ -147,6 +162,24 @@
 }
 .todotable {
   border: 1px solid #eee;
+  .input-textarea {
+    box-sizing: content-box;
+    max-height: 110px;
+    overflow-y: auto;
+    padding: 5px;
+    border: 1px solid transparent;
+    background: transparent;
+    border-radius: 5px;
+    transition: 0.3s;
+    &:hover {
+      border: 1px solid #ededed;
+      background: rgba(255, 255, 255, 0.74);
+    }
+    &:focus {
+      border: 1px solid #d9d9d9;
+      outline: none;
+    }
+  }
 }
 .el-table td,
 .el-table th {
@@ -183,7 +216,8 @@ export default {
           toggleStatus: 0,
           toggle: "还原"
         }
-      ]
+      ],
+      todoDoneStyle: { margin: "6px", display: "block", "text-decoration": "line-through" }
     };
   },
   created() {
@@ -239,10 +273,12 @@ export default {
       });
       return tasks;
     },
+
     async refreshTodoList() {
       this.todoData = await this.getTodolist();
       this.updateLocalTodoList();
     },
+
     //获取所有todolist
     async getTodolist() {
       let res = await this.$api.todo.getAll();
@@ -275,51 +311,70 @@ export default {
       }
     },
 
-    //删除一条todo
-    delTodo(index, id) {
-      this.$confirm("确定删除这个Todo吗?", "FBI Warnning!!", {
+    confirmAsk(index, id) {
+      this.$confirm("你还没有完成这个Todo，确定删除吗?", "FBI Warnning!!", {
         confirmButableDataonText: "确定!",
         cancelButableDataonText: "取消~",
         type: "warning"
       })
         .then(() => {
-          const delTodo = this.tableData.splice(index, 1);
-          if (this.loginStatus) {
-            this.$api.todo
-              .remove(id)
-              .then(() => {
-                this.$message.success("删除成功!");
-              })
-              .catch(err => {
-                this.tableData.splice(index, 0, ...delTodo);
-                console.log(err);
-                return;
-              });
-          } else {
-            this.$message.success("删除成功!");
-          }
-          this.updateLocalTodoList();
+          this.delTodo(index, id);
         })
         .catch(() => {
           // this.$message.info("已取消删除");
         });
     },
 
+    //删除一条todo
+    delTodo(index, id) {
+      const delTodo = this.tableData.splice(index, 1);
+      if (this.loginStatus) {
+        this.$api.todo
+          .remove(id)
+          .then(() => {
+            this.$message.success("删除成功!");
+          })
+          .catch(err => {
+            this.tableData.splice(index, 0, ...delTodo);
+            console.log(err);
+            return;
+          });
+      } else {
+        this.$message.success("删除成功!");
+      }
+      this.updateLocalTodoList();
+    },
     //更改todo完成状态
     toggleFn(index, id, status) {
-      if (this.loginStatus) {
-        this.$api.todo.changeStatus(id, status);
-      }
-      // var data = this.tableData[index];
-      // data.status = status;
       let toggleTableData = this.activeTab === "ing" ? this.doneTodoData : this.ingTodoData;
+      if (this.loginStatus) {
+        this.$api.todo.updateTodo(id, { status }).then(() => {
+          const toggleTodo = this.tableData.splice(index, 1)[0];
+          toggleTodo.status = status;
+          toggleTableData.push(toggleTodo);
+          this.updateLocalTodoList();
+        });
+        return;
+      }
       const toggleTodo = this.tableData.splice(index, 1)[0];
       toggleTodo.status = status;
       toggleTableData.push(toggleTodo);
-
       this.updateLocalTodoList();
     },
-
+    updateContent(index, id) {
+      let todo = this.tableData[index];
+      const content = this.$refs["input" + id].textContent;
+      todo.target = content;
+      if (this.loginStatus) {
+        this.$api.todo.updateTodo(id, { content }).then(() => {
+          this.tableData.splice(index, 1, todo);
+          this.updateLocalTodoList();
+        });
+        return;
+      }
+      this.tableData.splice(index, 1, todo);
+      this.updateLocalTodoList();
+    },
     //存储到本地LocalStorage
     updateLocalTodoList() {
       this.todoData = [...this.ingTodoData, ...this.doneTodoData];

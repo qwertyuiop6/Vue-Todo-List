@@ -2,13 +2,24 @@
   <div class="box">
     <p>
       Hi!
-      <a v-text="userInfo.name" class="name"></a>
-      , This is your {{ title }}!
+      <el-tooltip
+        v-if="user.uid"
+        open-delay="400"
+        class="item"
+        effect="dark"
+        content="查看个人资料"
+        placement="top"
+      >
+        <router-link :to="{ name: 'user', params: { uid: user.uid } }" class="name">{{
+          user.name
+        }}</router-link>
+      </el-tooltip>
+      <span v-else>{{ user.name }}</span> , This is your {{ title }}!
       <i class="el-icon-s-order"></i>
     </p>
 
     <!-- <todo-login title="登录/注册" @userStatusChange="setUserInfo" class="loginComp"></todo-login> -->
-    <todo-login title="登录/注册" class="loginComp"></todo-login>
+    <login title="登录/注册" class="loginComp"></login>
     <todo-table ref="todoTable"></todo-table>
   </div>
 </template>
@@ -63,7 +74,7 @@
 </style>
 
 <script>
-import todoLogin from "@/components/todoLogin.vue";
+import login from "@/components/login.vue";
 import todoTable from "@/components/todoTable.vue";
 
 export default {
@@ -75,14 +86,14 @@ export default {
     }
   },
   components: {
-    todoLogin,
+    login,
     todoTable
   },
   data: () => ({}),
   created() {},
   computed: {
-    userInfo() {
-      // return this.$store.state.userInfo; //vuex
+    user() {
+      // return this.$store.state.user; //vuex
       return this.$store.userInfo; //eventBus
     }
   },
