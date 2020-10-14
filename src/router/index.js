@@ -18,11 +18,11 @@ const routes = [
       //   component: TodoList,
       //   props: true
       // },
-      {
-        path: "/editTodo/:todoId",
-        name: "EditTodo",
-        component: () => import("@/components/editTodo.vue")
-      }
+      // {
+      //   path: "/editTodo/:todoId",
+      //   name: "EditTodo",
+      //   component: () => import("@/components/editTodo.vue")
+      // }
     ]
   },
   {
