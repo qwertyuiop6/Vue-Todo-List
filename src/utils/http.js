@@ -52,10 +52,10 @@ function get(url, params) {
  * @param {String} url [请求的url地址]
  * @param {Object} body [请求时携带的body数据]
  */
-function post(url, body) {
+function post(url, body, opts = null) {
   return new Promise((resolve, reject) => {
     axios
-      .post(url, QS.stringify(body))
+      .post(url, opts?.headers?.["Content-Type"] ? body : QS.stringify(body), opts)
       .then(res => {
         resolve(res.data);
       })
@@ -101,4 +101,7 @@ function patch(url, body) {
   });
 }
 
-export { get, post, del, patch };
+//创造一个axios实例,用来当作普通的http客户端
+const http = axios.create();
+
+export { get, post, del, patch, http };

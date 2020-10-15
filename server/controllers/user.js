@@ -54,7 +54,7 @@ async function getUserData(ctx) {
 
   ctx.send("获取到用户信息", {
     data: {
-      id,
+      uid: id,
       name,
       status,
       avatar: avatar ?? randomAvatar()
@@ -70,7 +70,7 @@ async function updateUserData(ctx) {
 }
 
 async function updateUserAvatar(ctx) {
-  // console.log(ctx.request.files.file);
+  console.log(ctx.request.files);
   const { hash, path: filepath, type, name, size } = ctx.request.files.file;
   const filename = `${hash}${path.extname(name)}`;
   await uploadIMG(filepath, "avatar/" + filename);

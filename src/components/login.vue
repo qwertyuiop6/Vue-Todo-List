@@ -204,11 +204,7 @@ export default {
     this.checkLoginStatus();
   },
   computed: {
-    user() {
-      return this.$store.userInfo;
-    },
     loginStatus() {
-      // return this.$store.state.loginStatus;
       return this.$store.loginStatus; //eventBus
     }
   },
@@ -217,14 +213,16 @@ export default {
       if (!localStorage.getItem("accessToken")) {
         return;
       }
-      //检查token是否过期
+      //检查token是否过期,再根据token用户id获取用户信息
       this.$api.auth
         .checkToken()
-        .then(res => {
-          this.updateUser(res.data);
+        .then(({ data }) => this.$api.user.get({ uid: data.uid }))
+        .then(({ data }) => {
+          const { uid, name, avatar } = data;
+          this.setUserState({ uid, name, avatar });
         })
         .catch(err => {
-          console.log(err.response);
+          console.log(err);
         });
     },
 
@@ -240,7 +238,7 @@ export default {
           this.formVisible = false;
           // this.$message.success(res.data.name + " 登陆成功~ 欢迎~");
           localStorage.setItem("accessToken", res.accessToken);
-          this.updateUser(res.data);
+          this.setUserState(res.data);
         })
         .catch(err => {
           this.loginForm.doing = false;
@@ -272,7 +270,7 @@ export default {
             .logout()
             .then(() => {
               localStorage.removeItem("accessToken");
-              this.updateUser({ name: "guy", uid: 0 }, false);
+              this.setUserState({ name: "guy", uid: 0 }, false);
               this.$message("已退出登录~");
             })
             .catch(() => {});
@@ -281,21 +279,21 @@ export default {
     },
 
     //设置登录状态信息
-    updateUser(userInfo, status = true) {
+    setUserState(userInfo) {
       // this.$emit("userStatusChange", {
       //   name: userInfo.name,
       //   uid: userInfo.uid,
       //   loginStatus: this.loginStatus
       // });
 
-      const userState = { info: userInfo, status };
+      const userState = { userInfo };
 
       //vuex
-      // this.$store.dispatch("updateUser", userState); //actions
-      // this.$store.commit("updateUser", userState); //mutations
+      // this.$store.dispatch("setUserState", userState); //actions
+      // this.$store.commit("setUserState", userState); //mutations
 
       // eventBus store
-      this.$store.$emit("updateUser", userState);
+      this.$store.$emit("setUserState", userState);
 
       if (this.loginStatus) {
         this.$message.success(`Hi ${userInfo.name} ,Welcome to your todolist!`);

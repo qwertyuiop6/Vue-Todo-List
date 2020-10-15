@@ -13,21 +13,19 @@
           class="input"
           ref="input"
           contenteditable
-          @blur="updateUser({ status: $refs.input.textContent })"
+          @blur="handleBlur"
           @focus="$refs.input.textContent = status"
         >
-          {{ status || "八千里路云和月" }}
+          {{ status || randomStatus }}
         </div>
       </div>
       <div v-else>
         <el-upload
-          class="avatar-uploader"
-          action="/api/user/avatar"
-          :headers="uploadHeader"
-          :show-file-list="false"
-          :on-success="handleAvatarSuccess"
-          :before-upload="beforeAvatarUpload"
           drag
+          class="avatar-uploader"
+          action="diy"
+          :show-file-list="false"
+          :http-request="uploadAvatar"
         >
           <img v-if="imageUrl" :src="imageUrl" class="avatar" />
           <!-- <i v-else class="el-icon-plus avatar-uploader-icon"></i> -->
@@ -63,14 +61,24 @@ export default {
     showUpload: false,
     imageUrl: "",
     uploadHeader: { authorization: `Bearer ${localStorage.getItem("accessToken")}` },
-    upSuccess: false
+    upSuccess: false,
+    randomStatus: ""
   }),
   created() {
     this.getUserData();
+    this.$http
+      .get("https://v1.jinrishici.com/tianqi/xingxing")
+      .then(({ data }) => {
+        this.randomStatus = data.content;
+      })
+      .catch(err => console.log(err));
   },
   computed: {
     user() {
       return this.$store.userInfo;
+    },
+    doms() {
+      return this.$refs;
     }
   },
   directives: {
@@ -81,7 +89,7 @@ export default {
         el.style.display = "none";
       },
       update: function(el, binding) {
-        // if (typeof binding.value !== "string") return;
+        if (typeof binding.value !== "string") return;
         // console.log(binding.value);
         if (binding.value?.trim().length) {
           el.textContent = binding.value;
@@ -97,10 +105,8 @@ export default {
         Object.assign(this, res.data);
       });
     },
+    random() {},
     updateUser({ status, avatar }) {
-      // if (status===''){
-      //   status =
-      // }
       const params = Object.assign(
         {},
         status !== undefined ? { status } : {},
@@ -116,6 +122,20 @@ export default {
             this.showUpload = false;
             this.avatar = avatar;
           }
+        })
+        .catch(err => console.log(err.response));
+    },
+    uploadAvatar(params) {
+      console.log(params);
+      this.beforeAvatarUpload(params.file);
+
+      let form = new FormData();
+      form.append("file", params.file);
+
+      this.$api.user
+        .uploadAvatar(form)
+        .then(res => {
+          this.handleAvatarSuccess(res);
         })
         .catch(err => console.log(err.response));
     },
@@ -146,8 +166,10 @@ export default {
         else this.$router.go(-1);
       } else if (dest === "home") this.$router.push("/");
     },
-    x() {
-      this.$refs.input.textContent = this.status;
+    handleBlur() {
+      const input = this.$refs.input;
+      this.updateUser({ status: input.textContent });
+      input.scrollTo(0, 0);
     }
   }
 };
@@ -211,15 +233,22 @@ export default {
       color: #6e6e6e;
       background-color: #e9e9e9;
       font-size: 15px;
+      top: -1px !important;
     }
   }
   .back {
     top: 0;
     left: 0;
+    &:hover {
+      left: -1px;
+    }
   }
   .home {
     top: 0;
     right: 0;
+    &:hover {
+      right: -1px;
+    }
   }
 }
 
@@ -271,9 +300,7 @@ export default {
 .el-upload-dragger {
   width: 130px;
   height: 130px;
-  &:hover {
-    border-color: #e7e7e7;
-  }
+  border: none;
   &:focus {
     outline: none;
   }
@@ -293,5 +320,9 @@ export default {
   font-size: 13px;
   margin-top: 1rem;
   display: block;
+}
+.el-card,
+.el-message {
+  overflow: unset;
 }
 </style>

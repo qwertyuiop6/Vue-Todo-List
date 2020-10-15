@@ -4,12 +4,10 @@ import Vue from "vue";
 const estore = new Vue({
   data: {
     userInfo: { name: "guy", uid: 0, avatar: "" }
-    // loginStatus: false
   },
   created() {
-    this.$on("updateUser", ({ info, status }) => {
-      this.userInfo = info;
-      // this.loginStatus = status;
+    this.$on("setUserState", ({ userInfo }) => {
+      this.userInfo = userInfo;
     });
   },
   computed: {
