@@ -285,6 +285,9 @@ export default {
       //   uid: userInfo.uid,
       //   loginStatus: this.loginStatus
       // });
+      if (!this.loginStatus && userInfo.uid > 0) {
+        this.$message.success(`Hi ${userInfo.name} ,Welcome to your todolist!`);
+      }
 
       const userState = { userInfo };
 
@@ -294,10 +297,6 @@ export default {
 
       // eventBus store
       this.$store.$emit("setUserState", userState);
-
-      if (this.loginStatus) {
-        this.$message.success(`Hi ${userInfo.name} ,Welcome to your todolist!`);
-      }
     },
 
     //注册

@@ -2,12 +2,20 @@
   <div class="user">
     <el-card class="box-card">
       <div v-if="!showUpload">
-        <el-image :alt="user.name" :src="avatar" @click="showUpload = true">
-          <div slot="error" class="image-slot">
-            <i class="el-icon-loading"></i>
-          </div>
-          <div slot="placeholder" class="image-slot"><i class="el-icon-loading"></i></div>
-        </el-image>
+        <el-tooltip
+          open-delay="800"
+          class="item"
+          effect="dark"
+          content="点击更换头像"
+          placement="right"
+        >
+          <el-image :alt="user.name" :src="avatar" @click="showUpload = true">
+            <div slot="error" class="image-slot">
+              <i class="el-icon-loading"></i>
+            </div>
+            <div slot="placeholder" class="image-slot"><i class="el-icon-loading"></i></div>
+          </el-image>
+        </el-tooltip>
         <span class="name">{{ name }}</span>
         <div
           class="input"
@@ -28,7 +36,6 @@
           :http-request="uploadAvatar"
         >
           <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-          <!-- <i v-else class="el-icon-plus avatar-uploader-icon"></i> -->
           <i v-else class="el-icon-upload"></i>
         </el-upload>
         <div v-if="upSuccess">

@@ -4,7 +4,7 @@
       Hi!
       <el-tooltip
         v-if="user.uid"
-        open-delay.number="400"
+        open-delay="500"
         class="item"
         effect="dark"
         content="查看个人资料"
