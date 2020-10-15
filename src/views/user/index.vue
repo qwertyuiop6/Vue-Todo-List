@@ -6,33 +6,38 @@
           <div slot="error" class="image-slot">
             <i class="el-icon-loading"></i>
           </div>
-          <!-- <div slot="placeholder" class="image-slot">加载中<span class="dot">...</span></div> -->
+          <div slot="placeholder" class="image-slot"><i class="el-icon-loading"></i></div>
         </el-image>
-        <span class="name">{{ user.name }}</span>
-        <div class="input" ref="input" contenteditable @blur="updateStatus">{{ status }}</div>
+        <span class="name">{{ name }}</span>
+        <div class="input" ref="input" contenteditable @blur="updateStatus" @focus="x">
+          {{ status || "八千里路云和月" }}
+        </div>
       </div>
       <div v-else>
         <el-upload
           class="avatar-uploader"
-          action="https://jsonplaceholder.typicode.com/posts/"
+          action="/api/user/avatar"
+          :headers="uploadHeader"
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"
+          drag
         >
           <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          <!-- <i v-else class="el-icon-plus avatar-uploader-icon"></i> -->
+          <i v-else class="el-icon-upload"></i>
         </el-upload>
         <div v-if="upSuccess">
           <el-button size="mini" type="primary" style="margin-top:1rem"
             >设为头像 <i class="el-icon-picture-outline-round"></i
           ></el-button>
         </div>
-        <span class="tip" v-else>点击上传头像,不大于5M</span>
+        <span class="tip" v-else>点击或者拖拽以上传头像,不大于5M</span>
       </div>
-      <el-button @click="to('back')" class="back" size="mini"
+      <el-button @click="to('back')" class="to back" size="mini"
         ><i class="el-icon-back"></i
       ></el-button>
-      <el-button @click="to('home')" class="home" size="mini"
+      <el-button @click="to('home')" class="to home" size="mini"
         ><i class="el-icon-s-home"></i
       ></el-button>
     </el-card>
@@ -44,8 +49,10 @@ export default {
   data: () => ({
     avatar: "",
     status: "",
+    name: "",
     showUpload: false,
     imageUrl: "",
+    uploadHeader: { authorization: `Bearer ${localStorage.getItem("accessToken")}` },
     upSuccess: false
   }),
   created() {
@@ -56,19 +63,37 @@ export default {
       return this.$store.userInfo;
     }
   },
+  directives: {
+    placeholder: {
+      bind: function(el, binding) {
+        if (typeof binding.value !== "string") return;
+        el.textContent = binding.value;
+        el.style.display = "none";
+      },
+      update: function(el, binding) {
+        // if (typeof binding.value !== "string") return;
+        // console.log(binding.value);
+        if (binding.value?.trim().length) {
+          el.textContent = binding.value;
+        }
+        el.style.display = "unset";
+      }
+    }
+  },
   methods: {
     getUserData() {
       const uid = this.$route.params.uid;
       this.$api.user.get({ uid }).then(res => {
-        this.status = res.data.status;
-        this.avatar = res.data.avatar;
+        Object.assign(this, res.data);
       });
     },
     updateStatus() {
       const status = this.$refs.input.textContent;
       this.$api.user
         .update({ status })
-        .then(res => {})
+        .then(res => {
+          this.status = status;
+        })
         .catch(err => console.log(err.response));
     },
     //预检图像信息
@@ -92,8 +117,11 @@ export default {
     to(dest = "back") {
       if (dest === "back") {
         if (this.showUpload) this.showUpload = false;
-        else this.$router.push("/");
+        else this.$router.go(-1);
       } else if (dest === "home") this.$router.push("/");
+    },
+    x() {
+      this.$refs.input.textContent = this.status;
     }
   }
 };
@@ -126,9 +154,9 @@ export default {
     transform: translateX(-50%);
     position: absolute;
     left: 50%;
-    top: 65%;
+    top: 66%;
     font-size: 14px;
-    color: #474747;
+    color: #777;
     font-family: monospace;
     width: 65%;
     padding: 8px;
@@ -145,14 +173,19 @@ export default {
       outline: none;
       // border: 1px solid rgb(168, 168, 168);
       background: #c8c8c86b;
-      transition: 0.5s;
+      // transition: 0.5s;
       // text-indent: -50%;
     }
   }
-  .back,
-  .home {
+  .to {
     position: absolute;
     border: unset;
+    &:hover,
+    &:focus {
+      color: #6e6e6e;
+      background-color: #e9e9e9;
+      font-size: 15px;
+    }
   }
   .back {
     top: 0;
@@ -161,12 +194,6 @@ export default {
   .home {
     top: 0;
     right: 0;
-  }
-  .el-button:focus,
-  .el-button:hover {
-    color: #6e6e6e;
-    background-color: #e9e9e9;
-    font-size: 15px;
   }
 }
 
@@ -199,9 +226,12 @@ export default {
   position: relative;
   overflow: hidden;
   transition: 0.3s;
-}
-.avatar-uploader .el-upload:hover {
-  border: 1px dashed #3c3c3c;
+  &:hover {
+    border: 1px dashed #389fff;
+    .el-icon-upload {
+      color: #4aa1ff;
+    }
+  }
 }
 .avatar-uploader-icon {
   font-size: 28px;
@@ -210,6 +240,21 @@ export default {
   height: 130px;
   line-height: 130px;
   text-align: center;
+}
+.el-upload-dragger {
+  width: 130px;
+  height: 130px;
+  &:hover {
+    border-color: #e7e7e7;
+  }
+  &:focus {
+    outline: none;
+  }
+  .el-icon-upload {
+    transition: 0.3s;
+    font-size: 2rem;
+    color: #cccccc;
+  }
 }
 .avatar {
   width: 130px;

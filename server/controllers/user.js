@@ -66,10 +66,16 @@ async function updateUserData(ctx) {
   ctx.status = 200;
 }
 
+async function updateUserAvatar(ctx) {
+  console.log(ctx.request.body, ctx.request.files);
+  ctx.status = 200;
+}
+
 module.exports = {
   login,
   register,
   checkName,
   getUserData,
-  updateUserData
+  updateUserData,
+  updateUserAvatar
 };

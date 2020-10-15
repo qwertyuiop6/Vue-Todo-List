@@ -45,6 +45,24 @@
   resolved "https://registry.npm.taobao.org/@types/color-name/download/@types/color-name-1.1.1.tgz?cache=0&sync_timestamp=1588199606687&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fcolor-name%2Fdownload%2F%40types%2Fcolor-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha1-HBJhu+qhCoBVu8XYq4S3sq/IRqA=
 
+"@types/events@*":
+  version "3.0.0"
+  resolved "https://registry.npm.taobao.org/@types/events/download/@types/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
+  integrity sha1-KGLz9Yqaf3w+eNefEw3U1xwlwqc=
+
+"@types/formidable@^1.0.31":
+  version "1.0.31"
+  resolved "https://registry.npm.taobao.org/@types/formidable/download/@types/formidable-1.0.31.tgz?cache=0&sync_timestamp=1596848219855&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fformidable%2Fdownload%2F%40types%2Fformidable-1.0.31.tgz#274f9dc2d0a1a9ce1feef48c24ca0859e7ec947b"
+  integrity sha1-J0+dwtChqc4f7vSMJMoIWefslHs=
+  dependencies:
+    "@types/events" "*"
+    "@types/node" "*"
+
+"@types/node@*":
+  version "14.11.8"
+  resolved "https://registry.npm.taobao.org/@types/node/download/@types/node-14.11.8.tgz#fe2012f2355e4ce08bca44aeb3abbb21cf88d33f"
+  integrity sha1-/iAS8jVeTOCLykSus6u7Ic+I0z8=
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.npm.taobao.org/abbrev/download/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -291,6 +309,16 @@ cluster-key-slot@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npm.taobao.org/cluster-key-slot/download/cluster-key-slot-1.1.0.tgz#30474b2a981fb12172695833052bc0d01336d10d"
   integrity sha1-MEdLKpgfsSFyaVgzBSvA0BM20Q0=
+
+co-body@^5.1.1:
+  version "5.2.0"
+  resolved "https://registry.npm.taobao.org/co-body/download/co-body-5.2.0.tgz#5a0a658c46029131e0e3a306f67647302f71c124"
+  integrity sha1-WgpljEYCkTHg46MG9nZHMC9xwSQ=
+  dependencies:
+    inflation "^2.0.0"
+    qs "^6.4.0"
+    raw-body "^2.2.0"
+    type-is "^1.6.14"
 
 co-body@^6.0.0:
   version "6.0.0"
@@ -619,6 +647,11 @@ fill-range@^7.0.1:
   integrity sha1-GRmmp8df44ssfHflGYU12prN2kA=
   dependencies:
     to-regex-range "^5.0.1"
+
+formidable@^1.1.1:
+  version "1.2.2"
+  resolved "https://registry.npm.taobao.org/formidable/download/formidable-1.2.2.tgz#bf69aea2972982675f00865342b982986f6b8dd9"
+  integrity sha1-v2muopcpgmdfAIZTQrmCmG9rjdk=
 
 fresh@~0.5.2:
   version "0.5.2"
@@ -1053,6 +1086,15 @@ kind-of@^3.0.2:
   integrity sha1-MeohpzS6ubuw8yRm2JOupR5KPGQ=
   dependencies:
     is-buffer "^1.1.5"
+
+koa-body@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.npm.taobao.org/koa-body/download/koa-body-4.2.0.tgz#37229208b820761aca5822d14c5fc55cee31b26f"
+  integrity sha1-NyKSCLggdhrKWCLRTF/FXO4xsm8=
+  dependencies:
+    "@types/formidable" "^1.0.31"
+    co-body "^5.1.1"
+    formidable "^1.1.1"
 
 koa-bodyparser@^4.3.0:
   version "4.3.0"
@@ -1682,12 +1724,12 @@ pupa@^2.0.1:
   dependencies:
     escape-goat "^2.0.0"
 
-qs@^6.5.2, qs@^6.9.4:
+qs@^6.4.0, qs@^6.5.2, qs@^6.9.4:
   version "6.9.4"
   resolved "https://registry.npm.taobao.org/qs/download/qs-6.9.4.tgz#9090b290d1f91728d3c22e54843ca44aea5ab687"
   integrity sha1-kJCykNH5FyjTwi5UhDykSupatoc=
 
-raw-body@^2.3.3:
+raw-body@^2.2.0, raw-body@^2.3.3:
   version "2.4.1"
   resolved "https://registry.npm.taobao.org/raw-body/download/raw-body-2.4.1.tgz#30ac82f98bb5ae8c152e67149dac8d55153b168c"
   integrity sha1-MKyC+Yu1rowVLmcUnayNVRU7Fow=
@@ -1977,7 +2019,7 @@ type-fest@^0.8.1:
   resolved "https://registry.npm.taobao.org/type-fest/download/type-fest-0.8.1.tgz?cache=0&sync_timestamp=1591686867009&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Ftype-fest%2Fdownload%2Ftype-fest-0.8.1.tgz#09e249ebde851d3b1e48d27c105444667f17b83d"
   integrity sha1-CeJJ696FHTseSNJ8EFREZn8XuD0=
 
-type-is@^1.6.16:
+type-is@^1.6.14, type-is@^1.6.16:
   version "1.6.18"
   resolved "https://registry.npm.taobao.org/type-is/download/type-is-1.6.18.tgz#4e552cd05df09467dcbc4ef739de89f2cf37c131"
   integrity sha1-TlUs0F3wlGfcvE73Od6J8s83wTE=

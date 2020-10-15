@@ -2,7 +2,7 @@
   <div style="min-width:900px">
     <img class="logo" alt="Vue logo" src="@/assets/logo.png" />
     <!-- <router-view></router-view> -->
-    <todo-list title="Todo List" :login="login"></todo-list>
+    <todo-list title="Todo List"></todo-list>
   </div>
 </template>
 

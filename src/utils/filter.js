@@ -35,6 +35,7 @@ axios.interceptors.response.use(
         // location.reload();
         router.push({ name: "Home", params: {} });
       }, 1000);
+      return;
     } else if (status >= 500) {
       Vue.prototype.$message.error("服务器出问题啦,请稍后重试");
       return;
