@@ -1,11 +1,16 @@
 let ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN;
 const tokenConf = require("../configs/token");
-if (process.env.NODE_ENV === "development") {
-  require("dotenv").config();
-  ({ ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN } = process.env);
-} else {
-  ({ ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN } = tokenConf); //已声明变量的对象解构赋值
-}
+// if (process.env.NODE_ENV === "development") {
+//   require("dotenv").config();
+//   ({ ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN } = process.env);
+// } else {
+({
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_SECRET,
+  ACCESS_TOKEN_EXPIRESIN,
+  ACCESS_TOKEN_REFRESH_TIME
+} = tokenConf); //已声明变量的对象解构赋值
+// }
 
 const jwt = require("jsonwebtoken");
 const Redis = require("ioredis");
@@ -29,10 +34,10 @@ async function authToken(ctx, next) {
       ctx.throw(403, "非法accessToken");
     }
 
-    if (user.exp < Math.floor(Date.now() / 1000) + 60 * 5) {
-      const { name, uid } = user;
+    if (user.exp - Math.floor(Date.now() / 1000) < parseInt(ACCESS_TOKEN_REFRESH_TIME) * 60) {
+      const { name, uid, avatar } = user;
       ctx.send("Token update", {
-        accessToken: generateAccessToken({ name, uid })
+        accessToken: generateAccessToken({ name, uid, avatar })
       });
       redis.lpush("blocklist", ctx.state.token);
     }

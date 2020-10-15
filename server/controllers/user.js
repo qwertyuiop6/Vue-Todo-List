@@ -1,7 +1,9 @@
 const users = require("../models/user");
 const encrypt = require("../utils/encrypt");
-
+const path = require("path");
 const { generateAccessToken } = require("../services/auth");
+const { uploadIMG } = require("../services/cos");
+const randomAvatar = require("../services/randomAvatar");
 
 async function login(ctx) {
   const { name, passwd } = ctx.request.body;
@@ -19,7 +21,8 @@ async function login(ctx) {
 
   const user = {
     name: data[0].name,
-    uid: data[0].id
+    uid: data[0].id,
+    avatar: data[0].avatar ?? randomAvatar()
   };
   const accessToken = generateAccessToken(user);
   ctx.send("登陆成功", { data: user, accessToken });
@@ -54,21 +57,25 @@ async function getUserData(ctx) {
       id,
       name,
       status,
-      avatar: avatar ?? require("../services/randomAvatar")()
+      avatar: avatar ?? randomAvatar()
     }
   });
 }
 
 async function updateUserData(ctx) {
   const { uid } = ctx.state.user;
-  const { status, avatar } = ctx.request.body;
-  await users.update({ status, uid });
+  const data = ctx.request.body;
+  await users.update(uid, data);
   ctx.status = 200;
 }
 
 async function updateUserAvatar(ctx) {
-  console.log(ctx.request.body, ctx.request.files);
-  ctx.status = 200;
+  // console.log(ctx.request.files.file);
+  const { hash, path: filepath, type, name, size } = ctx.request.files.file;
+  const filename = `${hash}${path.extname(name)}`;
+  await uploadIMG(filepath, "avatar/" + filename);
+  const avatarURL = "https://todo-1252371119.cos.ap-shanghai.myqcloud.com/avatar/" + filename;
+  ctx.send("文件上传成功", { data: { avatarURL }, status: 201 });
 }
 
 module.exports = {

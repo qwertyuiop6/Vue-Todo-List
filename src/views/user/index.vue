@@ -9,7 +9,13 @@
           <div slot="placeholder" class="image-slot"><i class="el-icon-loading"></i></div>
         </el-image>
         <span class="name">{{ name }}</span>
-        <div class="input" ref="input" contenteditable @blur="updateStatus" @focus="x">
+        <div
+          class="input"
+          ref="input"
+          contenteditable
+          @blur="updateUser({ status: $refs.input.textContent })"
+          @focus="$refs.input.textContent = status"
+        >
           {{ status || "八千里路云和月" }}
         </div>
       </div>
@@ -28,7 +34,11 @@
           <i v-else class="el-icon-upload"></i>
         </el-upload>
         <div v-if="upSuccess">
-          <el-button size="mini" type="primary" style="margin-top:1rem"
+          <el-button
+            @click="updateUser({ avatar: imageUrl })"
+            size="mini"
+            type="primary"
+            style="margin-top:1rem"
             >设为头像 <i class="el-icon-picture-outline-round"></i
           ></el-button>
         </div>
@@ -87,31 +97,47 @@ export default {
         Object.assign(this, res.data);
       });
     },
-    updateStatus() {
-      const status = this.$refs.input.textContent;
+    updateUser({ status, avatar }) {
+      // if (status===''){
+      //   status =
+      // }
+      const params = Object.assign(
+        {},
+        status !== undefined ? { status } : {},
+        avatar ? { avatar } : {}
+      );
+      console.log(params);
+
       this.$api.user
-        .update({ status })
+        .update(params)
         .then(res => {
-          this.status = status;
+          Object.assign(this, params);
+          if (avatar) {
+            this.showUpload = false;
+            this.avatar = avatar;
+          }
         })
         .catch(err => console.log(err.response));
     },
     //预检图像信息
     beforeAvatarUpload(file) {
-      // const isJPG = file.type === "image/jpeg";
+      const allowsType = ["jpeg", "png", "gif"];
+      const isAllow = !!allowsType.find(type => file.type.endsWith(type));
       const isLt5M = file.size / 1024 / 1024 < 5;
-      // if (!isJPG) {
-      //   this.$message.error("上传头像图片只能是 JPG 格式!");
-      // }
+      if (!isAllow) {
+        this.$message.error("上传头像只能是普通图片格式!(jpg,png,gif)");
+      }
       if (!isLt5M) {
         this.$message.error("上传头像图片大小不能超过 5MB!");
       }
-      return isLt5M;
+      return isAllow && isLt5M;
     },
     //成功
     handleAvatarSuccess(res, file) {
       this.$message.success("头像上传成功!");
-      this.imageUrl = URL.createObjectURL(file.raw);
+      // this.imageUrl = URL.createObjectURL(file.raw);
+      console.log(res);
+      this.imageUrl = res.data.avatarURL;
       this.upSuccess = true;
     },
     to(dest = "back") {
@@ -200,6 +226,7 @@ export default {
 .el-image {
   position: absolute;
   width: 100px;
+  height: 100px;
   border-radius: 50%;
   left: 50%;
   top: 10%;

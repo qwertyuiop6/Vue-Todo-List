@@ -16,12 +16,20 @@ function createUser(name, passwd, salt) {
 }
 
 function get({ name = null, uid = null }) {
-  if (name) return pool.query("select name,id,passwd,salt from public.user where name=$1", [name]);
+  if (name)
+    return pool.query("select name,id,passwd,salt,avatar from public.user where name=$1", [name]);
   return pool.query("select * from public.user where id=$1", [uid]);
 }
 
-function update({ status = null, uid = null }) {
-  return pool.query("update public.user set status=$2 where id=$1", [uid, status]);
+function update(uid, userData) {
+  const col = ["status", "avatar"];
+  const params = Object.keys(userData).filter(v => col.includes(v));
+  const setString = params.reduce((acc, p, i) => [...acc, p + "=$" + (i + 2)], []).join(",");
+  const sql = `update public.user set ${setString} where id=$1`;
+  const data = params.map(v => userData[v]);
+  const arr = [uid, ...data];
+  console.log(sql, arr);
+  return pool.query(sql, arr);
 }
 
 module.exports = {

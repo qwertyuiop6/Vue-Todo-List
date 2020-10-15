@@ -26,7 +26,7 @@ axios.interceptors.response.use(
     return Promise.resolve(res);
   },
   err => {
-    console.log(`请求响应错误:${err.response}`);
+    console.log("请求响应错误:", err.response);
     const { status, data } = err.response;
     if (status == 401) {
       Vue.prototype.$message.warning("登陆状态失效,请重新登录");

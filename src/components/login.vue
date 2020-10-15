@@ -12,6 +12,7 @@
         v-if="!loginStatus"
         @click="formVisible = true"
       ></el-button>
+      <!-- <img v-else :src="user.avatar" alt="" class="avatar" /> -->
       <el-button icon="el-icon-switch-button" circle v-else @click="logout()"></el-button>
     </el-tooltip>
 
@@ -203,6 +204,9 @@ export default {
     this.checkLoginStatus();
   },
   computed: {
+    user() {
+      return this.$store.userInfo;
+    },
     loginStatus() {
       // return this.$store.state.loginStatus;
       return this.$store.loginStatus; //eventBus
@@ -268,7 +272,7 @@ export default {
             .logout()
             .then(() => {
               localStorage.removeItem("accessToken");
-              this.updateUser({ name: "guy", uid: "" }, false);
+              this.updateUser({ name: "guy", uid: 0 }, false);
               this.$message("已退出登录~");
             })
             .catch(() => {});
