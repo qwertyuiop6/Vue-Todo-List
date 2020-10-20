@@ -160,7 +160,7 @@ export default {
                 // this.$message.success("发送"+value);
                 this.$axios
                   .get("/api/auth/checkName", { params: { name: value } })
-                  .then(res => {
+                  .then(() => {
                     callback();
                   })
                   .catch(err => {
@@ -242,8 +242,8 @@ export default {
         })
         .catch(err => {
           this.loginForm.doing = false;
-          console.log(err);
-          let { status, statusText: text, data } = err.response;
+          console.log(err.response);
+          let { status, statusText, data } = err.response;
           switch (status) {
             case 400:
               this.loginForm.nerror = data.error;
@@ -252,7 +252,7 @@ export default {
               this.loginForm.perror = data.error;
               break;
             default:
-              this.$message.error("服务器可能出问题啦,请稍后重试~" + text);
+              this.$message.error("服务器可能出问题啦,请稍后重试~" + statusText);
               break;
           }
         });
@@ -305,7 +305,7 @@ export default {
       this.regForm.nerror = "";
       this.$api.auth
         .register({ name, passwd })
-        .then(res => {
+        .then(() => {
           this.regForm.doing = false;
           this.$message.success("注册成功~,欢迎: " + name);
           this.DiaTab = "login";

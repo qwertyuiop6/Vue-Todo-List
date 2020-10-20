@@ -5,6 +5,7 @@ const path = require("path");
 const { timestamp2str: t2s } = require("../utils/date");
 
 const defaultLogPath = path.join(__dirname, "../logs");
+if (!fs.existsSync(defaultLogPath)) fs.mkdirSync(defaultLogPath);
 
 module.exports = options => async (ctx, next) => {
   const start = Date.now();

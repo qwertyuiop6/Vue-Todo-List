@@ -12,7 +12,7 @@ const config = require("./app.config");
 
 const app = new Koa(config.koa);
 
-// onerror(app);
+onerror(app);
 
 app
   .use(logger())

@@ -1,6 +1,5 @@
 const { pool } = require("./pg");
 
-//todo_list表操作
 function add(uid, { target, startDate, status, endDate }) {
   return pool.query(
     "INSERT INTO public.todo_list(id,uid, content,start_date,end_date,status) VALUES(nextval('todo_list_id_seq'), $1,$2,$3,$4,$5)",

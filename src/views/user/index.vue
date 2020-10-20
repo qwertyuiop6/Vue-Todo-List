@@ -134,7 +134,7 @@ export default {
     },
     uploadAvatar(params) {
       console.log(params);
-      this.beforeAvatarUpload(params.file);
+      if (!this.beforeAvatarUpload(params.file)) return;
 
       let form = new FormData();
       form.append("file", params.file);
