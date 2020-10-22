@@ -1,5 +1,8 @@
 const todos = require("../models/todo");
 
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
 async function get(ctx) {
   const { uid } = ctx.state.user;
   let { id } = ctx.params;
@@ -9,7 +12,17 @@ async function get(ctx) {
 
 async function add(ctx) {
   const { body: todo } = ctx.request;
-  await todos.add(ctx.state.user.uid, todo);
+  // await todos.add(ctx.state.user.uid, todo);
+  const createdTodo = await prisma.todo_list.create({
+    data: {
+      content: todo.target,
+      start_date: todo.startDate,
+      end_date: todo.endDate,
+      status: +todo.status,
+      user: { connect: { id: ctx.state.user.uid } }
+    }
+  });
+  // console.log(createdTodo);
   ctx.status = 201;
 }
 

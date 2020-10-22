@@ -28,6 +28,18 @@
   dependencies:
     vary "^1.1.2"
 
+"@prisma/cli@2.9.0":
+  version "2.9.0"
+  resolved "https://registry.npm.taobao.org/@prisma/cli/download/@prisma/cli-2.9.0.tgz#c6f6652890783b899f266537e90e69c3481f5474"
+  integrity sha1-xvZlKJB4O4mfJmU36Q5pw0gfVHQ=
+
+"@prisma/client@2.9.0":
+  version "2.9.0"
+  resolved "https://registry.npm.taobao.org/@prisma/client/download/@prisma/client-2.9.0.tgz#acfaca0c5695d7f439e5af54b7cd0f7fb5926340"
+  integrity sha1-rPrKDFaV1/Q55a9Ut80Pf7WSY0A=
+  dependencies:
+    pkg-up "^3.1.0"
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.npm.taobao.org/@sindresorhus/is/download/@sindresorhus/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
