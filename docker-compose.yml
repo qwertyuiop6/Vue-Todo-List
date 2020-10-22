@@ -1,0 +1,40 @@
+version: '3.7'
+services:
+  web:
+    build: .
+    image: todo-image
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/todos
+    volumes:
+      - ./data/logs:/usr/app/server/logs
+      - ./server/configs/db.js:/usr/app/server/configs/db.js
+      - ./server/prisma/schema.prisma:/usr/app/server/prisma/schema.prisma
+    ports:
+      - 8000:8000
+    restart: on-failure
+    container_name: todo-web
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: todos
+    volumes:
+      - ./data/pgdata:/var/lib/postgresql/data
+      - ./server/configs/sql:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+    restart: always
+    container_name: pg_db
+  redis:
+    image: redis:alpine
+    command: redis-server --requirepass redis_default_passwd
+    ports:
+      - 6379:6379
+    restart: always
+    volumes:
+      - ./data/redis_data:/data
+    container_name: redis_mem
