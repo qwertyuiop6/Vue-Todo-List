@@ -16,7 +16,7 @@ $ yarn
 # 总配置
 server/app.config.js
 # Pgsql导入数据库表
-server/configs/todolist.sql
+server/configs/sql/todos.sql
 # Pgsql和Redis配置
 server/configs/db.js
 # Jwt secret,expires配置
@@ -33,6 +33,11 @@ $ yarn build
 # 启动后台服务
 $ cd server
 $ yarn&&yarn start
+```
+
+### 使用 Docker-compose 直接部署启动
+```shell
+docker-compose up
 ```
 
 ## How Dev?
@@ -57,4 +62,5 @@ $ yarn dev
   - 日志: koa-logger + chalk
   - 存储,云: koa-body + cos-sdk(tx)
   - Other: check-fresh, Passwd Hash+Salt(crypto)
+- Build : Docker + Docker-compose
 - CI-CD : Git + [Vercel](https://vercel.com/)
