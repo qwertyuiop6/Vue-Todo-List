@@ -22,7 +22,6 @@ async function add(ctx) {
       user: { connect: { id: ctx.state.user.uid } }
     }
   });
-  // console.log(createdTodo);
   ctx.status = 201;
 }
 

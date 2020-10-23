@@ -137,7 +137,7 @@ export default {
       if (!this.beforeAvatarUpload(params.file)) return;
 
       let form = new FormData();
-      form.append("file", params.file);
+      form.append("avatar", params.file);
 
       this.$api.user
         .uploadAvatar(form)

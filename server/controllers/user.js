@@ -2,8 +2,8 @@ const users = require("../models/user");
 const encrypt = require("../utils/encrypt");
 const path = require("path");
 const { generateAccessToken } = require("../services/auth");
-const { uploadIMG } = require("../services/cos");
 const randomAvatar = require("../services/randomAvatar");
+const { uploadFile } = require("../services/cos");
 
 async function login(ctx) {
   const { name, passwd } = ctx.request.body;
@@ -11,7 +11,7 @@ async function login(ctx) {
   let result = await users.get({ name });
   const data = result.rows;
 
-  ctx.assert.ok(data.length, 400, "查无此人~");
+  ctx.assert.ok(data.length, 400, "查无此人~", { info: { name, passwd } });
   ctx.assert.strictEqual(
     encrypt(passwd, data[0].salt).passwd_hash,
     data[0].passwd,
@@ -71,10 +71,13 @@ async function updateUserData(ctx) {
 
 async function updateUserAvatar(ctx) {
   console.log(ctx.request.files);
-  const { hash, path: filepath, type, name, size } = ctx.request.files.file;
+  const { hash, path: filepath, name } = ctx.request.files.avatar;
   const filename = `${hash}${path.extname(name)}`;
-  await uploadIMG(filepath, "avatar/" + filename);
-  const avatarURL = "https://todo-1252371119.cos.ap-shanghai.myqcloud.com/avatar/" + filename;
+
+  const avatarURL = ctx.app.config.useCOS
+    ? await uploadFile(filepath, "avatar", filename)
+    : `/avatar/${filepath.split(path.sep).pop()}`;
+
   ctx.send("文件上传成功", { data: { avatarURL }, status: 201 });
 }
 
