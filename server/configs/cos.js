@@ -2,5 +2,9 @@ module.exports = {
   SecretId: "",
   SecretKey: "",
   Bucket: "",
-  Region: "ap-shanghai"
+  Region: "",
+  domain: "",
+  FilePath: {
+    avatar: "avatar"
+  }
 };
