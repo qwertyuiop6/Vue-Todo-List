@@ -1,11 +1,6 @@
 const chalk = require("chalk");
-const log = console.log;
-const fs = require("fs");
-const path = require("path");
 const { timestamp2str: t2s } = require("../utils/date");
-
-const defaultLogPath = path.join(__dirname, "../logs");
-if (!fs.existsSync(defaultLogPath)) fs.mkdirSync(defaultLogPath);
+const save2log=require('../utils/save2log')
 
 module.exports = options => async (ctx, next) => {
   const start = Date.now();
@@ -23,31 +18,20 @@ module.exports = options => async (ctx, next) => {
   const resBody = chalk.gray(JSON.stringify(ctx.body));
   const ms = Date.now() - start + "ms";
   const spendtime = chalk.blackBright(ms);
-  const size = chalk.blackBright(ctx.response.length + "-bytes");
+  const size = chalk.blackBright(ctx.response.length + "-b");
   const showline = `User[${user}]<${username}>\n  ${chalk.blackBright(
     "-->"
   )} ${method} ${url} ${reqBody}\n ${chalk.blackBright(" <--")} ${status} ${spendtime} ${
     ctx.response.length ? size : ""
   } ${ctx.body ? "body: " + resBody : ""} `;
-  log(showline);
-
-  const logline = `${t2s(start)}: User[${uid}](${name}) REQ: -->${ctx.method} ${
-    ctx.url
-  } ${JSON.stringify(ctx.request.body)} <-- RES: ${ctx.status} ${
-    ctx.body ? JSON.stringify(ctx.body) : ""
-  } ${ms} ${ctx.headers["content-length"] + "b"}\n`;
-
+  console.log(showline);
+  
   if (options.save) {
-    save2file("todo", options.logPath ?? defaultLogPath, logline);
+    const logline = `${t2s(start)}: User[${uid}](${name}) REQ: -->${ctx.method} ${
+      ctx.url
+    } ${JSON.stringify(ctx.request.body)} <-- RES: ${ctx.status} ${
+      ctx.body ? JSON.stringify(ctx.body) : ""
+    } ${ms} ${ctx.response.length + "-bytes"}\n`;
+    save2log(options.logPath ?? ctx.app.config.logPath,"todo",logline);
   }
 };
-
-function save2file(name, path, line) {
-  const d = new Date();
-  let filename =
-    path + "/" + name + d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + ".log";
-
-  fs.writeFile(filename, line, { flag: "a" }, err => {
-    if (err) console.log(err);
-  });
-}
