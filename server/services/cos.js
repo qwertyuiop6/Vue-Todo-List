@@ -1,23 +1,20 @@
 require("dotenv").config();
 const fs = require("fs");
 const COS = require("cos-nodejs-sdk-v5");
-const cos = require("../configs/cos");
+const cfg = require("../configs/cos");
 const cloud = new COS({
-  SecretId: cos.SecretId,
-  SecretKey: cos.SecretKey
+  SecretId: cfg.SecretId,
+  SecretKey: cfg.SecretKey
 });
 
-function uploadIMG(path, name) {
-  // const Key = path
-  //   .split(path.sep)
-  //   .slice(-2)
-  //   .join("/");
+function uploadFile(path, type, name) {
+  const Key=`${cfg.FilePath[type]}/${name}`
   return new Promise((res, rej) => {
     cloud.putObject(
       {
-        Bucket: cos.Bucket,
-        Region: cos.Region,
-        Key: name,
+        Bucket: cfg.Bucket,
+        Region: cfg.Region,
+        Key,
         StorageClass: "STANDARD",
         Body: fs.createReadStream(path), // 上传文件对象
         onProgress: function(progressData) {
@@ -26,13 +23,13 @@ function uploadIMG(path, name) {
       },
       function(err, data) {
         if (err) rej(err);
-        console.log("[TX云COS]上传成功-> " + name);
-        res(name);
+        console.log("[TX云COS]上传成功-> " + Key);
+        res(`${cfg.domain}/${Key}`);
       }
     );
   });
 }
 
 module.exports = {
-  uploadIMG
+  uploadFile
 };
