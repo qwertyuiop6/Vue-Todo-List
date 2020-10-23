@@ -1,10 +1,5 @@
 const path = require("path");
-
-function addEtag(res, path, stats) {
-  res.setHeader("Etag", `W/"${stats.size}-${stats.mtime.getTime()}"`);
-}
-
-function saveFile(name, file) {}
+const fs = require("fs");
 
 module.exports = {
   port: 8000,
@@ -18,22 +13,38 @@ module.exports = {
     setHeaders: addEtag //设置Etag协商缓存
   },
   bodyParser: {
-    // enableTypes: ["json", "form", "text"]
     multipart: true,
     formidable: {
-      // uploadDir: "./files",
+      uploadDir: "files", //本地文件保存路径
       keepExtensions: true,
-      hash: "sha1",
+      hash: "sha256",
       onFileBegin: saveFile
     }
   },
   cors: {
     origin: function(ctx) {
-      return "*";
+      return "*"; //配置跨域
     },
     credentials: true,
     allowMethods: ["GET", "POST", "DELETE", "PATCH", "PUT"],
     allowHeaders: ["authorization", "Content-Type"],
     maxAge: 86400 //24-hours
-  }
+  },
+  logPath: "logs", //日志路径
+  useCOS: false // 是否使用云对象存储
 };
+
+//静态文件设置E-tag
+function addEtag(res, path, stats) {
+  res.setHeader("Etag", `W/"${stats.size}-${stats.mtime.getTime()}"`);
+}
+
+function saveFile(name, file) {
+  // console.log(name, file);
+  const pathSplit = file.path.split(path.sep);
+  const uploadName = pathSplit.pop();
+  const filePath = pathSplit.concat(name).join(path.sep);
+  if (!fs.existsSync(filePath)) fs.mkdirSync(filePath, { recursive: true });
+  // file.path = file.path.replace(/upload_[1-9a-z]+/i, path.join(name, hash));
+  file.path = path.join(filePath, uploadName);
+}
