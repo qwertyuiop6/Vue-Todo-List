@@ -124,7 +124,7 @@
                 ></el-button>
 
                 <el-popconfirm
-                  style="margin-left:10px"
+                  style="margin-left: 10px"
                   confirmButtonText="删了"
                   cancelButtonText="不了"
                   icon="el-icon-info"
@@ -165,18 +165,19 @@
   .input-textarea {
     box-sizing: content-box;
     max-height: 110px;
-    overflow-y: auto;
+    overflow: hidden;
     padding: 5px;
     border: 1px solid transparent;
     background: transparent;
     border-radius: 5px;
     transition: 0.3s;
     &:hover {
+      overflow: auto;
       border: 1px solid #ededed;
       background: rgba(255, 255, 255, 0.74);
     }
     &:focus {
-      border: 1px solid #d9d9d9;
+      border: 1px solid #a2a2a2;
       outline: none;
     }
   }
@@ -196,7 +197,7 @@ export default {
     // tableData: Array
   },
   components: {
-    todoInput
+    todoInput,
   },
   data() {
     return {
@@ -208,16 +209,16 @@ export default {
           img: "el-icon-more",
           text: "进行中",
           toggleStatus: 1,
-          toggle: "完成！"
+          toggle: "完成！",
         },
         {
           img: "el-icon-success",
           text: "已完成",
           toggleStatus: 0,
-          toggle: "还原"
-        }
+          toggle: "还原",
+        },
       ],
-      todoDoneStyle: { margin: "6px", display: "block", "text-decoration": "line-through" }
+      todoDoneStyle: { margin: "6px", display: "block", "text-decoration": "line-through" },
     };
   },
   created() {
@@ -228,19 +229,19 @@ export default {
       return this.$store.loginStatus;
     },
     ingTodoData() {
-      return this.todoData.filter(v => v.status === 0);
+      return this.todoData.filter((v) => v.status === 0);
     },
     doneTodoData() {
-      return this.todoData.filter(v => v.status === 1);
+      return this.todoData.filter((v) => v.status === 1);
     },
     tableData() {
       return this.activeTab === "ing" ? this.ingTodoData : this.doneTodoData;
-    }
+    },
   },
   watch: {
     loginStatus(n, o) {
       if (o === false && n === true) this.loadTable();
-    }
+    },
   },
   methods: {
     //加载todolist表格数据
@@ -266,7 +267,7 @@ export default {
 
     //将本地离线创建的无IDtodo 同步到server
     getLocalChangedTodo(LocalTodoList, tasks = []) {
-      LocalTodoList.forEach(todo => {
+      LocalTodoList.forEach((todo) => {
         if (!Object.prototype.hasOwnProperty.call(todo, "id")) {
           tasks.push(this.$api.todo.add(todo));
         }
@@ -283,12 +284,12 @@ export default {
     async getTodolist() {
       let res = await this.$api.todo.getAll();
       this.loading = false;
-      let list = res.data.map(ele => ({
+      let list = res.data.map((ele) => ({
         startDate: ele.start_date,
         target: ele.content,
         endDate: ele.end_date,
         status: ele.status,
-        id: ele.id
+        id: ele.id,
       }));
       return list.sort((a, b) => a.id - b.id);
     },
@@ -302,7 +303,7 @@ export default {
             this.$message.success("添加成功~");
             this.refreshTodoList();
           })
-          .catch(err => {
+          .catch((err) => {
             this.$message.error("添加失败,请重试");
           });
       } else {
@@ -315,7 +316,7 @@ export default {
       this.$confirm("你还没有完成这个Todo，确定删除吗?", "FBI Warnning!!", {
         confirmButableDataonText: "确定!",
         cancelButableDataonText: "取消~",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           this.delTodo(index, id);
@@ -334,7 +335,7 @@ export default {
           .then(() => {
             this.$message.success("删除成功!");
           })
-          .catch(err => {
+          .catch((err) => {
             this.tableData.splice(index, 0, ...delTodo);
             console.log(err);
             return;
@@ -379,7 +380,7 @@ export default {
     updateLocalTodoList() {
       this.todoData = [...this.ingTodoData, ...this.doneTodoData];
       localStorage.setItem("todolist", JSON.stringify(this.todoData));
-    }
-  }
+    },
+  },
 };
 </script>

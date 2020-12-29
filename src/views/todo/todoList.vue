@@ -24,7 +24,7 @@
     <div class="loginComp">
       <login title="登录/注册"></login>
     </div>
-    <todo-table ref="todoTable"></todo-table>
+    <todo-table></todo-table>
   </div>
 </template>
 
@@ -100,12 +100,12 @@ export default {
   props: {
     title: {
       type: String,
-      default: "Todo List"
-    }
+      default: "Todo List",
+    },
   },
   components: {
     login,
-    todoTable
+    todoTable,
   },
   data: () => ({}),
   created() {},
@@ -113,8 +113,8 @@ export default {
     user() {
       // return this.$store.state.user; //vuex
       return this.$store.userInfo; //eventBus
-    }
+    },
   },
-  methods: {}
+  methods: {},
 };
 </script>
