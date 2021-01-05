@@ -10,7 +10,7 @@
     "build:vercel": "vue-cli-service build --mode='vercel'"
   },
   "dependencies": {
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "element-ui": "^2.8.2",
     "js-cookie": "^2.2.0",
