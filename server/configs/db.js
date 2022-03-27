@@ -1,16 +1,16 @@
 module.exports = {
   pgsql: {
-    host: "postgres",
+    host: "db.wtfk.fun",
     port: 5432,
-    database: "todos",
-    user: "postgres",
-    password: "postgres"
+    database: "study",
+    user: "wxs",
+    password: "wxs123",
   },
   redis: {
     port: 6379,
-    host: "redis",
+    host: "db.wtfk.fun",
     family: 4,
     db: "0",
-    password: "redis_default_passwd"
-  }
+    password: "!@#$%^&_wxs_(qwert*yuiop)butterfly",
+  },
 };
