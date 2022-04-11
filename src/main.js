@@ -21,7 +21,7 @@ Vue.config.devtools = true;
 new Vue({
   router,
   // store,
-  render: h => h(App)
+  render: (h) => h(App),
 }).$mount("#app");
 
 console.log(`欢迎使用${process.env.VUE_APP_NAME},Version:${process.env.VUE_APP_VER}`);

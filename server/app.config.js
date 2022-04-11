@@ -22,7 +22,7 @@ module.exports = {
     },
   },
   cors: {
-    origin: function (ctx) {
+    origin: function () {
       return "*"; //配置跨域
     },
     credentials: true,
