@@ -19,13 +19,13 @@ app
   .use(require("./middlewares/myutils")())
   .use(require("./middlewares/checkFresh")())
   .use(cors(config.cors))
-  .use(serve(path.resolve("../dist"), config.static))
-  .use(serve("./files"), config.static)
+  .use(serve(path.resolve(__dirname, "../dist"), config.static))
+  .use(serve(path.resolve(__dirname, "./uploads"), config.static))
   .use(body(config.bodyParser))
   .use(router.routes())
   .use(
     views(`${__dirname}/views`, {
-      extension: "pug"
+      extension: "pug",
     })
   )
   .use(handleNotFound)

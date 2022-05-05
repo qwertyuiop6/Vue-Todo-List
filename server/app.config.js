@@ -15,7 +15,7 @@ module.exports = {
   bodyParser: {
     multipart: true,
     formidable: {
-      uploadDir: "files", //本地文件保存路径
+      uploadDir: path.resolve(__dirname, "./uploads"), //本地文件保存路径
       keepExtensions: true,
       hash: "sha256",
       onFileBegin: saveFile,
@@ -30,7 +30,7 @@ module.exports = {
     allowHeaders: ["authorization", "Content-Type"],
     maxAge: 86400, //24-hours
   },
-  logPath: "logs", //日志路径
+  logPath: path.resolve(__dirname, "./logs"), //日志路径
   useCOS: false, // 是否使用云对象存储
 };
 

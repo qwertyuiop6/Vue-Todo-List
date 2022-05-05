@@ -3,6 +3,7 @@ node_modules
 /dist
 demo
 data
+uploads
 
 # local env files
 .env.local
