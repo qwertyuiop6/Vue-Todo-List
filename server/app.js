@@ -40,6 +40,7 @@ async function errorHandle(err, ctx) {
   console.log("interal error: ", err);
   if (process.env.NODE_ENV !== "development") {
     require("./utils/save2log")(config.logPath, "error", err);
+    ctx.send("出错啦~");
   }
 }
 
