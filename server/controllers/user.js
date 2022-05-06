@@ -1,4 +1,7 @@
-const users = require("../models/user");
+// const users = require("../models/user");
+
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 const encrypt = require("../utils/encrypt");
 const path = require("path");
 const { generateAccessToken } = require("../services/auth");
@@ -8,21 +11,16 @@ const { uploadFile } = require("../services/cos");
 async function login(ctx) {
   const { name, passwd } = ctx.request.body;
 
-  let result = await users.get({ name });
-  const data = result.rows;
+  // let result = await users.get({ name });
+  const result = await prisma.user.findFirst({ where: { name } });
 
-  ctx.assert.ok(data.length, 400, "查无此人~", { info: { name, passwd } });
-  ctx.assert.strictEqual(
-    encrypt(passwd, data[0].salt).passwd_hash,
-    data[0].passwd,
-    403,
-    "密码错误~"
-  );
+  ctx.assert.ok(result, 400, "查无此人~", { info: { name, passwd } });
+  ctx.assert.strictEqual(encrypt(passwd, result.salt).passwd_hash, result.passwd, 403, "密码错误~");
 
   const user = {
-    name: data[0].name,
-    uid: data[0].id,
-    avatar: data[0].avatar ?? randomAvatar()
+    name: result.name,
+    uid: result.id,
+    avatar: result.avatar ?? randomAvatar(),
   };
   const accessToken = generateAccessToken(user);
   ctx.send("登陆成功", { data: user, accessToken });
@@ -31,41 +29,46 @@ async function login(ctx) {
 async function register(ctx) {
   const { name, passwd } = ctx.request.body;
 
-  let res = await users.get({ name });
-  ctx.assert(!res.rows.length, 403, "该用户名已被使用!");
+  // let res = await users.get({ name });
+  const res = await prisma.user.findMany({ where: { name } });
+  ctx.assert(!res.length, 403, `${name} 已被使用!`);
 
+  // await users.createUser(name, passwd_hash, salt);
   const { passwd_hash, salt } = encrypt(passwd);
-  await users.createUser(name, passwd_hash, salt);
+  await prisma.user.create({ data: { name, passwd: passwd_hash, salt } });
+
   ctx.send("注册成功");
 }
 
 async function checkName(ctx) {
   const { name } = ctx.request.query;
-  let res = await users.get({ name });
-  ctx.assert(!res.rows.length, 403, "该用户名已被使用!");
+  // let res = await users.get({ name });
+  const res = await prisma.user.findFirst({ where: { name } });
+  ctx.assert(!res, 403, `${name} 已被使用!`);
   ctx.status = 200;
 }
 
 async function getUserData(ctx) {
   const { uid } = ctx.query;
-  // ctx.assert(ctx.state.user.uid, uid, 403);
-  let result = await users.get({ uid });
-  const { id, name, status, avatar } = result.rows[0];
+  // let result = await users.get({ uid });
+  const result = await prisma.user.findUnique({ where: { id: +uid } });
+  const { id, name, status, avatar } = result;
 
   ctx.send("获取到用户信息", {
     data: {
       uid: id,
       name,
       status,
-      avatar: avatar ?? randomAvatar()
-    }
+      avatar: avatar ?? randomAvatar(),
+    },
   });
 }
 
 async function updateUserData(ctx) {
   const { uid } = ctx.state.user;
   const data = ctx.request.body;
-  await users.update(uid, data);
+  // await users.update(uid, data);
+  await prisma.user.update({ where: { id: uid }, data });
   ctx.status = 200;
 }
 
@@ -87,5 +90,5 @@ module.exports = {
   checkName,
   getUserData,
   updateUserData,
-  updateUserAvatar
+  updateUserAvatar,
 };
