@@ -7,25 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model todo_list {
-  status      Int
+model Todo {
+  id          Int        @id @default(autoincrement())
   uid         Int
-  id          Int     @id @default(autoincrement())
-  content     String
-  start_date  String?
-  end_date    String?
-  last_update String?
-  user        user    @relation(fields: [uid], references: [id])
+  content     String     
+  complete    Boolean    @default(false)
+  createAt    DateTime   @default(now()) @db.Timestamptz(0)
+  deadlineAt  DateTime?  @db.Date
+  updateAt    DateTime   @updatedAt @db.Timestamptz(0)
+  User        User       @relation(fields: [uid], references: [id])
 }
 
-model user {
-  name        String
-  passwd      String
+model User {
   id          Int         @id @default(autoincrement())
-  create_date String?
-  last_update String?
-  salt        String?
+  name        String      @unique  
+  passwd      String      
+  salt        String
+  createAt    DateTime    @default(now()) @db.Timestamptz(0)
+  updateAt    DateTime    @updatedAt @db.Timestamptz(0)
   status      String?
   avatar      String?
-  todo_list   todo_list[]
+  Todo        Todo[]
 }
