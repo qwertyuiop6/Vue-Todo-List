@@ -1,5 +1,5 @@
 <template>
-  <div style="min-width:900px">
+  <div style="min-width: 900px">
     <img class="logo" alt="Vue logo" src="@/assets/logo.png" />
     <!-- <router-view></router-view> -->
     <todo-list title="Todo List"></todo-list>
@@ -10,10 +10,10 @@
 import todoList from "./todo/todoList.vue";
 
 export default {
-  name: "home",
+  name: "AppHome",
   components: {
-    todoList
-  }
+    todoList,
+  },
 };
 </script>
 

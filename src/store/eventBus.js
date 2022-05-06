@@ -3,7 +3,7 @@ import Vue from "vue";
 
 const estore = new Vue({
   data: {
-    userInfo: { name: "guy", uid: 0, avatar: "" }
+    userInfo: { name: "guy", uid: 0, avatar: "" },
   },
   created() {
     this.$on("setUserState", ({ userInfo }) => {
@@ -13,12 +13,12 @@ const estore = new Vue({
   computed: {
     loginStatus() {
       return this.userInfo.uid > 0;
-    }
-  }
+    },
+  },
 });
 
 //1.提供一个安装方法,以插件形式注册
-estore.install = (Vue, opts) => {
+estore.install = (Vue) => {
   Vue.prototype.$store = estore;
 };
 

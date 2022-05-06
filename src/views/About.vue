@@ -8,3 +8,8 @@
     <h2>PostgreSQL+pg+Base-DML+Redis</h2>
   </div>
 </template>
+<script>
+export default {
+  name: "AppAbout",
+};
+</script>

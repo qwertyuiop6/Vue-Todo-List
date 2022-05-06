@@ -4,26 +4,28 @@
       Hi!
       <el-tooltip
         v-if="user.uid"
-        open-delay="500"
+        :open-delay="300"
         class="item"
         effect="dark"
         content="查看个人资料"
         placement="top"
       >
-        <router-link :to="{ name: 'user', params: { uid: user.uid } }" class="name">{{
+        <router-link :to="{ name: 'User', params: { uid: user.uid } }" class="name">{{
           user.name
         }}</router-link>
       </el-tooltip>
       <span v-else>{{ user.name }}</span> , This is your {{ title }}!
       <i class="el-icon-s-order"></i>
     </p>
-    <el-tooltip class="avatar" content="查看个人资料" placement="bottom">
+
+    <el-tooltip class="avatar" content="查看个人资料" placement="bottom" :open-delay="300">
       <img v-if="user.uid" @click="$router.push(`user/${user.uid}`)" :src="user.avatar" alt="" />
     </el-tooltip>
-    <!-- <todo-login title="登录/注册" @userStatusChange="setUserInfo" class="loginComp"></todo-login> -->
+
     <div class="loginComp">
-      <login title="登录/注册"></login>
+      <login-form title="登录/注册"></login-form>
     </div>
+
     <todo-table></todo-table>
   </div>
 </template>
@@ -92,11 +94,10 @@
 </style>
 
 <script>
-import login from "@/components/login.vue";
+import loginForm from "@/components/loginForm.vue";
 import todoTable from "@/components/todoTable.vue";
 
 export default {
-  name: "todoList",
   props: {
     title: {
       type: String,
@@ -104,7 +105,7 @@ export default {
     },
   },
   components: {
-    login,
+    loginForm,
     todoTable,
   },
   data: () => ({}),

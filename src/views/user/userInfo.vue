@@ -3,7 +3,7 @@
     <el-card class="box-card">
       <div v-if="!showUpload">
         <el-tooltip
-          open-delay="800"
+          :open-delay="500"
           class="item"
           effect="dark"
           content="点击更换头像"
@@ -43,7 +43,7 @@
             @click="updateUser({ avatar: imageUrl })"
             size="mini"
             type="primary"
-            style="margin-top:1rem"
+            style="margin-top: 1rem"
             >设为头像 <i class="el-icon-picture-outline-round"></i
           ></el-button>
         </div>
@@ -69,7 +69,7 @@ export default {
     imageUrl: "",
     uploadHeader: { authorization: `Bearer ${localStorage.getItem("accessToken")}` },
     upSuccess: false,
-    randomStatus: ""
+    randomStatus: "",
   }),
   created() {
     this.getUserData();
@@ -78,7 +78,7 @@ export default {
       .then(({ data }) => {
         this.randomStatus = data.content;
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   },
   computed: {
     user() {
@@ -86,29 +86,29 @@ export default {
     },
     doms() {
       return this.$refs;
-    }
+    },
   },
   directives: {
     placeholder: {
-      bind: function(el, binding) {
+      bind: function (el, binding) {
         if (typeof binding.value !== "string") return;
         el.textContent = binding.value;
         el.style.display = "none";
       },
-      update: function(el, binding) {
+      update: function (el, binding) {
         if (typeof binding.value !== "string") return;
         // console.log(binding.value);
         if (binding.value?.trim().length) {
           el.textContent = binding.value;
         }
         el.style.display = "unset";
-      }
-    }
+      },
+    },
   },
   methods: {
     getUserData() {
       const uid = this.$route.params.uid;
-      this.$api.user.get({ uid }).then(res => {
+      this.$api.user.get({ uid }).then((res) => {
         Object.assign(this, res.data);
       });
     },
@@ -123,14 +123,14 @@ export default {
 
       this.$api.user
         .update(params)
-        .then(res => {
+        .then(() => {
           Object.assign(this, params);
           if (avatar) {
             this.showUpload = false;
             this.avatar = avatar;
           }
         })
-        .catch(err => console.log(err.response));
+        .catch((err) => console.log(err.response));
     },
     uploadAvatar(params) {
       console.log(params);
@@ -141,15 +141,15 @@ export default {
 
       this.$api.user
         .uploadAvatar(form)
-        .then(res => {
+        .then((res) => {
           this.handleAvatarSuccess(res);
         })
-        .catch(err => console.log(err.response));
+        .catch((err) => console.log(err.response));
     },
     //预检图像信息
     beforeAvatarUpload(file) {
       const allowsType = ["jpeg", "png", "gif"];
-      const isAllow = !!allowsType.find(type => file.type.endsWith(type));
+      const isAllow = !!allowsType.find((type) => file.type.endsWith(type));
       const isLt5M = file.size / 1024 / 1024 < 5;
       if (!isAllow) {
         this.$message.error("上传头像只能是普通图片格式!(jpg,png,gif)");
@@ -160,7 +160,7 @@ export default {
       return isAllow && isLt5M;
     },
     //成功
-    handleAvatarSuccess(res, file) {
+    handleAvatarSuccess(res) {
       this.$message.success("头像上传成功!");
       // this.imageUrl = URL.createObjectURL(file.raw);
       console.log(res);
@@ -177,8 +177,8 @@ export default {
       const input = this.$refs.input;
       this.updateUser({ status: input.textContent });
       input.scrollTo(0, 0);
-    }
-  }
+    },
+  },
 };
 </script>
 

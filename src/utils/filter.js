@@ -7,27 +7,28 @@ Vue.use(ElementUI);
 //Axios全局拦截器设置
 //请求拦截加token
 axios.interceptors.request.use(
-  cfg => {
+  (cfg) => {
     const token = localStorage.getItem("accessToken");
     if (token) cfg.headers.authorization = `Bearer ${token}`;
     return cfg;
   },
-  err => Promise.reject(err)
+  (err) => Promise.reject(err)
 );
 
 //响应拦截判断响应状态码,错误处理
 axios.interceptors.response.use(
-  res => {
+  (res) => {
     console.log("请求响应正常:", res.data);
+    // eslint-disable-next-line no-prototype-builtins
     if (res.data?.hasOwnProperty("accessToken")) {
       localStorage.setItem("accessToken", res.data.accessToken);
       console.log("accessToken已更新");
     }
     return Promise.resolve(res);
   },
-  err => {
+  (err) => {
     console.log("请求响应错误:", err.response);
-    const { status, data } = err.response;
+    const { status } = err.response;
     if (status == 401) {
       Vue.prototype.$message.warning("登陆状态失效,请重新登录");
       localStorage.removeItem("accessToken");
