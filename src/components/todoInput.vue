@@ -15,7 +15,7 @@
       placeholder="截止日期"
       value-format="yyyy-MM-dd"
     ></el-date-picker>
-    <el-button type="primary" style="border-radius: 0 5px 5px 0;padding: 12px 15px;" @click="add">
+    <el-button type="primary" style="border-radius: 0 5px 5px 0; padding: 12px 15px" @click="add">
       添加
       <i class="el-icon-edit"></i>
     </el-button>
@@ -53,24 +53,22 @@ export default {
   data() {
     return {
       content: "",
-      datePick: ""
+      datePick: "",
     };
   },
   methods: {
     add() {
-      var date = new Date();
-      var now = `${date.getFullYear()}/${date.getMonth() +
-        1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+      // var date = new Date();
+      // var now = `${date.getFullYear()}/${date.getMonth() +
+      //   1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
       let newTodo = {
-        startDate: now,
-        target: this.content,
-        status: 0,
-        endDate: this.datePick
+        content: this.content,
+        deadlineAt: this.datePick,
       };
       this.content = "";
       this.datePick = null;
       this.$emit("addTodo", newTodo);
-    }
-  }
+    },
+  },
 };
 </script>

@@ -7,7 +7,7 @@
         <el-tab-pane name="ing">
           <span slot="label"><i class="el-icon-date"></i> 进行中</span>
           <el-table :data="tableData" v-loading="loading" class="todotable" empty-text="---">
-            <el-table-column width="150" prop="startDate">
+            <el-table-column width="150" prop="createAt">
               <template slot="header">
                 <span>创建日期 </span>
                 <i class="el-icon-time"></i>
@@ -21,7 +21,7 @@
               <template slot-scope="scope">
                 <div
                   class="input-textarea"
-                  v-text="scope.row.target"
+                  v-text="scope.row.content"
                   :ref="'input' + scope.row.id"
                   contenteditable="true"
                   @blur="updateContent(scope.$index, scope.row.id)"
@@ -34,7 +34,7 @@
                 <i class="el-icon-time"></i>
               </template>
               <template slot-scope="scope">
-                <span>{{ scope.row.endDate || "———" }}</span>
+                <span>{{ scope.row.deadlineAt || "———" }}</span>
               </template>
             </el-table-column>
             <el-table-column width="90">
@@ -43,8 +43,8 @@
                 <i class="el-icon-copy-document"></i>
               </template>
               <template slot-scope="scope">
-                <span class="status" v-text="status[scope.row.status].text"></span>
-                <i :class="status[scope.row.status].img"></i>
+                <span class="status" v-text="status[scope.row.complete ? 1 : 0].text"></span>
+                <i :class="status[scope.row.complete ? 1 : 0].img"></i>
               </template>
             </el-table-column>
             <el-table-column width="180">
@@ -55,10 +55,8 @@
               <template slot-scope="scope">
                 <el-button
                   size="mini"
-                  v-text="status[scope.row.status].toggle"
-                  @click="
-                    toggleFn(scope.$index, scope.row.id, status[scope.row.status].toggleStatus)
-                  "
+                  v-text="status[scope.row.complete ? 1 : 0].toggle"
+                  @click="toggleFn(scope.$index, scope.row.id, !scope.row.complete)"
                 ></el-button>
                 <el-button
                   size="mini"
@@ -75,7 +73,7 @@
         <el-tab-pane name="done"
           ><span slot="label"><i class="el-icon-check"></i> 已完成</span>
           <el-table :data="tableData" v-loading="loading" class="todotable">
-            <el-table-column width="150" prop="startDate">
+            <el-table-column width="150" prop="createAt">
               <template slot="header">
                 <span>创建日期 </span>
                 <i class="el-icon-time"></i>
@@ -87,7 +85,7 @@
                 <i class="el-icon-data-line"></i>
               </template>
               <template slot-scope="scope">
-                <span v-text="scope.row.target" :style="todoDoneStyle"></span>
+                <span v-text="scope.row.content" :style="todoDoneStyle"></span>
               </template>
             </el-table-column>
             <el-table-column width="120">
@@ -96,7 +94,7 @@
                 <i class="el-icon-time"></i>
               </template>
               <template slot-scope="scope">
-                <span>{{ scope.row.endDate || "———" }}</span>
+                <span>{{ scope.row.deadlineAt || "———" }}</span>
               </template>
             </el-table-column>
             <el-table-column width="90">
@@ -105,8 +103,8 @@
                 <i class="el-icon-copy-document"></i>
               </template>
               <template slot-scope="scope">
-                <span class="status" v-text="status[scope.row.status].text"></span>
-                <i :class="status[scope.row.status].img"></i>
+                <span class="status" v-text="status[scope.row.complete ? 1 : 0].text"></span>
+                <i :class="status[scope.row.complete ? 1 : 0].img"></i>
               </template>
             </el-table-column>
             <el-table-column width="180">
@@ -117,10 +115,8 @@
               <template slot-scope="scope">
                 <el-button
                   size="mini"
-                  v-text="status[scope.row.status].toggle"
-                  @click="
-                    toggleFn(scope.$index, scope.row.id, status[scope.row.status].toggleStatus)
-                  "
+                  v-text="status[scope.row.complete ? 1 : 0].toggle"
+                  @click="toggleFn(scope.$index, scope.row.id, !scope.row.complete)"
                 ></el-button>
 
                 <el-popconfirm
@@ -207,13 +203,11 @@ export default {
         {
           img: "el-icon-more",
           text: "进行中",
-          toggleStatus: 1,
           toggle: "完成！",
         },
         {
           img: "el-icon-success",
           text: "已完成",
-          toggleStatus: 0,
           toggle: "还原",
         },
       ],
@@ -228,10 +222,10 @@ export default {
       return this.$store.loginStatus;
     },
     ingTodoData() {
-      return this.todoData.filter((v) => v.status === 0);
+      return this.todoData.filter((v) => !v.complete);
     },
     doneTodoData() {
-      return this.todoData.filter((v) => v.status === 1);
+      return this.todoData.filter((v) => v.complete);
     },
     tableData() {
       return this.activeTab === "ing" ? this.ingTodoData : this.doneTodoData;
@@ -244,7 +238,7 @@ export default {
   },
   methods: {
     //加载todolist表格数据
-    loadTable() {
+    async loadTable() {
       let LocalData = JSON.parse(localStorage.getItem("todolist"));
       //若loginStatus状态加载server
       if (this.loginStatus) {
@@ -253,11 +247,12 @@ export default {
         if (LocalData?.length > 0) {
           let syncTask = this.getLocalChangedTodo(LocalData);
           //多个本地todo增加任务完成后获取新的todolist
-          Promise.all(syncTask).then(this.refreshData());
+          await Promise.all(syncTask).then(this.refreshData());
         } else {
           //无本地数据则直接拉server
-          this.refreshData();
+          await this.refreshData();
         }
+        this.loading = false;
       } else if (LocalData) {
         //离线则加载本地LoalStorage
         this.todoData = LocalData;
@@ -281,14 +276,13 @@ export default {
     //获取所有todolist
     async getTodolist() {
       let res = await this.$api.todo.getAll();
-      this.loading = false;
-      let list = res.data.map((ele) => ({
-        startDate: ele.start_date,
-        target: ele.content,
-        endDate: ele.end_date,
-        status: ele.status,
-        id: ele.id,
-      }));
+      let list = res.data;
+      list.forEach((t, k) => {
+        list[k].createAt = new Date(t.createAt).toLocaleString();
+        if (isNaN(t) && Date.parse(t.deadlineAt)) {
+          list[k].deadlineAt = new Date(t.deadlineAt).toLocaleDateString();
+        }
+      });
       return list.sort((a, b) => a.id - b.id);
     },
 
@@ -345,26 +339,27 @@ export default {
       }
     },
     //更改todo完成状态
-    toggleFn(index, id, status) {
+    toggleFn(index, id, complete) {
       let toggleTableData = this.activeTab === "ing" ? this.doneTodoData : this.ingTodoData;
       if (this.loginStatus) {
-        this.$api.todo.updateTodo(id, { status }).then(() => {
-          const toggleTodo = this.tableData.splice(index, 1)[0];
-          toggleTodo.status = status;
-          toggleTableData.push(toggleTodo);
-          this.updateLocalData();
+        this.$api.todo.updateTodo(id, { complete }).then(() => {
+          // const toggleTodo = this.tableData.splice(index, 1)[0];
+          // toggleTodo.status = status;
+          // toggleTableData.push(toggleTodo);
+          // this.updateLocalData();
+          this.refreshData();
         });
         return;
       }
       const toggleTodo = this.tableData.splice(index, 1)[0];
-      toggleTodo.status = status;
+      toggleTodo.complete = complete;
       toggleTableData.push(toggleTodo);
       this.updateLocalData();
     },
     updateContent(index, id) {
       let todo = this.tableData[index];
       const content = this.$refs["input" + id].textContent;
-      todo.target = content;
+      todo.content = content;
       if (this.loginStatus) {
         this.$api.todo.updateTodo(id, { content }).then(() => {
           this.tableData.splice(index, 1, todo);
