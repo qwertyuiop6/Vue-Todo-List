@@ -7,43 +7,50 @@ const views = require("koa-views");
 const onerror = require("koa-onerror");
 // const session = require('koa-session');
 const path = require("path");
+
 const router = require("./router");
-const config = require("./app.config");
+const {
+  staticOptions,
+  bodyParser,
+  logPath,
+  port,
+  cors: corsConfig,
+  koa: koaConfig,
+} = require("./app.config");
 
-const app = new Koa(config.koa);
-
-onerror(app);
+const app = new Koa(koaConfig);
 
 app
   .use(logger())
   .use(require("./middlewares/myutils")())
   .use(require("./middlewares/checkFresh")())
-  .use(cors(config.cors))
-  .use(serve(path.resolve(__dirname, "../dist"), config.static))
-  .use(serve(path.resolve(__dirname, "./uploads"), config.static))
-  .use(body(config.bodyParser))
-  .use(router.routes())
+  .use(cors(corsConfig))
+  .use(serve(path.resolve(__dirname, "../dist"), staticOptions))
+  .use(serve(path.resolve(__dirname, "./uploads"), staticOptions))
+  .use(body(bodyParser))
   .use(
     views(`${__dirname}/views`, {
       extension: "pug",
     })
   )
+  .use(router.routes())
   .use(handleNotFound)
   .on("error", errorHandle);
 
+process.env.NODE_ENV === "development" && onerror(app);
+
 async function handleNotFound(ctx) {
   ctx.status = 404;
-  await ctx.render("error", { title: "FBI WARNING", error: "404 NOT FOUND" });
+  await ctx.render("error", { title: "FBI WARNING", error: `${ctx.url} NOT FOUND` });
 }
 
 async function errorHandle(err, ctx) {
-  console.log("interal error: ", err);
+  console.log("interal error:\n", err);
   if (process.env.NODE_ENV !== "development") {
-    require("./utils/save2log")(config.logPath, "error", err);
-    ctx.send("出错啦~");
+    require("./utils/save2log")(logPath, "error", err);
   }
 }
 
-app.listen(config.port, () => {
-  console.log(`linsten on http://localhost:${config.port}`);
+app.listen(port, () => {
+  console.log(`linsten on http://localhost:${port}`);
 });

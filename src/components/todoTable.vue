@@ -131,7 +131,7 @@
                   iconColor="red"
                   title="确定删除这个todo吗？"
                   confirmButtonType="danger"
-                  @onConfirm="delTodo(scope.$index, scope.row.id)"
+                  @confirm="delTodo(scope.$index, scope.row.id)"
                 >
                   <el-button slot="reference" size="mini" type="danger">
                     <i class="el-icon-delete"></i>
@@ -193,8 +193,7 @@ import todoInput from "./todoInput";
 export default {
   name: "todoTable",
   props: {
-    // loginStatus: Boolean,
-    // tableData: Array
+    data: Array,
   },
   components: {
     todoInput,
@@ -246,38 +245,37 @@ export default {
   methods: {
     //加载todolist表格数据
     loadTable() {
-      let LocalTodoList = JSON.parse(localStorage.getItem("todolist"));
+      let LocalData = JSON.parse(localStorage.getItem("todolist"));
       //若loginStatus状态加载server
       if (this.loginStatus) {
         this.loading = true;
         //登录时若本地有数据则与server同步
-        if (LocalTodoList?.length > 0) {
-          let syncTask = this.getLocalChangedTodo(LocalTodoList);
+        if (LocalData?.length > 0) {
+          let syncTask = this.getLocalChangedTodo(LocalData);
           //多个本地todo增加任务完成后获取新的todolist
-          Promise.all(syncTask).then(this.refreshTodoList());
+          Promise.all(syncTask).then(this.refreshData());
         } else {
           //无本地数据则直接拉server
-          this.refreshTodoList();
+          this.refreshData();
         }
-      } else if (LocalTodoList) {
+      } else if (LocalData) {
         //离线则加载本地LoalStorage
-        this.todoData = LocalTodoList;
+        this.todoData = LocalData;
       }
     },
 
     //将本地离线创建的无IDtodo 同步到server
-    getLocalChangedTodo(LocalTodoList, tasks = []) {
-      LocalTodoList.forEach((todo) => {
-        if (!Object.prototype.hasOwnProperty.call(todo, "id")) {
-          tasks.push(this.$api.todo.add(todo));
+    getLocalChangedTodo(LocalData) {
+      return LocalData.map((todo) => {
+        if (!Object.hasOwn(todo, "id")) {
+          return this.$api.todo.add(todo);
         }
       });
-      return tasks;
     },
 
-    async refreshTodoList() {
+    async refreshData() {
       this.todoData = await this.getTodolist();
-      this.updateLocalTodoList();
+      this.updateLocalData();
     },
 
     //获取所有todolist
@@ -301,14 +299,14 @@ export default {
           .then(() => {
             this.todoData.push(todo);
             this.$message.success("添加成功~");
-            this.refreshTodoList();
+            this.refreshData();
           })
-          .catch((err) => {
+          .catch(() => {
             this.$message.error("添加失败,请重试");
           });
       } else {
         this.ingTodoData.push(todo);
-        this.updateLocalTodoList();
+        this.updateLocalData();
       }
     },
 
@@ -328,22 +326,23 @@ export default {
 
     //删除一条todo
     delTodo(index, id) {
-      const delTodo = this.tableData.splice(index, 1);
       if (this.loginStatus) {
         this.$api.todo
           .remove(id)
           .then(() => {
             this.$message.success("删除成功!");
+            this.refreshData();
           })
-          .catch((err) => {
-            this.tableData.splice(index, 0, ...delTodo);
-            console.log(err);
+          .catch(() => {
+            // this.tableData.splice(index, 0, ...delTodo);
+            this.$message.error("删除失败");
             return;
           });
       } else {
+        this.tableData.splice(index, 1);
         this.$message.success("删除成功!");
+        this.updateLocalData();
       }
-      this.updateLocalTodoList();
     },
     //更改todo完成状态
     toggleFn(index, id, status) {
@@ -353,14 +352,14 @@ export default {
           const toggleTodo = this.tableData.splice(index, 1)[0];
           toggleTodo.status = status;
           toggleTableData.push(toggleTodo);
-          this.updateLocalTodoList();
+          this.updateLocalData();
         });
         return;
       }
       const toggleTodo = this.tableData.splice(index, 1)[0];
       toggleTodo.status = status;
       toggleTableData.push(toggleTodo);
-      this.updateLocalTodoList();
+      this.updateLocalData();
     },
     updateContent(index, id) {
       let todo = this.tableData[index];
@@ -369,15 +368,15 @@ export default {
       if (this.loginStatus) {
         this.$api.todo.updateTodo(id, { content }).then(() => {
           this.tableData.splice(index, 1, todo);
-          this.updateLocalTodoList();
+          this.updateLocalData();
         });
         return;
       }
       this.tableData.splice(index, 1, todo);
-      this.updateLocalTodoList();
+      this.updateLocalData();
     },
     //存储到本地LocalStorage
-    updateLocalTodoList() {
+    updateLocalData() {
       this.todoData = [...this.ingTodoData, ...this.doneTodoData];
       localStorage.setItem("todolist", JSON.stringify(this.todoData));
     },

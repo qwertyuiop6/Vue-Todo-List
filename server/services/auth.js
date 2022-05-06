@@ -1,15 +1,11 @@
-let ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN;
+let ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN, ACCESS_TOKEN_REFRESH_TIME;
 const tokenConf = require("../configs/token");
 // if (process.env.NODE_ENV === "development") {
 //   require("dotenv").config();
 //   ({ ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN } = process.env);
 // } else {
-({
-  ACCESS_TOKEN_SECRET,
-  REFRESH_TOKEN_SECRET,
-  ACCESS_TOKEN_EXPIRESIN,
-  ACCESS_TOKEN_REFRESH_TIME
-} = tokenConf); //已声明变量的对象解构赋值
+({ ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN, ACCESS_TOKEN_REFRESH_TIME } =
+  tokenConf); //已声明变量的对象解构赋值
 // }
 
 const jwt = require("jsonwebtoken");
@@ -37,7 +33,7 @@ async function authToken(ctx, next) {
     if (user.exp - Math.floor(Date.now() / 1000) < parseInt(ACCESS_TOKEN_REFRESH_TIME) * 60) {
       const { name, uid, avatar } = user;
       ctx.send("Token update", {
-        accessToken: generateAccessToken({ name, uid, avatar })
+        accessToken: generateAccessToken({ name, uid, avatar }),
       });
       redis.lpush("blocklist", ctx.state.token);
     }
@@ -54,7 +50,7 @@ async function checkToken(ctx) {
 //生成token
 function generateAccessToken(user) {
   return jwt.sign(user, ACCESS_TOKEN_SECRET, {
-    expiresIn: ACCESS_TOKEN_EXPIRESIN
+    expiresIn: ACCESS_TOKEN_EXPIRESIN,
   });
 }
 
@@ -63,7 +59,7 @@ async function deleteToken(ctx) {
   redis.lpush("blocklist", ctx.state.token);
 
   ctx.send("退出登陆成功", {
-    status: 202
+    status: 202,
   });
 }
 
@@ -71,5 +67,5 @@ module.exports = {
   checkToken,
   deleteToken,
   authToken,
-  generateAccessToken
+  generateAccessToken,
 };

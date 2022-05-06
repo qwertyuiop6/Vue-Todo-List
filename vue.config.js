@@ -12,6 +12,9 @@ module.exports = {
         // 将原地址主机更改为目标主机
         changeOrigin: true,
       },
+      "/avatar": {
+        target: "http://localhost:8008",
+      },
       // "/auth/*": {
       //   // 目标 API 地址
       //   target: "http://localhost:8000",

@@ -116,9 +116,8 @@
 
 <script>
 export default {
-  name: "login",
   props: {
-    title: String
+    title: String,
   },
   data() {
     return {
@@ -130,17 +129,17 @@ export default {
         nerror: "",
         passwd: "",
         perror: "",
-        doing: false
+        doing: false,
       },
       regForm: {
         name: "",
         nerror: "",
         passwd: "",
-        doing: false
+        doing: false,
       },
       loginRules: {
         name: [{ required: true, message: "请输入用户名称", trigger: "blur" }],
-        passwd: [{ required: true, message: "请输入密码", trigger: "blur" }]
+        passwd: [{ required: true, message: "请输入密码", trigger: "blur" }],
       },
       regRules: {
         name: [
@@ -149,7 +148,7 @@ export default {
             min: 3,
             max: 10,
             message: "长度在 3 到 10 个字",
-            trigger: "blur"
+            trigger: "blur",
           },
           {
             validator: (rule, value, callback) => {
@@ -163,13 +162,13 @@ export default {
                   .then(() => {
                     callback();
                   })
-                  .catch(err => {
+                  .catch((err) => {
                     if (err.response.status === 403) callback(new Error(`有人起过这个名字啦~`));
                   });
               }, 1500);
             },
-            trigger: "change"
-          }
+            trigger: "change",
+          },
         ],
         passwd: [
           { required: true, message: "请输入密码", trigger: "blur" },
@@ -181,8 +180,8 @@ export default {
                 callback();
               }
             },
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         checkPasswd: [
           { required: true, message: "请再次输入密码", trigger: "blur" },
@@ -194,10 +193,10 @@ export default {
                 callback();
               }
             },
-            trigger: "blur"
-          }
-        ]
-      }
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   mounted() {
@@ -206,7 +205,7 @@ export default {
   computed: {
     loginStatus() {
       return this.$store.loginStatus; //eventBus
-    }
+    },
   },
   methods: {
     checkLoginStatus() {
@@ -221,7 +220,7 @@ export default {
           const { uid, name, avatar } = data;
           this.setUserState({ uid, name, avatar });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     },
@@ -233,14 +232,14 @@ export default {
       this.loginForm.perror = "";
       this.$api.auth
         .login({ name, passwd })
-        .then(res => {
+        .then((res) => {
           this.loginForm.doing = false;
           this.formVisible = false;
           // this.$message.success(res.data.name + " 登陆成功~ 欢迎~");
           localStorage.setItem("accessToken", res.accessToken);
           this.setUserState(res.data);
         })
-        .catch(err => {
+        .catch((err) => {
           this.loginForm.doing = false;
           console.log(err.response);
           let { status, statusText, data } = err.response;
@@ -263,7 +262,7 @@ export default {
       this.$confirm("确定退出登录吗?", "FBI Warnning!!", {
         confirmButtonText: "确定!",
         cancelButtonText: "取消~",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           this.$api.auth
@@ -310,7 +309,7 @@ export default {
           this.$message.success("注册成功~,欢迎: " + name);
           this.DiaTab = "login";
         })
-        .catch(err => {
+        .catch((err) => {
           if (err.response.status == 403) {
             this.regForm.nerror = err.response.data.error;
           }
@@ -318,7 +317,7 @@ export default {
     },
 
     submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$refs[formName].$attrs.submitAction(this[formName].name, this[formName].passwd);
         } else {
@@ -331,7 +330,7 @@ export default {
     cancel(formName) {
       this.$refs[formName].resetFields();
       this.formVisible = false;
-    }
-  }
+    },
+  },
 };
 </script>

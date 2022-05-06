@@ -1,27 +1,25 @@
 {
-  "root": true,
-  "env": {
-    "node": true
-  },
-  "extends": [
-    "plugin:vue/essential",
-    "eslint:recommended"
-  ],
-  "rules": {
-    "no-console": "off"
-  },
-  "parserOptions": {
-    "parser": "babel-eslint"
-  },
-  "overrides": [
-    {
-      "files": [
-        "**/__tests__/*.{j,t}s?(x)",
-        "**/tests/unit/**/*.spec.{j,t}s?(x)"
-      ],
-      "env": {
-        "jest": true
-      }
-    }
-  ]
+	"root": true,
+	"env": {
+		"node": true
+	},
+	"extends": ["plugin:vue/essential", "eslint:recommended"],
+	"rules": {
+		"no-console": "off"
+	},
+	"parser": "vue-eslint-parser",
+	"parserOptions": {
+		"parser": "@babel/eslint-parser"
+	},
+	"overrides": [
+		{
+			"files": [
+				"**/__tests__/*.{j,t}s?(x)",
+				"**/tests/unit/**/*.spec.{j,t}s?(x)"
+			],
+			"env": {
+				"jest": true
+			}
+		}
+	]
 }

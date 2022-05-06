@@ -18,6 +18,6 @@ module.exports = function save2log(logPath, type, data) {
   }
 
   fs.writeFile(path.join(filepath, filename), data, { flag: "a" }, (err) => {
-    if (err) log(err);
+    if (err) console.log(err);
   });
 };
