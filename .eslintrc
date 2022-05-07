@@ -4,22 +4,15 @@
 		"node": true
 	},
 	"extends": ["plugin:vue/essential", "eslint:recommended"],
+	"plugins": ["vue"],
 	"rules": {
 		"no-console": "off"
 	},
 	"parser": "vue-eslint-parser",
 	"parserOptions": {
-		"parser": "@babel/eslint-parser"
+		// "parser": "@babel/eslint-parser",
+		"ecmaVersion": "latest",
+		"sourceType": "module"
 	},
-	"overrides": [
-		{
-			"files": [
-				"**/__tests__/*.{j,t}s?(x)",
-				"**/tests/unit/**/*.spec.{j,t}s?(x)"
-			],
-			"env": {
-				"jest": true
-			}
-		}
-	]
+	"overrides": []
 }
