@@ -184,7 +184,7 @@
 }
 </style>
 <script>
-import todoInput from "./todoInput";
+import todoInput from "./todoInput.vue";
 
 export default {
   name: "todoTable",

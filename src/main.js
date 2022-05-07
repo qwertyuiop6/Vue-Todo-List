@@ -24,4 +24,4 @@ new Vue({
   render: (h) => h(App),
 }).$mount("#app");
 
-console.log(`欢迎使用${process.env.VUE_APP_NAME},Version:${process.env.VUE_APP_VER}`);
+console.log(`欢迎使用${import.meta.env.VITE_APP_NAME},Version:${import.meta.env.VITE_APP_VER}`);

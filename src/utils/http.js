@@ -15,7 +15,7 @@ import QS from "qs";
 // }
 
 //2.通过.env文件根据不同环境加载不同的文件变量
-const baseURL = process.env.VUE_APP_AXIOS_BASE_URL;
+const baseURL = import.meta.env.VUE_APP_AXIOS_BASE_URL;
 if (baseURL) {
   axios.defaults.baseURL = baseURL;
 }
@@ -36,12 +36,12 @@ function get(url, params) {
   return new Promise((resolve, reject) => {
     axios
       .get(url, {
-        params
+        params,
       })
-      .then(res => {
+      .then((res) => {
         resolve(res.data);
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err);
       });
   });
@@ -56,10 +56,10 @@ function post(url, body, opts = null) {
   return new Promise((resolve, reject) => {
     axios
       .post(url, opts?.headers?.["Content-Type"] ? body : QS.stringify(body), opts)
-      .then(res => {
+      .then((res) => {
         resolve(res.data);
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err);
       });
   });
@@ -74,10 +74,10 @@ function del(url, params) {
   return new Promise((resolve, reject) => {
     axios
       .delete(url, { params })
-      .then(res => {
+      .then((res) => {
         resolve(res.data);
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err);
       });
   });
@@ -92,10 +92,10 @@ function patch(url, body) {
   return new Promise((resolve, reject) => {
     axios
       .patch(url, QS.stringify(body))
-      .then(res => {
+      .then((res) => {
         resolve(res.data);
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err);
       });
   });
