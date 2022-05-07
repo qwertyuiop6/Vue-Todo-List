@@ -33,13 +33,10 @@ axios.interceptors.response.use(
       Vue.prototype.$message.warning("登陆状态失效,请重新登录");
       localStorage.removeItem("accessToken");
       setTimeout(() => {
-        // location.reload();
         router.push({ name: "Home", params: {} });
       }, 1000);
-      return;
     } else if (status >= 500) {
       Vue.prototype.$message.error("服务器出问题啦,请稍后重试");
-      return;
     }
     return Promise.reject(err);
   }

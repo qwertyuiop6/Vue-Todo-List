@@ -338,15 +338,12 @@ export default {
         this.updateLocalData();
       }
     },
+
     //更改todo完成状态
     toggleFn(index, id, complete) {
       let toggleTableData = this.activeTab === "ing" ? this.doneTodoData : this.ingTodoData;
       if (this.loginStatus) {
         this.$api.todo.updateTodo(id, { complete }).then(() => {
-          // const toggleTodo = this.tableData.splice(index, 1)[0];
-          // toggleTodo.status = status;
-          // toggleTableData.push(toggleTodo);
-          // this.updateLocalData();
           this.refreshData();
         });
         return;
@@ -356,6 +353,7 @@ export default {
       toggleTableData.push(toggleTodo);
       this.updateLocalData();
     },
+
     updateContent(index, id) {
       let todo = this.tableData[index];
       const content = this.$refs["input" + id].textContent;
@@ -370,6 +368,7 @@ export default {
       this.tableData.splice(index, 1, todo);
       this.updateLocalData();
     },
+
     //存储到本地LocalStorage
     updateLocalData() {
       this.todoData = [...this.ingTodoData, ...this.doneTodoData];

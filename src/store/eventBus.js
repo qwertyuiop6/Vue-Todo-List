@@ -1,4 +1,4 @@
-//event bus 事件总线
+//event bus 事件总线,使用一个vue实例作为简单的状态储存和事件分发对象
 import Vue from "vue";
 
 const estore = new Vue({
@@ -22,5 +22,5 @@ estore.install = (Vue) => {
   Vue.prototype.$store = estore;
 };
 
-//2.导出一个Vue实例作为简单的状态储存和事件分发对象
+//2.导出
 export default estore;

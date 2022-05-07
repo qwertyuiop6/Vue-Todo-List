@@ -216,6 +216,9 @@ export default {
       this.$api.auth
         .checkToken()
         .then(({ data }) => this.$api.user.get({ uid: data.uid }))
+        .catch((err) => {
+          console.log(err);
+        })
         .then(({ data }) => {
           const { uid, name, avatar } = data;
           this.setUserState({ uid, name, avatar });

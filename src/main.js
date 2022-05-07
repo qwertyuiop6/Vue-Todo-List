@@ -3,6 +3,8 @@ import App from "./App.vue";
 
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
+import "virtual:windi.css";
+import "virtual:windi-devtools";
 
 import "@/api"; //引入api
 import "@/utils/filter"; //引入axios拦截器
