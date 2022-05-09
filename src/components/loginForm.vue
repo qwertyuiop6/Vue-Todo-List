@@ -6,20 +6,19 @@
       :content="!loginStatus ? '登录可以同步todolist到云端哦~' : '退出登录'"
       placement="top"
     >
-      <el-button
-        icon="el-icon-upload"
-        circle
-        v-if="!loginStatus"
-        @click="formVisible = true"
-      ></el-button>
+      <el-button icon="upload" circle v-if="!loginStatus" @click="formVisible = true"> </el-button>
       <!-- <img v-else :src="user.avatar" alt="" class="avatar" /> -->
-      <el-button icon="el-icon-switch-button" circle v-else @click="logout()"></el-button>
+      <el-button icon="switch" circle v-else @click="logout()"></el-button>
     </el-tooltip>
 
-    <el-dialog :title="title" :visible.sync="formVisible" width="460px">
+    <el-dialog :title="title" v-model="formVisible" width="460px">
       <el-tabs stretch v-model="DiaTab">
         <el-tab-pane label="登录" name="login">
-          <span slot="label"> <i class="el-icon-user-solid"></i>登录 </span>
+          <template #label>
+            <span
+              ><el-icon><user /></el-icon>登录</span
+            >
+          </template>
           <!-- 登录表单 -->
           <el-form
             :model="loginForm"
@@ -51,14 +50,18 @@
             <el-button @click="cancel('loginForm')">取 消</el-button>
             <el-button type="primary" @click="submitForm('loginForm')">
               登录
-              <i class="el-icon-loading" v-show="loginForm.doing"></i>
+              <el-icon class="is-loading" v-show="loginForm.doing"><loading /></el-icon>
             </el-button>
           </div>
         </el-tab-pane>
 
         <!-- 注册表单 -->
         <el-tab-pane label="注册" name="regsiter">
-          <span slot="label"> <i class="el-icon-edit-outline"></i>注册 </span>
+          <template #label>
+            <span
+              ><el-icon><EditPen /></el-icon>注册</span
+            >
+          </template>
           <!-- 注册框 -->
           <el-form
             :model="regForm"
@@ -103,7 +106,7 @@
               @click="submitForm('regForm')"
             >
               注册
-              <i class="el-icon-loading" v-show="regForm.doing"></i>
+              <el-icon class="is-loading" v-show="regForm.doing"><loading /></el-icon>
             </el-button>
           </div>
         </el-tab-pane>
@@ -115,12 +118,18 @@
 <style lang="scss"></style>
 
 <script>
+import { useStore } from "@/store/pinia";
+import { mapState, mapActions } from "pinia";
+// import { Upload, Switch } from "@element-plus/icons-vue";
+
 export default {
   props: {
     title: String,
   },
   data() {
     return {
+      // Upload,
+      // Switch,
       formVisible: false,
       DiaTab: "login",
       timer: null,
@@ -156,14 +165,13 @@ export default {
                 clearTimeout(this.timer);
               }
               this.timer = setTimeout(() => {
-                // this.$message.success("发送"+value);
                 this.$axios
                   .get("/api/auth/checkName", { params: { name: value } })
                   .then(() => {
                     callback();
                   })
-                  .catch((err) => {
-                    if (err.response.status === 403) callback(new Error(`有人起过这个名字啦~`));
+                  .catch(({ response: { status } }) => {
+                    if (status === 403) callback(new Error(`有人起过这个名字啦~`));
                   });
               }, 1500);
             },
@@ -203,11 +211,13 @@ export default {
     this.checkLoginStatus();
   },
   computed: {
-    loginStatus() {
-      return this.$store.loginStatus; //eventBus
-    },
+    // loginStatus() {
+    //   return this.$store.loginStatus; //eventBus
+    // },
+    ...mapState(useStore, ["loginStatus"]),
   },
   methods: {
+    ...mapActions(useStore, ["updateUser"]),
     checkLoginStatus() {
       if (!localStorage.getItem("accessToken")) {
         return;
@@ -242,16 +252,14 @@ export default {
           localStorage.setItem("accessToken", res.accessToken);
           this.setUserState(res.data);
         })
-        .catch((err) => {
+        .catch(({ status, statusText, data: err }) => {
           this.loginForm.doing = false;
-          console.log(err.response);
-          let { status, statusText, data } = err.response;
           switch (status) {
             case 400:
-              this.loginForm.nerror = data.error;
+              this.loginForm.nerror = err;
               break;
             case 403:
-              this.loginForm.perror = data.error;
+              this.loginForm.perror = err;
               break;
             default:
               this.$message.error("服务器可能出问题啦,请稍后重试~" + statusText);
@@ -291,14 +299,15 @@ export default {
         this.$message.success(`Hi ${userInfo.name} ,Welcome to your todolist!`);
       }
 
-      const userState = { userInfo };
-
       //vuex
       // this.$store.dispatch("setUserState", userState); //actions
       // this.$store.commit("setUserState", userState); //mutations
 
       // eventBus store
-      this.$store.$emit("setUserState", userState);
+      // this.$store.$emit("setUserState", userState);
+
+      //pinia
+      this.updateUser(userInfo);
     },
 
     //注册
@@ -312,9 +321,9 @@ export default {
           this.$message.success("注册成功~,欢迎: " + name);
           this.DiaTab = "login";
         })
-        .catch((err) => {
-          if (err.response.status == 403) {
-            this.regForm.nerror = err.response.data.error;
+        .catch(({ status, data: err }) => {
+          if (status == 403) {
+            this.regForm.nerror = err;
           }
         });
     },
