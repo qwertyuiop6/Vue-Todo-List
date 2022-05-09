@@ -12,7 +12,7 @@ async function login(ctx) {
 
   const result = await User.findFirst({ where: { name } });
 
-  ctx.assert.ok(result, 400, "查无此人~", { info: { name, passwd } });
+  ctx.assert.ok(result, 400, "查无此人~", { user: { name, passwd } });
   ctx.assert.strictEqual(encrypt(passwd, result.salt).passwd_hash, result.passwd, 403, "密码错误~");
 
   const user = {

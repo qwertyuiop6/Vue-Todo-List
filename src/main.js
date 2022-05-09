@@ -1,29 +1,31 @@
-import Vue from "vue";
+import { createApp } from "vue";
 import App from "./App.vue";
 
-import ElementUI from "element-ui";
-import "element-ui/lib/theme-chalk/index.css";
+import ElementPlus from "element-plus";
+import "element-plus/dist/index.css";
+import * as ElementIcons from "@element-plus/icons-vue";
 import "virtual:windi.css";
 import "virtual:windi-devtools";
 
-import "@/api"; //引入api
-import "@/utils/filter"; //引入axios拦截器
-import router from "./router"; //vue-router路由控制
-// import store from "./store"; //vuex状态管理
-// import estore from "@/store/eventBus"; //事件总线作为简单状态管理
-// Vue.prototype.$store = estore;
-import estore from "@/store/eventBus";
+import axios from "@/utils/axios"; //引入axios拦截器
+import api from "@/api"; //引入api
+import router from "@/router"; //vue-router路由控制
+// import store from "./store/vuex"; //vuex状态管理
+// import store from './store/pinia'; //pinia
+import { createPinia } from "pinia";
+// import busStore from "@/store/mittBus";//mitt eventbus
 
-Vue.use(estore);
-Vue.use(ElementUI);
-
-Vue.config.productionTip = false;
-Vue.config.devtools = true;
-
-new Vue({
+const app = createApp({
   router,
-  // store,
-  render: (h) => h(App),
-}).$mount("#app");
+  ...App,
+});
+
+Object.keys(ElementIcons).forEach((k) => {
+  app.component(k, ElementIcons[k]);
+});
+
+app.use(router).use(createPinia()).use(axios).use(api).use(ElementPlus).mount("#app");
+
+app.config.devtools = true;
 
 console.log(`欢迎使用${import.meta.env.VITE_APP_NAME},Version:${import.meta.env.VITE_APP_VER}`);
