@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import todoList from "./todo/todoList.vue";
+import todoList from "./todo/index.vue";
 
 export default {
   name: "AppHome",
