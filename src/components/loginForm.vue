@@ -120,7 +120,6 @@
 <script>
 import { useStore } from "@/store/pinia";
 import { mapState, mapActions } from "pinia";
-// import { Upload, Switch } from "@element-plus/icons-vue";
 
 export default {
   props: {
@@ -128,8 +127,6 @@ export default {
   },
   data() {
     return {
-      // Upload,
-      // Switch,
       formVisible: false,
       DiaTab: "login",
       timer: null,
@@ -211,13 +208,10 @@ export default {
     this.checkLoginStatus();
   },
   computed: {
-    // loginStatus() {
-    //   return this.$store.loginStatus; //eventBus
-    // },
     ...mapState(useStore, ["loginStatus"]),
   },
   methods: {
-    ...mapActions(useStore, ["updateUser"]),
+    ...mapActions(useStore, ["updateUser", "clearUser"]),
     checkLoginStatus() {
       if (!localStorage.getItem("accessToken")) {
         return;
@@ -248,7 +242,6 @@ export default {
         .then((res) => {
           this.loginForm.doing = false;
           this.formVisible = false;
-          // this.$message.success(res.data.name + " 登陆成功~ 欢迎~");
           localStorage.setItem("accessToken", res.accessToken);
           this.setUserState(res.data);
         })
@@ -280,7 +273,7 @@ export default {
             .logout()
             .then(() => {
               localStorage.removeItem("accessToken");
-              this.setUserState({ name: "guy", uid: 0 }, false);
+              this.clearUser();
               this.$message("已退出登录~");
             })
             .catch(() => {});
@@ -290,11 +283,6 @@ export default {
 
     //设置登录状态信息
     setUserState(userInfo) {
-      // this.$emit("userStatusChange", {
-      //   name: userInfo.name,
-      //   uid: userInfo.uid,
-      //   loginStatus: this.loginStatus
-      // });
       if (!this.loginStatus && userInfo.uid > 0) {
         this.$message.success(`Hi ${userInfo.name} ,Welcome to your todolist!`);
       }

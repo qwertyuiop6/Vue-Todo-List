@@ -1,10 +1,10 @@
 import axios from "axios";
-// import { createApp } from "vue";
-// import ElementPlus from "element-plus";
+import { createApp } from "vue";
+import ElementPlus from "element-plus";
 import router from "../router";
 
-// const app = createApp();
-// app.use(ElementPlus);
+const app = createApp();
+app.use(ElementPlus);
 
 //-----解决跨域开发和不同环境部署后端api的访问问题-----
 // 1.通过vue-cli-service自动设置的NODE_ENV变量判断环境

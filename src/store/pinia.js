@@ -1,8 +1,10 @@
 import { defineStore } from "pinia";
 
+const initUser = { name: "guyy", uid: 0 };
+
 export const useStore = defineStore("user", {
   state: () => ({
-    userInfo: { name: "guyy", uid: 0 },
+    userInfo: initUser,
     loginStatus: false,
   }),
   getters: {
@@ -11,6 +13,9 @@ export const useStore = defineStore("user", {
   actions: {
     updateUser(info) {
       this.userInfo = info;
+    },
+    clearUser() {
+      this.userInfo = initUser;
     },
   },
 });
