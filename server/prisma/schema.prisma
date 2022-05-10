@@ -8,24 +8,24 @@ datasource db {
 }
 
 model Todo {
-  id          Int        @id @default(autoincrement())
-  uid         Int
-  content     String     
-  complete    Boolean    @default(false)
-  createAt    DateTime   @default(now()) @db.Timestamptz(0)
-  deadlineAt  DateTime?  @db.Date
-  updateAt    DateTime   @updatedAt @db.Timestamptz(0)
-  User        User       @relation(fields: [uid], references: [id])
+  id         Int       @id @default(autoincrement())
+  uid        Int
+  content    String
+  complete   Boolean   @default(false)
+  createAt   DateTime  @default(now()) @db.Timestamptz(0)
+  deadlineAt DateTime? @db.Date
+  updateAt   DateTime  @updatedAt @db.Timestamptz(0)
+  User       User      @relation(fields: [uid], references: [id])
 }
 
 model User {
-  id          Int         @id @default(autoincrement())
-  name        String      @unique  
-  passwd      String      
-  salt        String
-  createAt    DateTime    @default(now()) @db.Timestamptz(0)
-  updateAt    DateTime    @updatedAt @db.Timestamptz(0)
-  status      String?
-  avatar      String?
-  Todo        Todo[]
+  id       Int      @id @default(autoincrement())
+  name     String   @unique
+  passwd   String
+  salt     String
+  createAt DateTime @default(now()) @db.Timestamptz(0)
+  updateAt DateTime @updatedAt @db.Timestamptz(0)
+  status   String?
+  avatar   String?
+  Todo     Todo[]
 }

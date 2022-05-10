@@ -11,11 +11,12 @@ async function get(ctx) {
 
 async function add(ctx) {
   const { content, deadlineAt, complete } = ctx.request.body;
+  // console.log(complete);
   await Todo.create({
     data: {
       content,
       deadlineAt: !deadlineAt.length ? null : new Date(deadlineAt),
-      complete,
+      complete: JSON.parse(complete),
       User: { connect: { id: ctx.state.user.uid } },
     },
   });
