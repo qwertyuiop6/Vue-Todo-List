@@ -6,7 +6,7 @@
       :content="!loginStatus ? '登录可以同步todolist到云端哦~' : '退出登录'"
       placement="top"
     >
-      <el-button icon="upload" circle v-if="!loginStatus" @click="formVisible = true"> </el-button>
+      <el-button icon="user" circle v-if="!loginStatus" @click="formVisible = true"> </el-button>
       <!-- <img v-else :src="user.avatar" alt="" class="avatar" /> -->
       <el-button icon="switch" circle v-else @click="logout()"></el-button>
     </el-tooltip>
