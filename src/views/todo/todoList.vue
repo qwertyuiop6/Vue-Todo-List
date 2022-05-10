@@ -1,121 +1,252 @@
 <template>
-  <div class="box">
-    <p>
-      Hi!
-      <el-tooltip
-        v-if="user.uid"
-        :open-delay="300"
-        class="item"
-        effect="dark"
-        content="查看个人资料"
-        placement="top"
-      >
-        <router-link :to="{ name: 'User', params: { uid: user.uid } }" class="name">{{
-          user.name
-        }}</router-link>
-      </el-tooltip>
-      <span v-else>{{ user.name }}</span> , This is your {{ title }}!
-      <i class="el-icon-s-order"></i>
-    </p>
+  <div>
+    <todo-input @addTodo="addTodo"></todo-input>
 
-    <el-tooltip class="avatar" content="查看个人资料" placement="bottom" :open-delay="300">
-      <img v-if="user.uid" @click="$router.push(`user/${user.uid}`)" :src="user.avatar" alt="" />
-    </el-tooltip>
+    <div class="todolist">
+      <el-tabs tab-position="left" v-model="activeTab">
+        <div class="w-[800px]">
+          <el-tab-pane name="ing">
+            <template #label>
+              <span
+                ><el-icon><Guide /></el-icon> 进行中</span
+              >
+            </template>
 
-    <div class="loginComp">
-      <login-form title="登录/注册"></login-form>
+            <todo-table :data="ingTodoData" type="ing" @update-data="handleUpdate('ing', $event)">
+              <template #content="{ content, id, index, updateContent }">
+                <el-tooltip
+                  content="点击修改"
+                  :show-after="200"
+                  placement="right-end"
+                  effect="dark"
+                >
+                  <div
+                    class="input-textarea"
+                    v-text="content"
+                    contenteditable="true"
+                    @blur="updateContent(index, id)"
+                  />
+                </el-tooltip>
+              </template>
+              <template #delete="{ action, index, id }">
+                <el-button type="danger" @click="action(index, id)">
+                  <el-icon><Delete /></el-icon>
+                </el-button>
+              </template>
+            </todo-table>
+          </el-tab-pane>
+
+          <el-tab-pane name="done">
+            <template #label>
+              <span
+                ><el-icon><finished /></el-icon> 已完成</span
+              >
+            </template>
+            <todo-table
+              :data="doneTodoData"
+              type="done"
+              @update-data="handleUpdate('done', $event)"
+            >
+              <template #content="{ content, todoDoneStyle }">
+                <span v-text="content" :style="todoDoneStyle" class="text-gray-400"></span>
+              </template>
+              <template #delete="{ action, index, id }">
+                <el-popconfirm
+                  title="确定删除这个todo吗?"
+                  confirmButtonText="删了"
+                  cancelButtonText="不了"
+                  icon="Delete"
+                  iconColor="red"
+                  confirmButtonType="danger"
+                  @confirm="action(index, id)"
+                >
+                  <template #reference>
+                    <el-button size="default" type="danger">
+                      <el-icon>
+                        <Delete />
+                      </el-icon>
+                    </el-button>
+                  </template>
+                </el-popconfirm>
+              </template>
+            </todo-table>
+          </el-tab-pane>
+        </div>
+      </el-tabs>
     </div>
-
-    <todo-table></todo-table>
   </div>
 </template>
 
 <style lang="scss">
-.box {
-  text-align: center;
-  min-width: 700px;
+.del {
+  text-decoration: line-through;
+}
+.el-icon-success {
+  color: #41b883;
+  margin-left: 2px;
+}
+.todolist {
+  margin-top: 1rem;
   position: relative;
-
-  p:first-child {
-    color: #409eff;
-    font-size: 1.5rem;
-    text-shadow: 1px 2px 6px #92c4e7;
-    // display: inline-block;
-    margin: 1.2rem 0;
-  }
-  .avatar {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    position: fixed;
-    right: 10px;
-    top: 10px;
-    transition: 0.6s;
-    box-shadow: 1px 1px 3px #8c8c8c;
+  left: -3.4rem;
+}
+.todotable {
+  border: 1px solid #eee;
+  .input-textarea {
+    box-sizing: content-box;
+    max-height: 110px;
+    overflow: hidden;
+    padding: 5px;
+    border: 1px solid transparent;
+    background: transparent;
+    border-radius: 5px;
+    transition: 0.3s;
     &:hover {
-      transform: rotate(360deg);
-      box-shadow: 1px 1px 10px #8c8c8c;
+      overflow: auto;
+      border: 1px solid #ededed;
+      background: rgba(255, 255, 255, 0.74);
     }
-  }
-  .name {
-    position: relative;
-    color: rgb(64, 158, 255);
-    font-weight: bold;
-    font-size: 1.5rem;
-    text-decoration: none;
-    transition: ease-in 0.4s;
-    &:hover {
-      text-shadow: 0 2px 8px #2894ebd1;
+    &:focus {
+      border: 1px solid #a2a2a2;
+      outline: none;
     }
-    &::before {
-      position: absolute;
-      height: 2px;
-      content: "";
-      left: 0;
-      right: 0;
-      bottom: -4px;
-      background: #409eff;
-      box-shadow: 0 2px 8px #2894ebd1;
-      transition: transform ease-in-out 0.4s;
-      transform-origin: bottom right;
-      transform: scaleX(0);
-    }
-    &:hover::before {
-      transform-origin: bottom left;
-      transform: scaleX(1);
-    }
-  }
-  .loginComp {
-    right: 5px;
-    position: absolute;
-    top: 50px;
   }
 }
+.el-table td,
+.el-table th {
+  padding: 14px 0;
+}
 </style>
-
 <script>
-import loginForm from "@/components/loginForm.vue";
+import todoInput from "./todoInput.vue";
 import todoTable from "@/components/todoTable.vue";
+import { useStore } from "@/store/pinia";
+import { mapState } from "pinia";
 
 export default {
+  name: "todoList",
   props: {
-    title: {
-      type: String,
-      default: "Todo List",
-    },
+    data: Array,
   },
   components: {
-    loginForm,
+    todoInput,
     todoTable,
   },
-  data: () => ({}),
-  created() {},
+  data() {
+    return {
+      todoData: [],
+      activeTab: "ing",
+      loading: false,
+    };
+  },
+  created() {
+    this.loadTable();
+  },
   computed: {
-    user() {
-      // return this.$store.state.user; //vuex
-      return this.$store.userInfo; //eventBus
+    ...mapState(useStore, ["loginStatus"]),
+    ingTodoData() {
+      return this.todoData.filter((v) => !v.complete);
+    },
+    doneTodoData() {
+      return this.todoData.filter((v) => v.complete);
+    },
+    tableData() {
+      return this.activeTab === "ing" ? this.ingTodoData : this.doneTodoData;
     },
   },
-  methods: {},
+  watch: {
+    loginStatus(n, o) {
+      if (o === false && n === true) this.loadTable();
+    },
+  },
+  methods: {
+    //加载todolist表格数据
+    async loadTable() {
+      let LocalData = this.getLocalData();
+      //若loginStatus状态加载server
+      if (this.loginStatus) {
+        this.loading = true;
+        //登录时若本地有数据则与server同步
+        if (LocalData?.length > 0) {
+          let syncTask = this.getLocalChangedTodo(LocalData);
+          //多个本地todo增加任务完成后获取新的todolist
+          await Promise.all(syncTask).then(this.refreshData());
+        } else {
+          //无本地数据则直接拉server
+          await this.refreshData();
+        }
+        this.loading = false;
+        this.updateLocalData();
+      } else if (LocalData) {
+        //离线则加载本地LoalStorage
+        this.todoData = LocalData;
+      }
+    },
+
+    //将本地离线创建的无IDtodo 同步到server
+    getLocalChangedTodo(LocalData) {
+      return LocalData.map((todo) => {
+        if (!Object.hasOwn(todo, "id")) {
+          return this.$api.todo.add(todo);
+        }
+      });
+    },
+
+    async refreshData() {
+      if (!this.loginStatus) {
+        this.todoData = this.getLocalData();
+      } else {
+        this.todoData = await this.getTodolist();
+      }
+    },
+
+    async getTodolist() {
+      let res = await this.$api.todo.getAll();
+      let list = res.data;
+      list.forEach((t, k) => {
+        list[k].createAt = new Date(t.createAt).toLocaleString();
+        if (isNaN(t) && Date.parse(t.deadlineAt)) {
+          list[k].deadlineAt = new Date(t.deadlineAt).toLocaleDateString();
+        }
+      });
+      return list.sort((a, b) => a.id - b.id);
+    },
+
+    handleUpdate(type, data) {
+      if (type === "ing") {
+        this.todoData = [...data, ...this.doneTodoData];
+      } else {
+        this.todoData = [...this.ingTodoData, ...data];
+      }
+      console.log(this.todoData);
+      this.updateLocalData();
+      this.loginStatus && this.refreshData();
+    },
+
+    async addTodo(todo) {
+      this.todoData.push(todo);
+      if (this.loginStatus) {
+        try {
+          await this.$api.todo.add(todo);
+          this.$message.success("添加成功~");
+        } catch (error) {
+          this.$message.error("添加失败,请重试");
+          return;
+        }
+        await this.refreshData();
+      }
+      this.updateLocalData();
+    },
+
+    //获取本地data
+    getLocalData() {
+      return JSON.parse(localStorage.getItem("todolist"));
+    },
+
+    //存储到本地LocalStorage
+    updateLocalData() {
+      localStorage.setItem("todolist", JSON.stringify(this.todoData));
+    },
+  },
 };
 </script>

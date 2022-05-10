@@ -3,17 +3,24 @@
     <el-card class="box-card">
       <div v-if="!showUpload">
         <el-tooltip
-          :open-delay="500"
+          :show-after="500"
           class="item"
           effect="dark"
           content="点击更换头像"
           placement="right"
         >
-          <el-image :alt="user.name" :src="avatar" @click="showUpload = true">
+          <el-image
+            class="cursor-pointer"
+            :alt="user.name"
+            :src="avatar"
+            @click="showUpload = true"
+          >
             <div slot="error" class="image-slot">
-              <i class="el-icon-loading"></i>
+              <el-icon><loading /></el-icon>
             </div>
-            <div slot="placeholder" class="image-slot"><i class="el-icon-loading"></i></div>
+            <div slot="placeholder" class="image-slot">
+              <el-icon><loading /></el-icon>
+            </div>
           </el-image>
         </el-tooltip>
         <span class="name">{{ name }}</span>
@@ -41,25 +48,28 @@
         <div v-if="upSuccess">
           <el-button
             @click="updateUser({ avatar: imageUrl })"
-            size="mini"
+            size="default"
             type="primary"
             style="margin-top: 1rem"
-            >设为头像 <i class="el-icon-picture-outline-round"></i
-          ></el-button>
+            >设为头像 <el-icon><check /></el-icon>
+          </el-button>
         </div>
         <span class="tip" v-else>点击或者拖拽以上传头像,不大于5M</span>
       </div>
-      <el-button @click="to('back')" class="to back" size="mini"
-        ><i class="el-icon-back"></i
-      ></el-button>
-      <el-button @click="to('home')" class="to home" size="mini"
-        ><i class="el-icon-s-home"></i
-      ></el-button>
+      <el-button @click="to('back')" class="to back">
+        <el-icon><back /></el-icon>
+      </el-button>
+      <el-button @click="to('home')" class="to home">
+        <el-icon><house /></el-icon>
+      </el-button>
     </el-card>
   </div>
 </template>
 
 <script>
+import { useStore } from "@/store/pinia";
+import { mapState } from "pinia";
+
 export default {
   data: () => ({
     avatar: "",
@@ -73,7 +83,7 @@ export default {
   }),
   created() {
     this.getUserData();
-    this.$http
+    this.$axios
       .get("https://v1.jinrishici.com/tianqi/xingxing")
       .then(({ data }) => {
         this.randomStatus = data.content;
@@ -81,9 +91,7 @@ export default {
       .catch((err) => console.log(err));
   },
   computed: {
-    user() {
-      return this.$store.userInfo;
-    },
+    ...mapState(useStore, { user: "userInfo" }),
     doms() {
       return this.$refs;
     },
@@ -130,7 +138,7 @@ export default {
             this.avatar = avatar;
           }
         })
-        .catch((err) => console.log(err.response));
+        .catch((res) => console.log(res));
     },
     uploadAvatar(params) {
       console.log(params);
@@ -144,7 +152,7 @@ export default {
         .then((res) => {
           this.handleAvatarSuccess(res);
         })
-        .catch((err) => console.log(err.response));
+        .catch((res) => console.log(res));
     },
     //预检图像信息
     beforeAvatarUpload(file) {
