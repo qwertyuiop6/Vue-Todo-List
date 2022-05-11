@@ -1,4 +1,4 @@
-version: '3.7'
+version: '1.0'
 services:
   web:
     build: .
@@ -7,12 +7,12 @@ services:
       - postgres
       - redis
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/todos
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/todolist
     volumes:
       - ./data/logs:/usr/app/server/logs
-      - ./data/files:/usr/app/server/files
+      - ./data/uploads:/usr/app/server/uploads
       - ./server/configs:/usr/app/server/configs
-      - ./server/prisma/schema.prisma:/usr/app/server/prisma/schema.prisma
+      - ./server/prisma:/usr/app/server/prisma
     ports:
       - 8000:8000
     restart: on-failure
@@ -22,7 +22,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: todos
+      POSTGRES_DB: todolist
     volumes:
       - ./data/pg_data:/var/lib/postgresql/data
       - ./server/configs/sql:/docker-entrypoint-initdb.d

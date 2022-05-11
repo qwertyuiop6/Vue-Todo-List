@@ -20,5 +20,4 @@ RUN chmod +x /usr/local/bin/wait-it
 
 # RUN
 EXPOSE 8000
-CMD cd server \
-    &&wait-it postgres:5432 -- node app.js
+CMD wait-it postgres:5432 -- npm run start:server
