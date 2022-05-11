@@ -2,7 +2,6 @@ const { PrismaClient } = require("@prisma/client");
 const { User } = new PrismaClient();
 
 const encrypt = require("../utils/encrypt");
-const path = require("path");
 const { generateAccessToken } = require("../services/auth");
 const randomAvatar = require("../services/randomAvatar");
 const { uploadFile } = require("../services/cos");
@@ -44,7 +43,7 @@ async function checkName(ctx) {
 }
 
 async function getUserData(ctx) {
-  const { uid } = ctx.query;
+  const { uid } = ctx.params;
   const { id, name, status, avatar } = await User.findUnique({ where: { id: +uid } });
 
   ctx.send("获取到用户信息", {
@@ -66,12 +65,12 @@ async function updateUserData(ctx) {
 
 async function updateUserAvatar(ctx) {
   console.log(ctx.request.files);
-  const { hash, path: filepath, name } = ctx.request.files.avatar;
-  const filename = `${hash}${path.extname(name)}`;
+  const { filepath, newFilename } = ctx.request.files.avatar;
+  // const filename = `${hash}${path.extname(newFilename)}`;
 
   const avatarURL = ctx.app.config.useCOS
-    ? await uploadFile(filepath, "avatar", filename)
-    : `/avatar/${filepath.split(path.sep).pop()}`;
+    ? await uploadFile(filepath, "avatar", newFilename)
+    : `/avatar/${newFilename}`;
 
   ctx.send("文件上传成功", { data: { avatarURL }, status: 201 });
 }

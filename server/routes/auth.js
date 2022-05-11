@@ -9,6 +9,6 @@ auth
   .post("/login", login)
   .get("/checkName", checkName)
   .post("/logout", authToken, deleteToken)
-  .get("/checkToken", authToken, checkToken);
+  .get("/token", authToken, checkToken);
 
 module.exports = auth;

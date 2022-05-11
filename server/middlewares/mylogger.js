@@ -1,8 +1,8 @@
 const chalk = require("chalk");
 const { timestamp2str: t2s } = require("../utils/date");
-const save2log=require('../utils/save2log')
+const save2log = require("../utils/save2log");
 
-module.exports = options => async (ctx, next) => {
+module.exports = (options) => async (ctx, next) => {
   const start = Date.now();
   const { uid, name } = ctx.state.user;
   const user = chalk.blackBright(uid);
@@ -25,13 +25,13 @@ module.exports = options => async (ctx, next) => {
     ctx.response.length ? size : ""
   } ${ctx.body ? "body: " + resBody : ""} `;
   console.log(showline);
-  
+
   if (options.save) {
     const logline = `${t2s(start)}: User[${uid}](${name}) REQ: -->${ctx.method} ${
       ctx.url
     } ${JSON.stringify(ctx.request.body)} <-- RES: ${ctx.status} ${
       ctx.body ? JSON.stringify(ctx.body) : ""
     } ${ms} ${ctx.response.length + "-bytes"}\n`;
-    save2log(options.logPath ?? ctx.app.config.logPath,"todo",logline);
+    save2log(options.logPath ?? ctx.app.config.logPath, "todo", logline);
   }
 };
