@@ -4,12 +4,13 @@ WORKDIR /usr/app
 COPY . .
 
 #FE
-RUN npm i --registry=https://registry.npm.taobao.org 
-RUN npm run build
+RUN npm i -g pnpm
+RUN pnpm i --registry=https://registry.npm.taobao.org 
+RUN pnpm build
 
 #BE
 RUN cd server \
-    && npm i --registry=https://registry.npm.taobao.org \
+    && pnpm i --registry=https://registry.npm.taobao.org \
     && npx prisma generate
 
 # ENV DATABASE_URL=postgresql://postgres:postgres@localhost:5432/todos?schema=public
@@ -20,4 +21,4 @@ RUN chmod +x /usr/local/bin/wait-it
 
 # RUN
 EXPOSE 8000
-CMD wait-it postgres:5432 -- npm run start:server
+CMD wait-it postgres:5432 -- pnpm start:server

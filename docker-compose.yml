@@ -1,22 +1,23 @@
-version: '1.0'
+version: '3.7'
 services:
   web:
     build: .
-    image: todo-image
+    image: todolist-image
     depends_on:
       - postgres
       - redis
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/todolist
+      REDIS_URL: redis://:redis_default_passwd@redis:6379/0
     volumes:
       - ./data/logs:/usr/app/server/logs
       - ./data/uploads:/usr/app/server/uploads
       - ./server/configs:/usr/app/server/configs
       - ./server/prisma:/usr/app/server/prisma
     ports:
-      - 8000:8000
+      - 8008:8008
     restart: on-failure
-    container_name: todo-web
+    container_name: todolist-web
   postgres:
     image: postgres:latest
     environment:
@@ -30,6 +31,7 @@ services:
       - 5432:5432
     restart: always
     container_name: pg_db
+    hostname: postgres
   redis:
     image: redis:alpine
     command: redis-server /etc/redis/redis.conf
@@ -40,3 +42,4 @@ services:
       - ./docker/redis.conf:/etc/redis/redis.conf
       - ./data/redis_data:/data/redis
     container_name: redis_mem
+    hostname: redis
