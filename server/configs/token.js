@@ -1,6 +1,0 @@
-module.exports = {
-  ACCESS_TOKEN_SECRET: "sample",
-  REFRESH_TOKEN_SECRET: "sample",
-  ACCESS_TOKEN_EXPIRESIN: "30m",
-  ACCESS_TOKEN_REFRESH_TIME: "10m"
-};
