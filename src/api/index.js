@@ -1,6 +1,6 @@
 import * as todo from "./todo";
-import auth from "./auth";
-import user from "./user";
+import * as auth from "./auth";
+import * as user from "./user";
 
 export default {
   install: (app) => {

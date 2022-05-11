@@ -1,19 +1,15 @@
 import * as http from "../utils/http";
-import API from "../config/api";
+import API from "./api";
 
-const get = query => http.get(API.user, query);
+const get = (uid) => http.get(API.user + "/" + uid);
 
-const update = body => http.post(API.user, body);
+const update = (body) => http.post(API.user, body);
 
-const uploadAvatar = body =>
+const uploadAvatar = (body) =>
   http.post(API.user + "/avatar", body, {
     headers: {
-      "Content-Type": "multipart/form-data"
-    }
+      "Content-Type": "multipart/form-data",
+    },
   });
 
-export default {
-  get,
-  update,
-  uploadAvatar
-};
+export { get, update, uploadAvatar };

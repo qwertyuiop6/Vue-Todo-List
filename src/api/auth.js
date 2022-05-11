@@ -1,12 +1,12 @@
 import { get, post } from "../utils/http";
-import API from "../config/api";
+import API from "./api";
 
 function login(body) {
   return post(API.auth + "/login", body);
 }
 
-function checkToken() {
-  return get(API.auth + "/checkToken");
+function check() {
+  return get(API.auth + "/token");
 }
 
 function register(body) {
@@ -17,9 +17,4 @@ function logout() {
   return post(API.auth + "/logout");
 }
 
-export default {
-  login,
-  logout,
-  checkToken,
-  register
-};
+export { login, logout, check, register };

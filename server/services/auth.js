@@ -1,16 +1,9 @@
-let ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN, ACCESS_TOKEN_REFRESH_TIME;
-const tokenConf = require("../configs/token");
-// if (process.env.NODE_ENV === "development") {
-//   require("dotenv").config();
-//   ({ ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN } = process.env);
-// } else {
-({ ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN, ACCESS_TOKEN_REFRESH_TIME } =
-  tokenConf); //已声明变量的对象解构赋值
-// }
-
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const { REDIS_URL, ACCESS_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN, ACCESS_TOKEN_REFRESH_TIME } =
+  process.env;
 const Redis = require("ioredis");
-const redis = new Redis(require("../configs/db").redis);
+const redis = new Redis(REDIS_URL);
 
 //验证token中间件
 async function authToken(ctx, next) {
