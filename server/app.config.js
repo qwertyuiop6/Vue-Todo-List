@@ -17,7 +17,7 @@ module.exports = {
     formidable: {
       uploadDir: path.resolve(__dirname, "./uploads"), //本地文件保存路径
       keepExtensions: true,
-      hash: "sha256",
+      hashAlgorithm: "sha256",
       onFileBegin: saveFile,
     },
   },

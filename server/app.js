@@ -8,7 +8,6 @@ const onerror = require("koa-onerror");
 // const session = require('koa-session');
 const path = require("path");
 
-const router = require("./router");
 const {
   staticOptions,
   bodyParser,
@@ -19,6 +18,7 @@ const {
 } = require("./app.config");
 
 const app = new Koa(koaConfig);
+const router = require("./routes");
 
 app
   .use(logger())
@@ -44,13 +44,14 @@ async function handleNotFound(ctx) {
   await ctx.render("error", { title: "FBI WARNING", error: `${ctx.url} NOT FOUND` });
 }
 
-async function errorHandle(err, ctx) {
+async function errorHandle(err) {
   console.log("interal error:\n", err);
   if (process.env.NODE_ENV !== "development") {
     require("./utils/save2log")(logPath, "error", err);
   }
 }
+const PORT = process.env.PORT || port;
 
-app.listen(port, () => {
-  console.log(`linsten on http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`linsten on http://localhost:${PORT}`);
 });
