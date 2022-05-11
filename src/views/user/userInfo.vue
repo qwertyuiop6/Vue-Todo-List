@@ -1,6 +1,6 @@
 <template>
   <div class="user">
-    <el-card class="box-card">
+    <el-card class="box-card grid place-items-center">
       <div v-if="!showUpload">
         <el-tooltip
           :show-after="500"
@@ -10,17 +10,21 @@
           placement="right"
         >
           <el-image
-            class="cursor-pointer"
+            class="avatar cursor-pointer w-[100px]"
             :alt="user.name"
             :src="avatar"
             @click="showUpload = true"
           >
-            <div slot="error" class="image-slot">
-              <el-icon><loading /></el-icon>
-            </div>
-            <div slot="placeholder" class="image-slot">
-              <el-icon><loading /></el-icon>
-            </div>
+            <template #error>
+              <div class="image-slot">
+                <el-icon><icon-picture /></el-icon>
+              </div>
+            </template>
+            <template #placeholder>
+              <div class="image-slot">
+                <el-icon><loading /></el-icon>
+              </div>
+            </template>
           </el-image>
         </el-tooltip>
         <span class="name">{{ name }}</span>
@@ -34,23 +38,23 @@
           {{ status || randomStatus }}
         </div>
       </div>
-      <div v-else>
+      <div v-else class="grid place-items-center">
         <el-upload
           drag
-          class="avatar-uploader"
-          action="diy"
+          class="avatar-uploader !text-gray-500 hover:!text-blue-400"
           :show-file-list="false"
           :http-request="uploadAvatar"
         >
-          <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-          <i v-else class="el-icon-upload"></i>
+          <!-- <img v-if="imageUrl" :src="imageUrl" class="h-[100%]" /> -->
+          <el-image v-if="imageUrl" :src="imageUrl" fit="fill" :lazy="true"></el-image>
+          <el-icon v-else :size="25"><upload-filled /></el-icon>
         </el-upload>
         <div v-if="upSuccess">
           <el-button
             @click="updateUser({ avatar: imageUrl })"
             size="default"
             type="primary"
-            style="margin-top: 1rem"
+            class="mt-3"
             >设为头像 <el-icon><check /></el-icon>
           </el-button>
         </div>
@@ -116,11 +120,10 @@ export default {
   methods: {
     getUserData() {
       const uid = this.$route.params.uid;
-      this.$api.user.get({ uid }).then((res) => {
+      this.$api.user.get(uid).then((res) => {
         Object.assign(this, res.data);
       });
     },
-    random() {},
     updateUser({ status, avatar }) {
       const params = Object.assign(
         {},
@@ -140,19 +143,21 @@ export default {
         })
         .catch((res) => console.log(res));
     },
-    uploadAvatar(params) {
+    async uploadAvatar(params) {
       console.log(params);
       if (!this.beforeAvatarUpload(params.file)) return;
 
       let form = new FormData();
       form.append("avatar", params.file);
-
-      this.$api.user
-        .uploadAvatar(form)
-        .then((res) => {
-          this.handleAvatarSuccess(res);
-        })
-        .catch((res) => console.log(res));
+      try {
+        const res = await this.$api.user.uploadAvatar(form);
+        console.log(res);
+        this.$message.success("头像上传成功!");
+        this.imageUrl = res.data.avatarURL;
+        this.upSuccess = true;
+      } catch (error) {
+        console.log(error);
+      }
     },
     //预检图像信息
     beforeAvatarUpload(file) {
@@ -166,14 +171,6 @@ export default {
         this.$message.error("上传头像图片大小不能超过 5MB!");
       }
       return isAllow && isLt5M;
-    },
-    //成功
-    handleAvatarSuccess(res) {
-      this.$message.success("头像上传成功!");
-      // this.imageUrl = URL.createObjectURL(file.raw);
-      console.log(res);
-      this.imageUrl = res.data.avatarURL;
-      this.upSuccess = true;
     },
     to(dest = "back") {
       if (dest === "back") {
@@ -265,31 +262,32 @@ export default {
       right: -1px;
     }
   }
+  .avatar {
+    position: absolute;
+    border-radius: 50%;
+    left: 50%;
+    top: 10%;
+    transform: translateX(-50%);
+    transition: 1s;
+    &:hover {
+      // box-shadow: 1px 2px 11px 1px #9595958f;
+      transform: translateX(-50%) rotate(360deg);
+    }
+  }
 }
 
 .el-image {
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  left: 50%;
-  top: 10%;
-  transform: translateX(-50%);
-  transition: 1s;
-  &:hover {
-    // box-shadow: 1px 2px 11px 1px #9595958f;
-    transform: translateX(-50%) rotate(360deg);
-  }
-  .image-slot {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: #eee;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+  // .image-slot {
+  //   width: 100px;
+  //   height: 100px;
+  //   border-radius: 50%;
+  //   background: #eee;
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  // }
 }
+
 .avatar-uploader .el-upload {
   border: 1px dashed #c2c2c2;
   border-radius: 50%;
@@ -298,9 +296,25 @@ export default {
   overflow: hidden;
   transition: 0.3s;
   &:hover {
-    border: 1px dashed #389fff;
+    border-color: #35c9fe;
     .el-icon-upload {
       color: #4aa1ff;
+    }
+  }
+  .el-upload-dragger {
+    display: grid;
+    place-items: center;
+    height: 130px;
+    width: 130px;
+    padding: 0;
+    border: none;
+    &:focus {
+      outline: none;
+    }
+    .el-icon-upload {
+      transition: 0.3s;
+      font-size: 2rem;
+      color: #cccccc;
     }
   }
 }
@@ -311,24 +325,6 @@ export default {
   height: 130px;
   line-height: 130px;
   text-align: center;
-}
-.el-upload-dragger {
-  width: 130px;
-  height: 130px;
-  border: none;
-  &:focus {
-    outline: none;
-  }
-  .el-icon-upload {
-    transition: 0.3s;
-    font-size: 2rem;
-    color: #cccccc;
-  }
-}
-.avatar {
-  width: 130px;
-  height: 130px;
-  display: block;
 }
 .tip {
   color: #444;

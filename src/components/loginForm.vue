@@ -218,8 +218,8 @@ export default {
       }
       //检查token是否过期,再根据token用户id获取用户信息
       this.$api.auth
-        .checkToken()
-        .then(({ data }) => this.$api.user.get({ uid: data.uid }))
+        .check()
+        .then(({ data }) => this.$api.user.get(data.uid))
         .catch((err) => {
           console.log(err);
         })
