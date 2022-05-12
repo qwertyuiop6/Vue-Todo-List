@@ -1,35 +1,38 @@
-require("dotenv").config();
+const path = require("path");
 const fs = require("fs");
 const COS = require("cos-nodejs-sdk-v5");
-const cfg = require("../configs/cos");
+
+require("dotenv").config({ path: path.resolve(__dirname, ".env") });
+const { SecretId, SecretKey, Bucket, Region, domain, avatar } = process.env;
+
 const cloud = new COS({
-  SecretId: cfg.SecretId,
-  SecretKey: cfg.SecretKey
+  SecretId,
+  SecretKey,
 });
 
-function uploadFile(path, type, name) {
-  const Key=`${cfg.FilePath[type]}/${name}`
+function uploadFile(fullPath, type, name) {
+  const Key = `${type}/${name}`;
   return new Promise((res, rej) => {
     cloud.putObject(
       {
-        Bucket: cfg.Bucket,
-        Region: cfg.Region,
+        Bucket,
+        Region,
         Key,
         StorageClass: "STANDARD",
-        Body: fs.createReadStream(path), // 上传文件对象
-        onProgress: function(progressData) {
+        Body: fs.createReadStream(fullPath), // 上传文件对象
+        onProgress: function (progressData) {
           // console.log(JSON.stringify(progressData));
-        }
+        },
       },
-      function(err, data) {
+      function (err, data) {
         if (err) rej(err);
         console.log("[TX云COS]上传成功-> " + Key);
-        res(`${cfg.domain}/${Key}`);
+        res(`${domain}/${Key}`);
       }
     );
   });
 }
 
 module.exports = {
-  uploadFile
+  uploadFile,
 };

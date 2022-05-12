@@ -68,9 +68,10 @@ async function updateUserAvatar(ctx) {
   const { filepath, newFilename } = ctx.request.files.avatar;
   // const filename = `${hash}${path.extname(newFilename)}`;
 
-  const avatarURL = ctx.app.config.useCOS
-    ? await uploadFile(filepath, "avatar", newFilename)
-    : `/avatar/${newFilename}`;
+  const avatarURL =
+    process.env.USE_COS === "true"
+      ? await uploadFile(filepath, "avatar", newFilename)
+      : `/avatar/${newFilename}`;
 
   ctx.send("文件上传成功", { data: { avatarURL }, status: 201 });
 }

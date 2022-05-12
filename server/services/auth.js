@@ -1,4 +1,3 @@
-require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { REDIS_URL, ACCESS_TOKEN_SECRET, ACCESS_TOKEN_EXPIRESIN, ACCESS_TOKEN_REFRESH_TIME } =
   process.env;

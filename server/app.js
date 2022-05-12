@@ -19,6 +19,7 @@ const {
 
 const app = new Koa(koaConfig);
 const router = require("./routes");
+require("dotenv").config();
 
 app
   .use(logger())
