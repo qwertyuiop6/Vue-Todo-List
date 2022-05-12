@@ -7,7 +7,7 @@
 ### 安装依赖
 
 ```shell
-$ pnpm i
+$ pnpm i&&cd server&&pnpm i&&cd ..
 ```
 
 ### 配置
@@ -16,13 +16,11 @@ $ pnpm i
 # 配置
 server/app.config.js
 # Postgres导入数据库表
-server/configs/sql/todolist.sql
-# Postgres配置
-server/prisma/.env
-# Redis和Jwt secret,expires配置
+server/sql/todolist.sql
+# Postgres,Redis连接和Jwt secret,expires
 server/.env
-# Cos对象云存储配置(可选)
-server/configs/cos.js
+# COS对象云存储API-KEY配置(可选)
+server/services/.env
 ```
 
 ### 启动
@@ -31,8 +29,7 @@ server/configs/cos.js
 # 构建前端页面
 $ pnpm build
 # 启动后台服务
-$ cd server&&pnpm i
-$ pnpm start
+$ pnpm start:server
 ```
 
 ### 使用 Docker-compose 直接部署启动
@@ -47,8 +44,7 @@ docker-compose up
 # 前端开发
 $ pnpm dev
 # 后端开发
-$ cd server
-$ pnpm dev
+$ cd server&&pnpm dev
 ```
 
 ## How Works?

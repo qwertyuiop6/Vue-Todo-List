@@ -26,7 +26,7 @@ services:
       POSTGRES_DB: todolist
     volumes:
       - ./data/pg_data:/var/lib/postgresql/data
-      - ./server/configs/sql:/docker-entrypoint-initdb.d
+      - ./server/sql:/docker-entrypoint-initdb.d
     ports:
       - 5432
     restart: always
