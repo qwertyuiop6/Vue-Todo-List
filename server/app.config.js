@@ -31,5 +31,4 @@ module.exports = {
     maxAge: 86400, //24-hours
   },
   logPath: path.resolve(__dirname, "./logs"), //日志路径
-  useCOS: false, // 是否使用云对象存储
 };
