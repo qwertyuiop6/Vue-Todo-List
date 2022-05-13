@@ -101,21 +101,20 @@ export default {
     },
   },
   directives: {
-    placeholder: {
-      bind: function (el, binding) {
-        if (typeof binding.value !== "string") return;
-        el.textContent = binding.value;
-        el.style.display = "none";
-      },
-      update: function (el, binding) {
-        if (typeof binding.value !== "string") return;
-        // console.log(binding.value);
-        if (binding.value?.trim().length) {
-          el.textContent = binding.value;
-        }
-        el.style.display = "unset";
-      },
-    },
+    // placeholder: {
+    //   bind: function (el, binding) {
+    //     if (typeof binding.value !== "string") return;
+    //     el.textContent = binding.value;
+    //     el.style.display = "none";
+    //   },
+    //   update: function (el, binding) {
+    //     if (typeof binding.value !== "string") return;
+    //     if (binding.value?.trim().length) {
+    //       el.textContent = binding.value;
+    //     }
+    //     el.style.display = "unset";
+    //   },
+    // },
   },
   methods: {
     getUserData() {
