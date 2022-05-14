@@ -1,9 +1,5 @@
-import { createApp } from "vue";
-import ElementPlus from "element-plus";
+import { ElMessage } from "element-plus";
 import router from "../../router";
-
-const app = createApp();
-app.use(ElementPlus);
 
 //请求之前检测,加请求头
 function beforeRequest(config) {
@@ -14,13 +10,14 @@ function beforeRequest(config) {
 
 //响应成功数据处理
 function responseSuccess(response) {
-  console.log("请求响应正常:", response.data);
-  // eslint-disable-next-line no-prototype-builtins
-  if (response.data?.hasOwnProperty("accessToken")) {
-    localStorage.setItem("accessToken", response.data.accessToken);
+  const { data } = response;
+  console.log("请求响应正常:", data);
+  if (Object.hasOwn(data, "accessToken")) {
+    localStorage.setItem("accessToken", data.accessToken);
     console.log("accessToken已更新");
+    import.meta.env.DEV && ElMessage.success("token已更新" + data.accessToken);
   }
-  return Promise.resolve(response);
+  return Promise.resolve(data);
 }
 
 //响应错误处理
@@ -33,13 +30,17 @@ function responseError(error) {
   console.log("请求响应错误:", response);
   const { status } = response;
   if (status == 401) {
-    app.config.globalProperties.$message.warning("登陆状态失效,请重新登录");
+    // app.config.globalProperties.$message.warning("登陆状态失效,请重新登录");
+    ElMessage.warning("登陆状态失效,请重新登录");
     localStorage.removeItem("accessToken");
     setTimeout(() => {
       router.push({ name: "Home", params: {} });
     }, 1000);
+  } else if (status == 403) {
+    // app.config.globalProperties.$message.error("服务器出问题啦,请稍后重试");
+    ElMessage.error("非法请求!");
   } else if (status >= 500) {
-    app.config.globalProperties.$message.error("服务器出问题啦,请稍后重试");
+    ElMessage.error("服务器出问题啦,请稍后重试");
   }
   return Promise.reject(response);
 }

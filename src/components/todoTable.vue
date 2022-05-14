@@ -67,10 +67,11 @@ export default {
   props: {
     type: String,
     data: Array,
+    loading: Boolean,
   },
   data() {
     return {
-      loading: false,
+      // loading: false,
       status: [
         {
           text: "进行中",

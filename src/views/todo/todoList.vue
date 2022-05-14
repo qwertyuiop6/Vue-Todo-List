@@ -12,7 +12,12 @@
               >
             </template>
 
-            <todo-table :data="ingTodoData" type="ing" @update-data="handleUpdate('ing', $event)">
+            <todo-table
+              :data="ingTodoData"
+              :loading="loading"
+              type="ing"
+              @update-data="handleUpdate('ing', $event)"
+            >
               <template #content="{ content, id, index, updateContent }">
                 <el-tooltip
                   content="点击修改"
@@ -45,6 +50,7 @@
             <todo-table
               :data="doneTodoData"
               type="done"
+              :loading="loading"
               @update-data="handleUpdate('done', $event)"
             >
               <template #content="{ content, todoDoneStyle }">
@@ -201,14 +207,15 @@ export default {
     },
 
     async getTodolist() {
-      let res = await this.$api.todo.getAll();
-      let list = res.data;
+      this.loading = true;
+      let list = await this.$api.todo.getAll();
       list.forEach((t, k) => {
         list[k].createAt = new Date(t.createAt).toLocaleString();
         if (isNaN(t) && Date.parse(t.deadlineAt)) {
           list[k].deadlineAt = new Date(t.deadlineAt).toLocaleDateString();
         }
       });
+      this.loading = false;
       return list.sort((a, b) => a.id - b.id);
     },
 

@@ -219,11 +219,11 @@ export default {
       //检查token是否过期,再根据token用户id获取用户信息
       this.$api.auth
         .check()
-        .then(({ data }) => this.$api.user.get(data.uid))
+        .then((data) => this.$api.user.get(data.uid))
         .catch((err) => {
           console.log(err);
         })
-        .then(({ data }) => {
+        .then((data) => {
           const { uid, name, avatar } = data;
           this.setUserState({ uid, name, avatar });
         })
@@ -242,8 +242,8 @@ export default {
         .then((res) => {
           this.loginForm.doing = false;
           this.formVisible = false;
-          localStorage.setItem("accessToken", res.accessToken);
-          this.setUserState(res.data);
+          // localStorage.setItem("accessToken", res.accessToken);
+          this.setUserState(res);
         })
         .catch(({ status, statusText, data: err }) => {
           this.loginForm.doing = false;

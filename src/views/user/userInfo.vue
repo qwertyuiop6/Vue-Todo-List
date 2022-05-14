@@ -119,8 +119,8 @@ export default {
   methods: {
     getUserData() {
       const uid = this.$route.params.uid;
-      this.$api.user.get(uid).then((res) => {
-        Object.assign(this, res.data);
+      this.$api.user.get(uid).then((data) => {
+        Object.assign(this, data);
       });
     },
     updateUser({ status, avatar }) {
@@ -150,9 +150,9 @@ export default {
       form.append("avatar", params.file);
       try {
         const res = await this.$api.user.uploadAvatar(form);
-        console.log(res);
+        // console.log(res);
         this.$message.success("头像上传成功!");
-        this.imageUrl = res.data.avatarURL;
+        this.imageUrl = res.avatarURL;
         this.upSuccess = true;
       } catch (error) {
         console.log(error);
