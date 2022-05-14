@@ -7,7 +7,7 @@ import * as ElementIcons from "@element-plus/icons-vue";
 import "virtual:windi.css";
 import "virtual:windi-devtools";
 
-import axios from "@/utils/axios"; //引入axios拦截器
+import axios from "@/api/http"; //引入axios
 import api from "@/api"; //引入api
 import router from "@/router"; //vue-router路由控制
 // import store from "./store/vuex"; //vuex状态管理
@@ -20,6 +20,7 @@ const app = createApp({
   ...App,
 });
 
+//注册elementplus图标组件
 Object.keys(ElementIcons).forEach((k) => {
   app.component(k, ElementIcons[k]);
 });
