@@ -1,6 +1,5 @@
 /* eslint-disable no-cond-assign */
-// import axios from "axios";
-import { http as axios } from "./axios";
+import { http } from "./axios";
 import QS from "qs";
 
 //封装get,post请求
@@ -11,7 +10,7 @@ import QS from "qs";
  */
 function get(url, params) {
   return new Promise((resolve, reject) => {
-    axios
+    http
       .get(url, {
         params,
       })
@@ -31,7 +30,7 @@ function get(url, params) {
  */
 function post(url, body, opts = null) {
   return new Promise((resolve, reject) => {
-    axios
+    http
       .post(url, opts?.headers?.["Content-Type"] ? body : QS.stringify(body), opts)
       .then((res) => {
         resolve(res.data);
@@ -49,7 +48,7 @@ function post(url, body, opts = null) {
  */
 function del(url, params) {
   return new Promise((resolve, reject) => {
-    axios
+    http
       .delete(url, { params })
       .then((res) => {
         resolve(res.data);
@@ -67,7 +66,7 @@ function del(url, params) {
  */
 function patch(url, body) {
   return new Promise((resolve, reject) => {
-    axios
+    http
       .patch(url, QS.stringify(body))
       .then((res) => {
         resolve(res.data);
