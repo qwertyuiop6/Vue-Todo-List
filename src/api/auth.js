@@ -1,4 +1,4 @@
-import { get, post } from "../utils/http";
+import { get, post } from "./http";
 import API from "./api";
 
 function login(body) {

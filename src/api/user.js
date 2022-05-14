@@ -1,4 +1,4 @@
-import * as http from "../utils/http";
+import * as http from "./http";
 import API from "./api";
 
 const get = (uid) => http.get(API.user + "/" + uid);

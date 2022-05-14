@@ -1,80 +1,94 @@
 /* eslint-disable no-cond-assign */
 import { http } from "./axios";
-import QS from "qs";
+// import QS from "qs";
+import { ElLoading, ElMessage } from "element-plus";
 
-//封装get,post请求
-/**
- * get方法，对应get请求
- * @param {String} url [请求的url地址]
- * @param {Object} params [url参数]
- */
-function get(url, params) {
+function request(
+  method,
+  url,
+  params,
+  { loading = false, showError = true, confirm = false, headers = {} } = {}
+) {
+  let loadingInstance;
+  if (loading) loadingInstance = ElLoading.service();
+
   return new Promise((resolve, reject) => {
-    http
-      .get(url, {
-        params,
-      })
+    const payload = method === "GET" || method === "DELETE" ? { params } : { data: params };
+    http({
+      method,
+      url,
+      headers,
+      ...payload,
+    })
       .then((res) => {
         resolve(res.data);
       })
       .catch((err) => {
+        showError && ElMessage.error(err.data.error);
         reject(err);
+      })
+      .finally(() => {
+        if (loading) loadingInstance.close();
       });
   });
 }
 
-/**
- * post方法，对应post请求
- * @param {String} url [请求的url地址]
- * @param {Object} body [请求时携带的body数据]
- */
-function post(url, body, opts = null) {
-  return new Promise((resolve, reject) => {
-    http
-      .post(url, opts?.headers?.["Content-Type"] ? body : QS.stringify(body), opts)
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-}
+const get = (url, params) => request("GET", url, params, { loading: false });
+const post = (url, params, headers = {}) => request("POST", url, params, { headers });
+const patch = (url, params) => request("PATCH", url, params);
+const del = (url, params) => request("DELETE", url, params);
 
-/**
- * delete方法，对应delete请求
- * @param {String} url [请求的url地址]
- * @param {Object} params [请求时携带的url参数]
- */
-function del(url, params) {
-  return new Promise((resolve, reject) => {
-    http
-      .delete(url, { params })
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-}
+// function get(url, params) {
+//   return new Promise((resolve, reject) => {
+//     http
+//       .get(url, {
+//         params,
+//       })
+//       .then((res) => {
+//         resolve(res.data);
+//       })
+//       .catch((err) => {
+//         reject(err);
+//       });
+//   });
+// }
+// function post(url, body, opts = null) {
+//   return new Promise((resolve, reject) => {
+//     http
+//       .post(url, opts?.headers?.["Content-Type"] ? body : QS.stringify(body), opts)
+//       .then((res) => {
+//         resolve(res.data);
+//       })
+//       .catch((err) => {
+//         reject(err);
+//       });
+//   });
+// }
 
-/**
- * patch方法，对应patch请求
- * @param {String} url [请求的url地址]
- * @param {Object} body [请求时携带的body参数]
- */
-function patch(url, body) {
-  return new Promise((resolve, reject) => {
-    http
-      .patch(url, QS.stringify(body))
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-}
+// function del(url, params) {
+//   return new Promise((resolve, reject) => {
+//     http
+//       .delete(url, { params })
+//       .then((res) => {
+//         resolve(res.data);
+//       })
+//       .catch((err) => {
+//         reject(err);
+//       });
+//   });
+// }
+
+// function patch(url, body) {
+//   return new Promise((resolve, reject) => {
+//     http
+//       .patch(url, QS.stringify(body))
+//       .then((res) => {
+//         resolve(res.data);
+//       })
+//       .catch((err) => {
+//         reject(err);
+//       });
+//   });
+// }
 
 export { get, post, del, patch };
