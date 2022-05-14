@@ -15,7 +15,7 @@ async function add(ctx) {
   await Todo.create({
     data: {
       content,
-      deadlineAt: !deadlineAt.length ? null : new Date(deadlineAt),
+      deadlineAt: !deadlineAt?.length ? null : new Date(deadlineAt),
       complete: JSON.parse(complete),
       User: { connect: { id: ctx.state.user.uid } },
     },
