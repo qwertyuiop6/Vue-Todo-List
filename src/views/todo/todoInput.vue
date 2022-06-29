@@ -35,20 +35,6 @@
       border-radius: unset;
     }
   }
-  // .el-date-editor.el-input__inner {
-  // width: 10rem;
-  // > input {
-  //   border-radius: 0;
-  // }
-  // }
-  // .el-input__inner {
-  //   border-radius: 4px 0 0 4px;
-  //   border-right: none;
-  // }
-  // .tips {
-  //   font-size: 0.9rem;
-  //   color: gray;
-  // }
   .btn {
     border-radius: 0 5px 5px 0;
     padding: 12px 15px;
@@ -69,6 +55,7 @@ export default {
   },
   methods: {
     add() {
+      if (this.content.length === 0) return;
       const date = new Date();
       const now = `${date.getFullYear()}/${
         date.getMonth() + 1

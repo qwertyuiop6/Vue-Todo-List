@@ -11,8 +11,12 @@ async function login(ctx) {
 
   const result = await User.findFirst({ where: { name } });
 
-  ctx.assert.ok(result, 400, "查无此人~", { user: { name, passwd } });
-  ctx.assert.strictEqual(encrypt(passwd, result.salt).passwd_hash, result.passwd, 403, "密码错误~");
+  if (!result) {
+    return ctx.send("查无此人", { data: { type: "name" }, status: 400 });
+  }
+  if (encrypt(passwd, result.salt).passwd_hash !== result.passwd) {
+    return ctx.send("密码错误", { data: { type: "password" }, status: 400 });
+  }
 
   const user = {
     name: result.name,
@@ -27,7 +31,7 @@ async function register(ctx) {
   const { name, passwd } = ctx.request.body;
 
   const res = await User.findUnique({ where: { name } });
-  ctx.assert(!res, 403, `${name} 已被使用!`);
+  ctx.assert(!res, 400, `${name} 已被使用!`);
 
   const { passwd_hash, salt } = encrypt(passwd);
   await User.create({ data: { name, passwd: passwd_hash, salt } });
@@ -38,7 +42,7 @@ async function register(ctx) {
 async function checkName(ctx) {
   const { name } = ctx.request.query;
   const res = await User.findUnique({ where: { name } });
-  ctx.assert(!res, 403, `${name} 已被使用!`);
+  ctx.assert(!res, 400, `${name} 已被使用!`);
   ctx.status = 200;
 }
 

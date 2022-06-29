@@ -167,8 +167,8 @@ export default {
                   .then(() => {
                     callback();
                   })
-                  .catch(({ response: { status } }) => {
-                    if (status === 403) callback(new Error(`有人起过这个名字啦~`));
+                  .catch(() => {
+                    callback(new Error(`有人起过这个名字啦~`));
                   });
               }, 1500);
             },
@@ -245,17 +245,18 @@ export default {
           // localStorage.setItem("accessToken", res.accessToken);
           this.setUserState(res);
         })
-        .catch(({ status, statusText, data: err }) => {
+        .catch((err) => {
+          console.log(err);
+          const { data, msg } = err;
           this.loginForm.doing = false;
-          switch (status) {
-            case 400:
-              this.loginForm.nerror = err;
+          switch (data.type) {
+            case "name":
+              this.loginForm.nerror = msg;
               break;
-            case 403:
-              this.loginForm.perror = err;
+            case "password":
+              this.loginForm.perror = msg;
               break;
             default:
-              this.$message.error("服务器可能出问题啦,请稍后重试~" + statusText);
               break;
           }
         });

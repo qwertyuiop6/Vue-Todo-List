@@ -41,10 +41,6 @@ async function update(ctx) {
   const { id } = ctx.params;
   const data = ctx.request.body;
 
-  // String.prototype.bool = function () {
-  //   return /^true$/i.test(this);
-  // };
-
   const todo = await Todo.findUnique({ where: { id: +id } });
   if (todo.uid !== uid) {
     return (ctx.status = 403);

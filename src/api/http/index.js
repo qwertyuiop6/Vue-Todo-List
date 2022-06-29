@@ -24,7 +24,8 @@ function request(
         resolve(res.data);
       })
       .catch((err) => {
-        showError && ElMessage.error(err.data.error);
+        console.log(err);
+        showError && ElMessage.error(typeof err === "string" ? err : err.msg);
         reject(err);
       })
       .finally(() => {
@@ -33,62 +34,9 @@ function request(
   });
 }
 
-const get = (url, params) => request("GET", url, params, { loading: false });
-const post = (url, params, headers = {}) => request("POST", url, params, { headers });
-const patch = (url, params) => request("PATCH", url, params);
-const del = (url, params) => request("DELETE", url, params);
-
-// function get(url, params) {
-//   return new Promise((resolve, reject) => {
-//     http
-//       .get(url, {
-//         params,
-//       })
-//       .then((res) => {
-//         resolve(res.data);
-//       })
-//       .catch((err) => {
-//         reject(err);
-//       });
-//   });
-// }
-// function post(url, body, opts = null) {
-//   return new Promise((resolve, reject) => {
-//     http
-//       .post(url, opts?.headers?.["Content-Type"] ? body : QS.stringify(body), opts)
-//       .then((res) => {
-//         resolve(res.data);
-//       })
-//       .catch((err) => {
-//         reject(err);
-//       });
-//   });
-// }
-
-// function del(url, params) {
-//   return new Promise((resolve, reject) => {
-//     http
-//       .delete(url, { params })
-//       .then((res) => {
-//         resolve(res.data);
-//       })
-//       .catch((err) => {
-//         reject(err);
-//       });
-//   });
-// }
-
-// function patch(url, body) {
-//   return new Promise((resolve, reject) => {
-//     http
-//       .patch(url, QS.stringify(body))
-//       .then((res) => {
-//         resolve(res.data);
-//       })
-//       .catch((err) => {
-//         reject(err);
-//       });
-//   });
-// }
+const get = (url, params, opts) => request("GET", url, params, opts);
+const post = (url, params, opts) => request("POST", url, params, opts);
+const patch = (url, params, opts) => request("PATCH", url, params, opts);
+const del = (url, params, opts) => request("DELETE", url, params, opts);
 
 export { get, post, del, patch };
