@@ -51,8 +51,8 @@ async function errorHandle(err) {
     require("./utils/save2log")(logPath, "error", err);
   }
 }
-const PORT = process.env.PORT || port;
 
+const PORT = process.env.PORT || port;
 app.listen(PORT, () => {
   console.log(`linsten on http://localhost:${PORT}`);
 });
