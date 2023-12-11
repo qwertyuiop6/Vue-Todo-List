@@ -4,7 +4,7 @@
 	"description": "server",
 	"main": "app.js",
 	"dependencies": {
-		"@koa/cors": "^3.3.0",
+		"@koa/cors": "^5.0.0",
 		"@prisma/client": "^4.0.0",
 		"chalk": "4",
 		"cos-nodejs-sdk-v5": "^2.11.9",
